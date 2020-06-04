@@ -251,13 +251,20 @@ if (!function_exists('dumpDebug')) {
             VarDumper::dump($e);
         }
 
-        $lasDebugger = array_get(@debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), 1, []);
+        $cor = 0;
+        $limit = 5;
+        do {
+            $lasDebugger = array_get(@debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), ++$cor, []);
 
-        $method = array_get($lasDebugger, 'function', '');
-        $line = array_get($lasDebugger, 'line', '');
-        $file = array_get($lasDebugger, 'file', '');
-        $class = array_get($lasDebugger, 'class', '');
-        $type = array_get($lasDebugger, 'type', '@');
+            $method = array_get($lasDebugger, 'function', '');
+            $line = array_get($lasDebugger, 'line', '');
+            $file = array_get($lasDebugger, 'file', '');
+            $class = array_get($lasDebugger, 'class', '');
+            $type = array_get($lasDebugger, 'type', '@');
+        } while(
+            $limit-- <= 0 || dirname(real_path(cutBasePath($file))) == dirname(real_path(cutBasePath(__FILE__)))
+        );
+
         $lastDebug = isConsole( [
                                     'Method: ' . iif( $method, $method, '[ No Method ]' ) . '.',
                                     'File: ' . when( $file, function () use($file) { return cutBasePath($file); }, '[ No File ]' ) . iif( $file && $line, "@{$line}", getAny( $line, '[ No Line ]' )) . '.',
