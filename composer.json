@@ -11,7 +11,8 @@
     "authors": [
         {
             "name": "mPhpMaster",
-            "email": "59211285+mPhpMaster@users.noreply.github.com"
+            "email": "59211285+mPhpMaster@users.noreply.github.com",
+            "github": "https://github.com/mPhpMaster/laravel-helpers"
         }
     ],
     "autoload": {
