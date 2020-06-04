@@ -5,7 +5,7 @@ namespace mPhpMaster\Support;
 /**
  * Class With
  *
- * @package App\Utilities
+ * @package mPhpMaster\Support
  */
 class With
 {
