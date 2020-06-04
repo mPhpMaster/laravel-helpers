@@ -3,7 +3,6 @@
  * Copyright © 2020 mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Arr;
 use mPhpMaster\Support\Suffixer;
 use Symfony\Component\VarDumper\VarDumper;
@@ -1045,7 +1044,7 @@ if (!function_exists('includeAllSubFiles')) {
 
         $__DIR__ = fixPath($__DIR__);
         if (file_exists($__DIR__)) {
-            return collect(File::allFiles($__DIR__))
+            return collect((new Filesystem)->allFiles($__DIR__))
                 ->map($mCojntetnt);
         } else {
             dE(

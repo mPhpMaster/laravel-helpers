@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\File;
+use Illuminate\Filesystem\Filesystem;
 
 if (!function_exists('unzip')) {
     /**
@@ -56,7 +56,7 @@ if (!function_exists('includeAllSubFiles')) {
 
         $__DIR__ = fixPath($__DIR__);
         if (file_exists($__DIR__)) {
-            return collect(File::allFiles($__DIR__))
+            return collect((new Filesystem)->allFiles($__DIR__))
                 ->map($mCojntetnt);
         } else {
             dE(

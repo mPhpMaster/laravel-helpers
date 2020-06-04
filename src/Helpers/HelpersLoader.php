@@ -3,7 +3,7 @@
  * Copyright © 2020 mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
-use Illuminate\Support\Facades\File;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 
 /**
@@ -64,7 +64,7 @@ class HelpersLoader
         $this->path = $helpers_dir;
 
         /** @var Collection $files */
-        $files = toCollect(File::files($this->path));
+        $files = toCollect((new Filesystem)->files($this->path));
 
         /**
          * @var \Symfony\Component\Finder\SplFileInfo $f

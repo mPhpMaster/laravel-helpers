@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Routing\PendingResourceRegistration;
 use Illuminate\Routing\ResourceRegistrar;
 use Illuminate\Support\Facades\Route;
@@ -142,7 +143,7 @@ class AbstractRouting
      */
     public function loadControllers($dir, callable $callable)
     {
-        collect(File::allFiles(real_path($dir . "../Http/Controllers")))->map(function ($v) use (&$callable) {
+        collect((new Filesystem)->allFiles(real_path($dir . "../Http/Controllers")))->map(function ($v) use (&$callable) {
             /** @var \Symfony\Component\Finder\SplFileInfo $v */
             if ($v->getExtension() === 'php')
                 static::controller(...$callable($v));
@@ -173,7 +174,7 @@ class AbstractRouting
      */
     public function loadRepositories($dir, callable $callable)
     {
-        collect(File::allFiles(real_path($dir . "../Repository/")))->map(function ($v) use (&$callable) {
+        collect((new Filesystem)->allFiles(real_path($dir . "../Repository/")))->map(function ($v) use (&$callable) {
             /** @var \Symfony\Component\Finder\SplFileInfo $v */
             if ($v->getExtension() === 'php' && str_finish($v->getFilenameWithoutExtension(), 'Repository') && $v->getFilenameWithoutExtension() != 'Repository') {
                 static::repository(...$callable($v));
