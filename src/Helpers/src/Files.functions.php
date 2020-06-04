@@ -130,3 +130,17 @@ if (!function_exists('includeMenuPartials')) {
         return $menu->all();
     }
 }
+
+if (!function_exists('filenameWithoutExtension')) {
+    /**
+     * returns the given filename with out extension
+     *
+     * @param string $filename
+     *
+     * @return string|string[]|null
+     */
+    function filenameWithoutExtension(string $filename)
+    {
+        return $filename ? pathinfo($filename, PATHINFO_FILENAME) : null;
+    }
+}
