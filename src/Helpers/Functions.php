@@ -1394,7 +1394,7 @@ if (!function_exists("filesMap")) {
         if ($path) {
             $data = collect((new Filesystem())->files(...func_get_args()))->mapWithKeys(function ($v) use ($callback) {
                 /** @var $v \Symfony\Component\Finder\SplFileInfo */
-                $map = [$v->getFilenameWithoutExtension() => $v->getRealPath()];
+                $map = [pathinfo($f->getFilename(), PATHINFO_FILENAME) => $v->getRealPath()];
                 return is_callable($callback) ? $callback($map) : $map;
             })->filter()->toArray();
         }

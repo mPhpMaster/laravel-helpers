@@ -4,7 +4,7 @@ namespace mPhpMaster\Support;
 
 /**
  * Class Suffixer
- *
+ * @version 0.1
  * @package mPhpMaster\Support
  */
 class Suffixer implements \Countable

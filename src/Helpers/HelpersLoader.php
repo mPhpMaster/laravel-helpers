@@ -71,7 +71,7 @@ class HelpersLoader
          */
         $files->map( static function (\Symfony\Component\Finder\SplFileInfo $f) {
             if (!in_array( $f->getRealPath(), self::$included, true ) ) {
-                if( ends_with( $f->getFilenameWithoutExtension(), self::ALLOWED_SUFFIX ) ) {
+                if( ends_with( pathinfo($f->getFilename(), PATHINFO_FILENAME), self::ALLOWED_SUFFIX ) ) {
                     if( "." . $f->getExtension() === self::ALLOWED_EXTENSION ) {
                         if( $f->isFile() && $f->isReadable() ) {
                             include_once $f->getRealPath();

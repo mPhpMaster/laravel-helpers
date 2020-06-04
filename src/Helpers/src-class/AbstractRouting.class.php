@@ -176,7 +176,7 @@ class AbstractRouting
     {
         collect((new Filesystem)->allFiles(real_path($dir . "../Repository/")))->map(function ($v) use (&$callable) {
             /** @var \Symfony\Component\Finder\SplFileInfo $v */
-            if ($v->getExtension() === 'php' && str_finish($v->getFilenameWithoutExtension(), 'Repository') && $v->getFilenameWithoutExtension() != 'Repository') {
+            if ($v->getExtension() === 'php' && str_finish(pathinfo($v->getFilename(), PATHINFO_FILENAME), 'Repository') && pathinfo($v->getFilename(), PATHINFO_FILENAME) != 'Repository') {
                 static::repository(...$callable($v));
             }
         });
