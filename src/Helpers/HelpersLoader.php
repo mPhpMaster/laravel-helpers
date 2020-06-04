@@ -6,6 +6,9 @@
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Collection;
 
+/**
+ *
+ */
 define( 'HELPERS_DIR', __DIR__ . DIRECTORY_SEPARATOR . '' );
 
 /**
