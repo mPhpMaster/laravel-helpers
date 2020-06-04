@@ -3,6 +3,7 @@
  * Copyright © 2020 mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Collection;
 
 /**
