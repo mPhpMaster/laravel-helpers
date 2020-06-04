@@ -2,7 +2,11 @@
 
 namespace mPhpMaster\Support;
 
-
+/**
+ * Class Suffixer
+ *
+ * @package mPhpMaster\Support
+ */
 class Suffixer implements \Countable
 {
     public $string = null;
