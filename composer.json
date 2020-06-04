@@ -20,7 +20,9 @@
             "mPhpMaster\\Support\\": "src/"
         },
         "files": [
-            "src/Helpers/Functions.php"
+            "src/Helpers/Functions.php",
+            "src/Helpers/Global.functions.php",
+            "src/Helpers/HelpersLoader.php"
         ]
     },
     "extra": {
