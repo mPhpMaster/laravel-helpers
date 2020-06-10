@@ -207,12 +207,156 @@ if (!function_exists('whenUsed')) {
     }
 }
 
-if (!function_exists('when')) {
-    function when($cond, $then = null, $else = null)
+if ( !function_exists('getModel') ) {
+    /**
+     * Returns model of query|model.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\Relation|\Illuminate\Database\Eloquent\Model $model
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
+    function getModel($model)
     {
-        $cond = !!value($cond);
+        try {
+            if ( is_object($model) ) {
+                return $model->getModel();
+            }
+        } catch (Exception $exception) {
+            try {
+                if ( is_object($model) ) {
+                    return $model->getQuery()->getModel();
+                }
+            } catch (Exception $exception2) {
 
-        return $cond ? value($then) : value($else);
+            }
+        }
+
+        return null;
+    }
+}
+
+if ( !function_exists('when') ) {
+    /**
+     * if $condition then call $whenTrue|null else call $whenFalse|null
+     *
+     * @param bool|mixed    $condition
+     * @param callable|null $whenTrue
+     * @param callable|null $whenFalse
+     * @param mixed|null    $with
+     *
+     * @return mixed|null
+     */
+    function when($condition, callable $whenTrue = null, callable $whenFalse = null, $with = null)
+    {
+        if ( value($condition) ) {
+            return is_callable($whenTrue) ? $whenTrue($condition, $with) : $whenTrue;
+        } else {
+            return is_callable($whenFalse) ? $whenFalse($condition, $with) : $whenFalse;
+        }
+    }
+}
+
+if ( !function_exists('whenEmpty') ) {
+    /**
+     * Apply the callback if the collection is empty.
+     *
+     * @param \Illuminate\Support\Collection|array|mixed $collection
+     * @param callable|null                              $empty
+     * @param callable|null                              $notEmpty
+     *
+     * @return mixed
+     */
+    function whenEmpty($collection, callable $empty, callable $notEmpty = null)
+    {
+        return toCollectWithModel($collection)->pipe(function ($_collection) use ($collection, $empty, $notEmpty) {
+            if ( $collection instanceof \Illuminate\Database\Eloquent\Model ) {
+                if ( empty($collection->getAttributes()) ) {
+                    return $empty($collection, true);
+                } else {
+                    return $notEmpty($collection, false);
+                }
+            }
+
+            return $_collection->when($_collection->isEmpty(), $empty, $notEmpty);
+        });
+    }
+}
+
+if ( !function_exists('whenNotEmpty') ) {
+    /**
+     * Apply the callback if the collection is not empty.
+     *
+     * @param \Illuminate\Support\Collection|array|mixed $collection
+     * @param callable|null                              $empty
+     * @param callable|null                              $notEmpty
+     *
+     * @return mixed
+     */
+    function whenNotEmpty($collection, callable $notEmpty, callable $empty = null)
+    {
+        return toCollectWithModel($collection)->pipe(function ($_collection) use ($collection, $notEmpty, $empty) {
+            if ( $collection instanceof \Illuminate\Database\Eloquent\Model ) {
+                if ( !empty($collection->getAttributes()) ) {
+                    return $notEmpty($collection, true);
+                } else {
+                    return $empty($collection, false);
+                }
+            }
+
+            return $_collection->when(!$_collection->isEmpty(), $notEmpty, $empty);
+        });
+    }
+}
+
+if ( !function_exists('getFirstValueByKey') ) {
+    /**
+     * Get first existing key from object.
+     *
+     * @param \Illuminate\Support\Collection|array|mixed           $request
+     * @param \Illuminate\Contracts\Support\Arrayable|array|string $keys
+     * @param mixed|null                                           $default
+     *
+     * @return mixed
+     */
+    function getFirstValueByKey($request, $keys, $default = null)
+    {
+        $request = toCollect($request);
+        $return = $default;
+        toCollect($keys)->each(function ($key) use (&$return, $request) {
+            if ( $request->has($key) ) {
+                $return = $request->get($key);
+                return false;
+            }
+            return true;
+        });
+
+        return $return;
+    }
+}
+
+if ( !function_exists('getFirstKeyByKey') ) {
+    /**
+     * Get first existing key from object.
+     *
+     * @param \Illuminate\Support\Collection|array|mixed           $request
+     * @param \Illuminate\Contracts\Support\Arrayable|array|string $keys
+     * @param mixed|null                                           $default
+     *
+     * @return mixed
+     */
+    function getFirstKeyByKey($request, $keys, $default = null)
+    {
+        $request = toCollect($request);
+        $return = $default;
+        toCollect($keys)->each(function ($key) use (&$return, $request) {
+            if ( $request->has($key) ) {
+                $return = $key;
+                return false;
+            }
+            return true;
+        });
+
+        return $return;
     }
 }
 
@@ -227,6 +371,87 @@ if (!function_exists('makeWith')) {
         return new With($value);
     }
 }
+
+// region: return
+if ( !function_exists('returnClosure') ) {
+    /**
+     * Returns function that returns any arguments u sent;
+     *
+     * @param mixed ...$data
+     *
+     * @return \Closure
+     */
+    function returnClosure(...$data)
+    {
+        $_data = when(func_num_args(),
+            function ($count) use ($data) {
+                return $count == 1 ? head($data) : $data;
+            },
+            function () {
+                return null;
+            });
+        return function () use ($_data) {
+            return $_data;
+        };
+    }
+}
+
+if ( !function_exists('returnArray') ) {
+    /**
+     * Returns function that returns [];
+     *
+     * @param mixed ...$data
+     *
+     * @return \Closure
+     */
+    function returnArray(...$data)
+    {
+        return returnClosure($data);
+    }
+}
+
+if ( !function_exists('returnNull') ) {
+    /**
+     * Returns function that returns null;
+     *
+     * @param mixed ...$data
+     *
+     * @return \Closure
+     */
+    function returnNull()
+    {
+        return returnClosure(null);
+    }
+}
+
+if ( !function_exists('returnTrue') ) {
+    /**
+     * Returns function that returns true;
+     *
+     * @param mixed ...$data
+     *
+     * @return \Closure
+     */
+    function returnTrue()
+    {
+        return returnClosure(true);
+    }
+}
+
+if ( !function_exists('returnFalse') ) {
+    /**
+     * Returns function that returns false;
+     *
+     * @param mixed ...$data
+     *
+     * @return \Closure
+     */
+    function returnFalse()
+    {
+        return returnClosure(false);
+    }
+}
+// endregion: return
 
 #region IS
 if (!function_exists('isUsedCount')) {
@@ -328,39 +553,6 @@ if (!function_exists('iif')) {
         return $var ? $true : $false;
     }
 }
-
-if (!function_exists('whenEmpty')) {
-    /**
-     * Apply the callback if the collection is empty.
-     *
-     * @param \Illuminate\Support\Collection|array|mixed $collection
-     * @param callable|null $empty
-     * @param callable|null $notEmpty
-     *
-     * @return mixed
-     */
-    function whenEmpty($collection, callable $empty, callable $notEmpty = null)
-    {
-        return toCollect($collection)->whenEmpty($empty, $notEmpty);
-    }
-}
-
-if (!function_exists('whenNotEmpty')) {
-    /**
-     * Apply the callback if the collection is not empty.
-     *
-     * @param \Illuminate\Support\Collection|array|mixed $collection
-     * @param callable|null $empty
-     * @param callable|null $notEmpty
-     *
-     * @return mixed
-     */
-    function whenNotEmpty($collection, callable $notEmpty, callable $empty = null)
-    {
-        return toCollect($collection)->whenNotEmpty($empty, $notEmpty);
-    }
-}
-
 #endregion
 
 #region HAS
