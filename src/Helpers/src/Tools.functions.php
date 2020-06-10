@@ -329,6 +329,38 @@ if (!function_exists('iif')) {
     }
 }
 
+if (!function_exists('whenEmpty')) {
+    /**
+     * Apply the callback if the collection is empty.
+     *
+     * @param \Illuminate\Support\Collection|array|mixed $collection
+     * @param callable|null $empty
+     * @param callable|null $notEmpty
+     *
+     * @return mixed
+     */
+    function whenEmpty($collection, callable $empty, callable $notEmpty = null)
+    {
+        return toCollect($collection)->whenEmpty($empty, $notEmpty);
+    }
+}
+
+if (!function_exists('whenNotEmpty')) {
+    /**
+     * Apply the callback if the collection is not empty.
+     *
+     * @param \Illuminate\Support\Collection|array|mixed $collection
+     * @param callable|null $empty
+     * @param callable|null $notEmpty
+     *
+     * @return mixed
+     */
+    function whenNotEmpty($collection, callable $notEmpty, callable $empty = null)
+    {
+        return toCollect($collection)->whenNotEmpty($empty, $notEmpty);
+    }
+}
+
 #endregion
 
 #region HAS
