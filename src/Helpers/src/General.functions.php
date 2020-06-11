@@ -201,3 +201,66 @@ if (!function_exists('replaceAll')) {
     }
 }
 
+if (!function_exists('getArrayFirst')) {
+    /**
+     * Get property value fom class
+     *
+     * @param iterable      $array
+     * @param callable|null $callback
+     *
+     * @return mixed
+     *
+     */
+    function getArrayFirst(iterable $array, callable $callback = null)
+    {
+        try {
+            reset($array);
+
+            $key = key($array);
+            $value = current($array); //$array[ $key ];
+        } catch (Exception | Error $exception) {
+            foreach($array as $k => $v) {
+                $key = $k;
+                $value = $v;
+                break;
+            }
+        }
+
+        $_row = [
+            $value,
+            $key,
+        ];
+        $callback = is_callable($callback) ? $callback : function ($value, $key) {
+            return [$value, $key];
+        };
+
+        return is_callable($callback) ? $callback(...$_row) : $_row;
+    }
+}
+
+if(!function_exists('Row')) {
+    /**
+     * Alias for getArrayFirst()
+     *
+     * @param iterable      $array
+     * @param callable|null $callback
+     *
+     * @return array|mixed
+     */
+    function Row(iterable $array, callable $callback = null) {
+        return getArrayFirst(...func_get_args());
+    }
+}
+
+if(!function_exists('getNumbers')) {
+    /**
+     * Returns Numbers only from the given string
+     *
+     * @param $string
+     *
+     * @return string
+     */
+    function getNumbers($string) {
+        return preg_filter( "/[^0-9]+/", "", $string);
+    }
+}
