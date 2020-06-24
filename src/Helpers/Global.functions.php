@@ -276,7 +276,8 @@ if (!function_exists('ViewMode')) {
     function ViewMode()
     {
         try {
-            return @end(explode('.', CurrentRoute()->getName()));
+            $array = explode('.', CurrentRoute()->getName());
+            return @end($array);
         } catch (Exception $exception) {
             return null;
         }

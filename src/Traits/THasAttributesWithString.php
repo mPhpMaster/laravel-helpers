@@ -7,7 +7,7 @@ namespace mPhpMaster\Support\Traits;
  *
  * @mixin \mPhpMaster\Support\Interfaces\IHasAttributesWithString
  * @mixin \Illuminate\Database\Eloquent\Model
- *
+ * 
  * @package mPhpMaster\Support\Traits
  */
 trait THasAttributesWithString

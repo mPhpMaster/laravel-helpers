@@ -2,11 +2,18 @@
 
 use Illuminate\Filesystem\Filesystem;
 
-if (!function_exists('unzip')) {
+if ( !defined('DIRECTORY_SEPARATOR_L') ) {
+    /**
+     * opposite of DIRECTORY_SEPARATOR
+     */
+    @define("DIRECTORY_SEPARATOR_L", "/");
+}
+
+if ( !function_exists('unzip') ) {
     /**
      * UnZip .zip archive.
      *
-     * @param string $archivePath .zip path
+     * @param string      $archivePath .zip path
      * @param string|null $extractToPath Destination directory path.
      *
      * @return bool
@@ -15,11 +22,11 @@ if (!function_exists('unzip')) {
     {
         $path = $extractToPath ?: getcwd();
         $file = $archivePath;
-        if (!file_exists($file)) return false;
+        if ( !file_exists($file) ) return false;
 
         $zip = new ZipArchive();
         $res = $zip->open($file);
-        if ($res === TRUE) {
+        if ( $res === TRUE ) {
             // extract it to the path we determined above
             $zip->extractTo($path);
             $zip->close();
@@ -31,7 +38,7 @@ if (!function_exists('unzip')) {
     }
 }
 
-if (!function_exists('includeAllSubFiles')) {
+if ( !function_exists('includeAllSubFiles') ) {
     /**
      * Include php files
      */
@@ -44,9 +51,9 @@ if (!function_exists('includeAllSubFiles')) {
 //        }
 
         $mCojntetnt = function ($v) use ($incCallBack) {
-            if ($v->getExtension() != 'php') return false;
+            if ( $v->getExtension() != 'php' ) return false;
 
-            if ($incCallBack && is_callable($incCallBack)) {
+            if ( $incCallBack && is_callable($incCallBack) ) {
                 return $incCallBack($v->getPathname());
             }
 
@@ -55,7 +62,7 @@ if (!function_exists('includeAllSubFiles')) {
         };
 
         $__DIR__ = fixPath($__DIR__);
-        if (file_exists($__DIR__)) {
+        if ( file_exists($__DIR__) ) {
             return collect((new Filesystem)->allFiles($__DIR__))
                 ->map($mCojntetnt);
         } else {
@@ -68,7 +75,7 @@ if (!function_exists('includeAllSubFiles')) {
     }
 }
 
-if (!function_exists('includeIfExists')) {
+if ( !function_exists('includeIfExists') ) {
     /**
      * Include file if exist
      */
@@ -78,7 +85,7 @@ if (!function_exists('includeIfExists')) {
     }
 }
 
-if (!function_exists('fixPath')) {
+if ( !function_exists('fixPath') ) {
     /**
      * Fix slashes/back-slashes replace it with DIRECTORY_SEPARATOR.
      *
@@ -86,19 +93,25 @@ if (!function_exists('fixPath')) {
      *
      * @return string
      */
-    function fixPath(string $path) {
-        return replaceAll([ "\\" => DIRECTORY_SEPARATOR ], $path);
+    function fixPath(string $path, $replace_separator_with = DIRECTORY_SEPARATOR)
+    {
+        $replace_separator_with = $replace_separator_with ?: DIRECTORY_SEPARATOR;
+        return replaceAll([
+            "\\" => $replace_separator_with,
+            "/" => $replace_separator_with,
+            $replace_separator_with . $replace_separator_with => $replace_separator_with,
+        ], $path);
     }
 }
 
-if (!function_exists('includeMenuPartials')) {
+if ( !function_exists('includeMenuPartials') ) {
     /**
      * Include menu files
      *
-     * @param string $partialsDir
-     * @param string $partialsFile
+     * @param string     $partialsDir
+     * @param string     $partialsFile
      * @param null|array $mergeWith
-     * @param string $partialsDirName
+     * @param string     $partialsDirName
      *
      * @return array
      */
@@ -109,14 +122,14 @@ if (!function_exists('includeMenuPartials')) {
         $menus = toCollect(includeAllSubFiles(
             $partialsDir . "\\{$partialsDirName}\\",
             str_before(basenameOf($partialsFile), ".php"),
-            fn($file)=>includeIfExists($file)
+            fn($file) => includeIfExists($file)
         ));
         $menu = collect();
-        $menus->each(function ($v) use(&$menu) {
+        $menus->each(function ($v) use (&$menu) {
             $menu = $menu->mergeRecursive($v);
         });
 
-        if(!is_null($mergeWith)) {
+        if ( !is_null($mergeWith) ) {
             $menu = $menu->mergeRecursive($mergeWith);
         }
 
@@ -131,7 +144,7 @@ if (!function_exists('includeMenuPartials')) {
     }
 }
 
-if (!function_exists('filenameWithoutExtension')) {
+if ( !function_exists('filenameWithoutExtension') ) {
     /**
      * returns the given filename with out extension
      *
