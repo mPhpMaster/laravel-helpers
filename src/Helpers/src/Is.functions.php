@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
-if (!function_exists('array_keys_exists')) {
+if ( !function_exists('array_keys_exists') ) {
     /**
      * Easily check if multiple array keys exist.
      *
@@ -24,7 +24,7 @@ if (!function_exists('array_keys_exists')) {
 /**
  * return bool
  */
-if (!function_exists('isArrayable')) {
+if ( !function_exists('isArrayable') ) {
     /**
      * Check if the given var is Arrayable (has ->toArray()).
      *
@@ -41,7 +41,24 @@ if (!function_exists('isArrayable')) {
 /**
  * return bool
  */
-if (!function_exists('isArrayableOrArray')) {
+if ( !function_exists('isClosure') ) {
+    /**
+     * Check if the given var is Closure.
+     *
+     * @param mixed|null $closure
+     *
+     * @return bool
+     */
+    function isClosure($closure): bool
+    {
+        return $closure instanceof Closure;
+    }
+}
+
+/**
+ * return bool
+ */
+if ( !function_exists('isArrayableOrArray') ) {
     /**
      * Check if the given var is Array | is Arrayable (has ->toArray()).
      *
@@ -58,7 +75,7 @@ if (!function_exists('isArrayableOrArray')) {
 /**
  * return bool
  */
-if (!function_exists('isAllable')) {
+if ( !function_exists('isAllable') ) {
     /**
      * Check if the given var is Allable (has ->all()).
      *
@@ -75,7 +92,7 @@ if (!function_exists('isAllable')) {
 /**
  * return bool
  */
-if (!function_exists('isPaginator')) {
+if ( !function_exists('isPaginator') ) {
     /**
      * Check if the given var is paginator instance.
      *
@@ -104,7 +121,7 @@ if (!function_exists('isPaginator')) {
 /**
  * return bool
  */
-if (!function_exists('isPaginated')) {
+if ( !function_exists('isPaginated') ) {
     /**
      * Check if the given var is paginate result.
      *
@@ -114,11 +131,11 @@ if (!function_exists('isPaginated')) {
      */
     function isPaginated($value)
     {
-        if (isPaginator($value) || method_exists($value, 'getCollection')) {
+        if ( isPaginator($value) || method_exists($value, 'getCollection') ) {
             return true;
         }
 
-        if (is_array($value)) {
+        if ( is_array($value) ) {
             if (
                 Arr::has($value, ['current_page', 'per_page']) ||
                 Arr::has($value, 'meta')
@@ -134,7 +151,7 @@ if (!function_exists('isPaginated')) {
 /**
  * return mixed
  */
-if (!function_exists('isConsole')) {
+if ( !function_exists('isConsole') ) {
     /**
      *
      * ### Check if the application running in `Console (CLI)`.
@@ -161,7 +178,7 @@ if (!function_exists('isConsole')) {
 /**
  * return bool
  */
-if (!function_exists('isBuilder')) {
+if ( !function_exists('isBuilder') ) {
     /**
      * ### Check if the given var is Query Builder | Eloquent Builder | Relation.
      *
@@ -178,7 +195,7 @@ if (!function_exists('isBuilder')) {
 /**
  * return bool
  */
-if (!function_exists('isLoggedIn')) {
+if ( !function_exists('isLoggedIn') ) {
     /**
      * ### Check if user has logged in.
      *
@@ -193,7 +210,7 @@ if (!function_exists('isLoggedIn')) {
 /**
  * return bool
  */
-if (!function_exists('isGuest')) {
+if ( !function_exists('isGuest') ) {
     /**
      * ### Check if user is guest.
      *
@@ -205,18 +222,19 @@ if (!function_exists('isGuest')) {
     }
 }
 
-if (!function_exists('endsWithAny')) {
+if ( !function_exists('endsWithAny') ) {
     /**
      * Determine if a given string ends with a given substrings then return substring or False when fail.
      *
-     * @param string $haystack
+     * @param string       $haystack
      * @param string|array $needles
+     *
      * @return string
      */
     function endsWithAny($haystack, $needles)
     {
         foreach ((array)$needles as $needle) {
-            if (Str::endsWith($haystack, $needle))
+            if ( Str::endsWith($haystack, $needle) )
                 return $needle;
         }
 
@@ -224,28 +242,74 @@ if (!function_exists('endsWithAny')) {
     }
 }
 
-if (!function_exists('isInstanceOf')) {
+/**
+ * return bool
+ */
+if ( !function_exists('isInstanceOf') ) {
     /**
-     * Determine if a given object is an instance of second object
+     * ### Check if the given object\objects is an instance of second object.
      *
-     * @param $object
-     * @param $ofThat
+     * @param array|object|mixed  $object
+     * @param string|object|mixed $ofThat
+     * @param callable|null       $then
      *
      * @return bool
      */
-    function isInstanceOf($object, $ofThat)
+    function isInstanceOf($object, $ofThat, ?callable $then = null): bool
     {
-        $noClass = function ($o) {
-            return is_object($o) ? get_class($o) : $o;
+        $applyThen = function (&$_object, &$_ofThat) use (&$then) {
+            return isClosure($then) ? $then($_object, $_ofThat) : $then;
         };
 
+        $instance_found = 0;
         try {
-            $_ofThat = $noClass($ofThat);
+            $object = valueToArray($object);
+            foreach ($object as $_object) {
+                foreach ((array)$ofThat as $_ofThat) {
+                    if ( ($_object instanceof $_ofThat) || is_a($_object, $_ofThat) ) {
+                        $instance_found++;
+                        $applyThen($_object, $_ofThat);
+                    }
 
-            return ($object instanceof $ofThat) ||
-                ($object instanceof $_ofThat) ||
-                is_a($object, $ofThat) ||
-                is_a($object, $_ofThat);
+                    $__ofThat = $_ofThat;
+                    if ( ($_ofThat = getClass($__ofThat)) !== $__ofThat &&
+                        (
+                            ($_object instanceof $_ofThat) || is_a($_object, $_ofThat)
+                        )
+                    ) {
+                        $instance_found++;
+                        $applyThen($_object, $_ofThat);
+                    }
+                }
+            }
+
+        } catch (Exception $exception) {
+
+        }
+
+        return is_array($object) && $instance_found === count($object);
+    }
+}
+
+if ( !function_exists('isInstanceOfAnyOf') ) {
+    /**
+     * Determine if any of the given object\objects is an instance of any of second object\objects
+     *
+     * @param array|object|mixed $objects
+     * @param array|object|mixed $ofThese
+     *
+     * @return bool
+     */
+    function isInstanceOfAnyOf($objects, $ofThese, ?callable $then = null)
+    {
+        try {
+            foreach ((array)$objects as $_object) {
+                foreach ((array)$ofThese as $_ofThat) {
+                    if ( isInstanceOf($_object, $_ofThat, $then) ) {
+                        return true;
+                    }
+                }
+            }
 
         } catch (Exception $exception) {
 
@@ -255,7 +319,7 @@ if (!function_exists('isInstanceOf')) {
     }
 }
 
-if (!function_exists('isModel')) {
+if ( !function_exists('isModel') ) {
     /**
      * Determine if a given object is inherit Model class.
      *
@@ -275,7 +339,27 @@ if (!function_exists('isModel')) {
     }
 }
 
-if (!function_exists('getModelKey')) {
+if ( !function_exists('isRelation') ) {
+    /**
+     * Determine if a given object is inherit \Illuminate\Database\Eloquent\Relations\Relation class.
+     *
+     * @param object $object
+     *
+     * @return bool
+     */
+    function isRelation($object)
+    {
+        try {
+            return (isInstanceOf($object, \Illuminate\Database\Eloquent\Relations\Relation::class)) || is_a($object, \Illuminate\Database\Eloquent\Relations\Relation::class);
+        } catch (Exception $exception) {
+
+        }
+
+        return false;
+    }
+}
+
+if ( !function_exists('getModelKey') ) {
     /**
      * Returns Model Key Only!
      *
@@ -285,12 +369,15 @@ if (!function_exists('getModelKey')) {
      */
     function getModelKey($object)
     {
-        if(isModel($object)) {
+        if ( isModel($object) ) {
             $key = $object->getKeyName() ?: 'id';
-            return $object->getKey() ?: $object->{$key} ?: (
-                object_get($object, $key) ?:
-                    array_get($object->toArray(), $key) ?: null
-            );
+            if ( !($return = ($object->getKey() ?: $object->{$key})) ) {
+                $return = object_get($object, $key) ?: array_get($object->toArray(), $key);
+            }
+
+            if ( $return ) {
+                return $return;
+            }
         }
 
         return $object;

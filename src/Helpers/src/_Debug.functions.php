@@ -1,30 +1,33 @@
 <?php
 /**
  * Copyright © 2020 mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ * Debug helpers
  */
 
 use Illuminate\Support\Arr;
 use Symfony\Component\VarDumper\VarDumper;
 
-/**
- *
- */
-!defined( 'DEBUG_METHODS') &&
-define('DEBUG_METHODS', [
-    'collectTrace',
-    'traceInfo',
-    'dumpDebug',
-    'getDumpOutput',
-    'dump',
-    'du',
-    'dx',
-    'd',
-    'dd',
-    'dE',
-]);
+if ( !defined('DEBUG_METHODS') ) {
+    /**
+     * @var array
+     */
+    define('DEBUG_METHODS', [
+        'getDebugBacktrace',
+        'collectTrace',
+        'traceInfo',
+        'dumpDebug',
+        'getDumpOutput',
+        'dump',
+        'du',
+        'dx',
+        'd',
+        'dd',
+        'dE',
+    ]);
+}
 
 #region DEBUG
-if (!function_exists('collectTrace')) {
+if ( !function_exists('collectTrace') ) {
     /**
      * @param null $file
      * @param null $line
@@ -48,23 +51,23 @@ if (!function_exists('collectTrace')) {
     {
         try {
             $call = [];
-            if (!isDebugEnabled()) {
+            if ( !isDebugEnabled() ) {
                 {
-                    return compact( 'line', 'file', 'call', 'string', 'debugTrace' );
+                    return compact('line', 'file', 'call', 'string', 'debugTrace');
                 }
             }
 
             $debugTrace = $debugTrace ?: @debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 
-            if (!empty($debugTrace) AND is_array($debugTrace)) {
+            if ( !empty($debugTrace) and is_array($debugTrace) ) {
                 $idx = -1;
                 $searchin = array_flip(DEBUG_METHODS);
                 foreach ($debugTrace as $key => $item) {
                     $functionName = array_get($item, 'function', false);
-                    if ($functionName && Arr::has(
+                    if ( $functionName && Arr::has(
                             $searchin,
                             $functionName
-                        )) {
+                        ) ) {
                         $idx = $key;
                     }
                 }
@@ -72,9 +75,9 @@ if (!function_exists('collectTrace')) {
 //                    return \Illuminate\Support\Arr::has(DEBUG_METHODS, $fn);
 //                });
                 @reset($debugTrace);
-                if ( (int) $idx > -1) {
+                if ( (int)$idx > -1 ) {
                     try {
-                        $calls = array_splice( $debugTrace, (int) $idx + 0, 2);
+                        $calls = array_splice($debugTrace, (int)$idx + 0, 2);
                         $call = array_merge(
                             $fst = array_get($calls, '1'),
                             $scnd = array_only(array_get($calls, '0'), ['file', 'line'])
@@ -86,40 +89,33 @@ if (!function_exists('collectTrace')) {
 //                    for ($counter = 0; $counter < $idx; $counter++)
 //                        $call = @next($debugTrace);
                 } else {
-                    $call = @current( $debugTrace );
+                    $call = @current($debugTrace);
                 }
             } else {
-                throw new Exception( __LINE__ . " function debug_backtrace() returned: {$debugTrace}" );
+                throw new Exception(__LINE__ . " function debug_backtrace() returned: {$debugTrace}");
             }
 
-            $line = ( $call['line'] ?? __LINE__ );
-            $file = @basenameOf(( $call['file'] ?? cutBasePath() ));
-            $method = ( $call['function'] ?? __METHOD__ );
-            $object = ( $call['class'] ?? __CLASS__ );
-            $parentRelatoinType = ( $call['type'] ?? '::' );
+            $line = ($call['line'] ?? __LINE__);
+            $file = @basename(($call['file'] ?? cutBasePath()));
+            $method = ($call['function'] ?? __METHOD__);
+            $object = ($call['class'] ?? __CLASS__);
+            $parentRelatoinType = ($call['type'] ?? '::');
 
-            $classWithMethod = iif($object, isConsole( (string) ( $object ), "<b style='color: #6c1512'>{$object}</b>")) .
-                               iif($object && $method, getAny($parentRelatoinType, '::'), '') .
-                iif($method,
-                    isConsole( (string) ( $method ), "<b style='color: #0b6c0e'>{$method}</b>")
-                );
+            $classWithMethod = iif($object, isConsole((string)($object), "<b style='color: #6c1512'>{$object}</b>")) .
+                iif($object && $method, getAny($parentRelatoinType, '::'), '') .
+                iif($method, isConsole((string)($method), "<b style='color: #0b6c0e'>{$method}</b>"));
+
             $fileWithLine = $file .
-                iif($file && $line,
-                    isConsole( ':', '<b>:</b>' ),
-                    ''
-                ) .
+                iif($file && $line, isConsole(':', '<b>:</b>'), '') .
                 iif(
                     $line,
-                    isConsole( (string) ( $line ), "<b>{$line}</b>")
+                    isConsole((string)($line), "<b>{$line}</b>")
                 );
             $string =
                 iif($classWithMethod,
-                    isConsole( (string) ( $classWithMethod ), "<b style='color: #0e566c'>{$classWithMethod}</b>")
+                    isConsole((string)($classWithMethod), "<b style='color: #0e566c'>{$classWithMethod}</b>")
                 ) .
-                iif(
-                    $fileWithLine,
-                    isConsole("    | {$fileWithLine}", "    <b>|</b><small style='color: blue;'>{$fileWithLine}</small>")
-                );
+                iif($fileWithLine, isConsole("    | {$fileWithLine}", "    <b>|</b><small style='color: blue;'>{$fileWithLine}</small>"));
 
         } catch (Exception $e) {
             d(
@@ -139,7 +135,7 @@ if (!function_exists('collectTrace')) {
     }
 }
 
-if (!function_exists('traceInfo')) {
+if ( !function_exists('traceInfo') ) {
     /**
      * @param null $debugBacktrace
      *
@@ -153,11 +149,11 @@ if (!function_exists('traceInfo')) {
         $debugBacktrace = $debug_backtrace ?? @debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         $string = null;
 
-        return collectTrace( $file, $line, $class, $method, $string, $debugBacktrace );
+        return collectTrace($file, $line, $class, $method, $string, $debugBacktrace);
     }
 }
 
-if (!function_exists('dumpDebug')) {
+if ( !function_exists('dumpDebug') ) {
     /**
      * @param       $debug
      * @param mixed ...$args
@@ -165,15 +161,19 @@ if (!function_exists('dumpDebug')) {
     function dumpDebug($debug, ...$args)
     {
         try {
-            $isRunningConsole = isConsole( 'Yes', 'No' );
-
-            $debug = $file = $line = $method = null;
-            /** @var string|null $string */
-            $string = null;
-            $debug = @debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+            /**
+             * @var array|null      $debug Array of debug_backtrace
+             * @var string|null     $file debug_backtrace file
+             * @var string|int|null $line debug_backtrace line
+             * @var string|null     $method debug_backtrace method
+             * @var string|null     $string debug_backtrace string to print.
+             */
+            $debug = $file = $line = $method = $string = null;
+            $isRunningConsole = isConsole('Yes', 'No');
+            $debug = @getDebugBacktrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
             extract(traceInfo($debug));
-//dd(traceInfo($debug));
-            if (isConsole()) {
+
+            if ( isConsole() ) {
                 consoleBox($string);
             } else {
                 echo $string;
@@ -198,27 +198,26 @@ if (!function_exists('dumpDebug')) {
             $_data = '';
 
             toCollect([$firstErr])
-                ->each( static function ($_v) use (&$_data, $file) {
+                ->each(static function ($_v) use (&$_data, $file) {
                     foreach ($_v as $k => $v) {
-                        if (isArrayableOrArray($v)) {
+                        if ( isArrayableOrArray($v) ) {
                             return;
                         }
 
-                        if ($k === 'args') {
+                        if ( $k === 'args' ) {
                             $_data .= getDumpOutput($v);
 
-                        } else if ($k === 'line') {
-                            $_data .= makeCol('line', [ 2,
-                                                        ' ', '#']) .
-                                      isConsole($v, "<span class='sf-dump-num'>{$v}</span>");
+                        } else if ( $k === 'line' ) {
+                            $_data .= makeCol('line', [2, ' ', '#']) .
+                                isConsole($v, "<span class='sf-dump-num'>{$v}</span>");
 
-                        } else if ($k === 'file') {
+                        } else if ( $k === 'file' ) {
                             $_file = $file->take(-2)->implode(DIRECTORY_SEPARATOR);
                             $_path = $file->splice(0, $file->count() - 2)->implode(DIRECTORY_SEPARATOR);
 
-                            $_data .= makeCol('file', [ 2,
-                                                        ' ', '#']) .
-                                      isConsole("{$_path}/{$_file}",
+                            $_data .= makeCol('file', [2,
+                                    ' ', '#']) .
+                                isConsole("{$_path}/{$_file}",
                                     '"' . "<span class='sf-dump-str'>" .
                                     "<span class='sf-dump-ellipsis sf-dump-ellipsis-path'>{$_path}</span>" .
                                     "<span class='sf-dump-ellipsis'>/</span>" .
@@ -227,71 +226,114 @@ if (!function_exists('dumpDebug')) {
                                 );
 
                         } else {
-                            $_data .= makeCol($k, [ 2,
-                                                    ' ',
-                                                    '#'
+                            $_data .= makeCol($k, [2,
+                                    ' ',
+                                    '#'
                                 ]) .
-                                      isConsole($v,
+                                isConsole($v,
                                     '"' .
                                     "<span class='sf-dump-str'>{$v}</span>" .
                                     '"'
                                 );
                         }
 
-                        $_data .= isConsole( "\n", '<br>' );
+                        $_data .= isConsole("\n", '<br>');
                     }
                 });
 
-            $msg .= isConsole( '   Error:' . PHP_EOL . $_data . PHP_EOL,
+            $msg .= isConsole('   Error:' . PHP_EOL . $_data . PHP_EOL,
                 "<pre class='sf-dump'>" .
                 "<span class='sf-dump-note'>Error:</span> {<br>" .
                 "<samp data-depth='1' class='sf-dump-expanded'>{$_data}</samp>" . '} </pre>'
             );
+
             echo $msg;
             VarDumper::dump($e);
         }
 
-        $cor = 0;
-        $limit = 5;
-        do {
-            $lasDebugger = array_get(@debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), ++$cor, []);
+        /** @var array $lasDebugger */
+        $lasDebugger = array_get(@getDebugBacktrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2), 1, []);
 
-            $method = array_get($lasDebugger, 'function', '');
-            $line = array_get($lasDebugger, 'line', '');
-            $file = array_get($lasDebugger, 'file', '');
-            $class = array_get($lasDebugger, 'class', '');
-            $type = array_get($lasDebugger, 'type', '@');
-        } while(
-            $limit-- <= 0 || dirname(real_path(cutBasePath($file))) == dirname(real_path(cutBasePath(__FILE__)))
-        );
-
-        $lastDebug = isConsole( [
-                                    'Method: ' . iif( $method, $method, '[ No Method ]' ) . '.',
-                                    'File: ' . when( $file, function () use($file) { return cutBasePath($file); }, '[ No File ]' ) . iif( $file && $line, "@{$line}", getAny( $line, '[ No Line ]' )) . '.',
-                                    'Class: ' . getAny( $class, '[ No Class ]' ) . '.',
-                                    "Running In Console: [ {$isRunningConsole} ].",
+        $method = array_get($lasDebugger, 'function', '');
+        $line = array_get($lasDebugger, 'line', '');
+        $file = array_get($lasDebugger, 'file', '');
+        $class = array_get($lasDebugger, 'class', '');
+        $type = array_get($lasDebugger, 'type', '@');
+        $lastDebug = isConsole([
+            'Method: ' . iif($method, $method, '[ No Method ]') . '.',
+            'File: ' . iif($file, cutBasePath($file), '[ No File ]') . iif($file && $line, "@{$line}", getAny($line, '[ No Line ]')) . '.',
+            'Class: ' . getAny($class, '[ No Class ]') . '.',
+            "Running In Console: [ {$isRunningConsole} ].",
         ],
-                                '<small>By: <b>' . cutBasePath( $file) . ':' . $line . '</b>;  ' . $class . $type . '<b>' . $method . '</b></small> <br>'
+            '<small>By: <b>' . cutBasePath($file) . ':' . $line . '</b>;  ' . $class . $type . '<b>' . $method . '</b></small> <br>'
         );
 
-        if ($lastDebug && is_array($lastDebug) && App::runningInConsole()) {
-            consoleBox( $lastDebug, STR_PAD_RIGHT, 'End Of Debug' );
-        } else if ($lastDebug && !App::runningInConsole()) {
+        if ( $lastDebug && is_array($lastDebug) && App::runningInConsole() ) {
+            consoleBox($lastDebug, STR_PAD_RIGHT, 'End Of Debug');
+        } else if ( $lastDebug && !App::runningInConsole() ) {
             echo($lastDebug);
         }
+    }
+}
+
+if ( !function_exists('getDebugBacktrace') ) {
+    /**
+     * Returns a backtrace.
+     *
+     * @param int $options
+     * @param int $length
+     * @param int $offset to slice
+     *
+     * @return array
+     */
+    function getDebugBacktrace($options = DEBUG_BACKTRACE_PROVIDE_OBJECT, $length = 0, $offset = 0): array
+    {
+        $slicer = function (?array $debug = null,int $length = 0) use(&$offset, &$options): array {
+            $limit = $length < 0 ? ($offset - $length) : ($offset + $length);
+            return slice( ($debug ?? @debug_backtrace($options, $length !== 0 ? $limit : 0)) , $offset, $length === 0 ? null : $length);
+        };
+
+        if( $offset !== 0 ) {
+            return $slicer(null, $length);
+        }
+
+        if ( $length === 0 ) {
+            return @debug_backtrace($options, (int)$length);
+        }
+
+        $_limit = ($length > 0) ? ($length + 2) : ($length - 2);
+        $debug = @debug_backtrace($options, (int)$_limit);
+
+        if ( !empty($debug) and is_array($debug) ) {
+            $count = 0;
+            $searchin = array_flip(DEBUG_METHODS);
+            foreach ($debug as $item) {
+                $functionName = array_get($item, 'function', false);
+                if ( $functionName && Arr::has($searchin, $functionName) ) {
+                    $count++;
+                } else {
+                    break;
+                }
+            }
+
+            $_limit = $length < 0 ? ($length - $count) : ($length + $count);
+            $debug = slice(@debug_backtrace($options, (int)$_limit), $count, $_limit);
+        }
+
+        return take($debug, $length);
     }
 }
 
 /**
  * dump to memory & return the result
  */
-if (!function_exists('getDumpOutput')) {
+if ( !function_exists('getDumpOutput') ) {
     /**
      * @return string
      */
     function getDumpOutput()
     {
-        if (!isDebugEnabled()) {
+        if ( !isDebugEnabled() ) {
             return "";
         }
 
@@ -307,7 +349,7 @@ if (!function_exists('getDumpOutput')) {
     }
 }
 
-if (!function_exists('dump')) {
+if ( !function_exists('dump') ) {
     /**
      * @param mixed   $var
      * @param mixed[] ...$moreVars
@@ -317,7 +359,7 @@ if (!function_exists('dump')) {
      */
     function dump($var, ...$moreVars)
     {
-        if (!isDebugEnabled()) {
+        if ( !isDebugEnabled() ) {
             return $var;
         }
 
@@ -327,7 +369,7 @@ if (!function_exists('dump')) {
             VarDumper::dump($v);
         }
 
-        if (1 < func_num_args()) {
+        if ( 1 < func_num_args() ) {
             return func_get_args();
         }
 
@@ -335,13 +377,13 @@ if (!function_exists('dump')) {
     }
 }
 
-if (!function_exists('dd')) {
+if ( !function_exists('dd') ) {
     /**
      * @param mixed ...$vars
      */
     function dd(...$vars)
     {
-        if (!isDebugEnabled()) {
+        if ( !isDebugEnabled() ) {
             return;
         }
 
@@ -353,11 +395,11 @@ if (!function_exists('dd')) {
     }
 }
 
-if (!function_exists('du')) {
+if ( !function_exists('du') ) {
     /**
      * Dump the passed variables and end the script.
      *
-     * @param  mixed $args
+     * @param mixed $args
      *
      * @return void
      */
@@ -367,35 +409,37 @@ if (!function_exists('du')) {
     }
 }
 
-if (!function_exists('d')) {
+if ( !function_exists('d') ) {
     /**
      * Dump the passed variables and end the script.
      *
-     * @param  mixed $args
+     * @param mixed $args
      *
      * @return void
      */
     function d(...$args)
     {
-        if (!isDebugEnabled()) {
+        if ( !isDebugEnabled() ) {
             return;
         }
 
-        dumpDebug(@debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS), ...$args);
+        dumpDebug(@getDebugBacktrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10), ...$args);
 
         die(1);
     }
 }
 
-if (!function_exists('dx')) {
+if ( !function_exists('dx') ) {
     /**
      * Empty Function.
      *
-     * @param  mixed $args
+     * @param mixed $args
      *
      * @return void
      */
-    function dx(...$args) { }
+    function dx(...$args)
+    {
+    }
 }
 #endregion
 
@@ -403,7 +447,7 @@ if (!function_exists('dx')) {
 /**
  * Shortcut: get_class_methods
  */
-if (!function_exists('_gcm')) {
+if ( !function_exists('_gcm') ) {
     /**
      * @return array
      */
@@ -416,7 +460,7 @@ if (!function_exists('_gcm')) {
 /**
  * Shortcut: get_class
  */
-if (!function_exists('_gc')) {
+if ( !function_exists('_gc') ) {
     /**
      * @return string
      */
@@ -429,7 +473,7 @@ if (!function_exists('_gc')) {
 /**
  * Shortcut: class_exists
  */
-if (!function_exists('_ce')) {
+if ( !function_exists('_ce') ) {
     /**
      * @return bool
      */

@@ -373,6 +373,31 @@ if (!function_exists('makeWith')) {
 }
 
 // region: return
+if ( !function_exists('returnCallable') ) {
+    /**
+     * Determine if the given value is callable, but not a string.
+     *
+     *
+     * **Source**: ---  {@link \Illuminate\Support\Collection Laravel Collection}
+     *
+     * @param mixed $value
+     *
+     * @return \Closure
+     */
+    function returnCallable($value): \Closure
+    {
+        if ( !is_callable($value) ) {
+            return returnClosure($value);
+        }
+
+        if ( is_string($value) ) {
+            return Closure::fromCallable($value);
+        }
+
+        return $value;
+    }
+}
+
 if ( !function_exists('returnClosure') ) {
     /**
      * Returns function that returns any arguments u sent;
@@ -383,16 +408,14 @@ if ( !function_exists('returnClosure') ) {
      */
     function returnClosure(...$data)
     {
-        $_data = when(func_num_args(),
-            function ($count) use ($data) {
-                return $count == 1 ? head($data) : $data;
-            },
-            function () {
-                return null;
-            });
-        return function () use ($_data) {
-            return $_data;
-        };
+        $_data = head($data);
+        if ( func_num_args() > 1 ) {
+            $_data = $data;
+        } else if ( func_num_args() === 0 ) {
+            $_data = returnNull();
+        }
+
+        return function () use ($_data) { return value($_data); };
     }
 }
 
@@ -410,6 +433,123 @@ if ( !function_exists('returnArray') ) {
     }
 }
 
+if ( !function_exists('returnCollect') ) {
+    /**
+     * Returns function that returns Collection;
+     *
+     * @param mixed ...$data
+     *
+     * @return \Closure
+     */
+    function returnCollect(...$data)
+    {
+        return function (...$args) use ($data) {
+            return collect($data)->merge($args);
+        };
+    }
+}
+
+if ( !function_exists('returnArgs') ) {
+    /**
+     * Returns function that returns func_get_args();
+     *
+     * @return \Closure
+     */
+    function returnArgs()
+    {
+        return function () {
+            return func_get_args();
+        };
+    }
+}
+
+if ( !function_exists('returnThis') ) {
+    /**
+     * Returns function that returns $this;
+     *
+     * @return \Closure
+     */
+    function returnThis()
+    {
+        return returnClosureBinder(function () { return $this; }, ...func_get_args());
+    }
+}
+
+if ( !function_exists('returnStaticName') ) {
+    /**
+     * Returns function that returns static::class
+     *
+     * @return \Closure
+     */
+    function returnStaticName()
+    {
+        return returnClosureBinder(function () {
+            /** @noinspection PhpUndefinedClassInspection */
+            return static::class;
+        }, ...func_get_args());
+    }
+}
+
+if ( !function_exists('returnClosureBinder') ) {
+    /**
+     * Returns function that accepts Closure and scope and returns new Closure.
+     *
+     * @param \Closure $closure The anonymous function to bind
+     *
+     * @return \Closure
+     */
+    function returnClosureBinder($closure = null)
+    {
+        if ( isClosure($closure) ) {
+            /**
+             * @param object|null $newthis The object to which the given anonymous function should be bound, or NULL for the closure to be unbound.
+             * @param mixed       $newscope The class scope to which associate the closure is to be associated, or 'static' to keep the current one.
+             * If an object is given, the type of the object will be used instead.
+             * This determines the visibility of protected and private methods of the bound object.
+             *
+             * @return Closure Returns the newly created Closure object
+             */
+            $return = function ($newthis = null, $newscope = 'static') use (&$closure) {
+                return $newthis ? bindTo($closure, $newthis, $newscope) : $closure;
+            };
+        } else {
+            /**
+             * @param object|null $newthis The object to which the given anonymous function should be bound, or NULL for the closure to be unbound.
+             * @param mixed       $newscope The class scope to which associate the closure is to be associated, or 'static' to keep the current one.
+             * If an object is given, the type of the object will be used instead.
+             * This determines the visibility of protected and private methods of the bound object.
+             *
+             * @return Closure Returns the newly created Closure object
+             */
+            $return = function (\Closure $_closure = null, $newthis = null, $newscope = 'static') {
+                return $newthis ? bindTo($_closure, $newthis, $newscope) : $_closure;
+            };
+        }
+
+        if(func_num_args() > 1) {
+            $args = func_get_args();
+            array_shift($args);
+            return $return(...$args);
+        }
+
+        return $return;
+    }
+}
+
+if ( !function_exists('returnString') ) {
+    /**
+     * Returns function that returns ""
+     *
+     * @param string|null $text
+     *
+     * @return \Closure
+     */
+    function returnString(?string $text = "")
+    {
+        return returnClosure((string)$text);
+    }
+}
+
 if ( !function_exists('returnNull') ) {
     /**
      * Returns function that returns null;
@@ -420,7 +560,9 @@ if ( !function_exists('returnNull') ) {
      */
     function returnNull()
     {
-        return returnClosure(null);
+        return function () {
+            return null;
+        };
     }
 }
 

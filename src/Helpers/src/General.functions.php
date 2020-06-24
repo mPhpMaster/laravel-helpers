@@ -68,70 +68,6 @@ if (!function_exists('currentLocale')) {
 }
 
 /**
- * return table name}
- */
-if (!function_exists('getTable')) {
-    /**
-     * Returns Model table name.
-     *
-     * @param string $model Model class.
-     *
-     * @return null|string
-     */
-    function getTable(string $model)
-    {
-        if ($model && class_exists($model)) {
-            $class = new $model;
-
-            /** @var $class \Illuminate\Database\Eloquent\Model */
-            return $class->getTable();
-        }
-
-        return null;
-    }
-}
-
-/**
- * return class methods}
- */
-if (!function_exists('getMethods')) {
-    /**
-     * Returns Model methods list.
-     *
-     * @param mixed $model Model class.
-     *
-     * @return null|array|\Illuminate\Support\Collection
-     */
-    function getMethods($model)
-    {
-        return get_class_methods($model);
-    }
-}
-
-/**
- * return model fillable}
- */
-if (!function_exists('getFillable')) {
-    /**
-     * Returns Model Fillable.
-     *
-     * @param string $model Model class.
-     *
-     * @return null|array
-     */
-    function getFillable(string $model)
-    {
-        if ($model && class_exists($model)) {
-            $class = new $model;
-            /** @var $class \Illuminate\Database\Eloquent\Model */
-            return $class->getFillable();
-        }
-
-        return null;
-    }
-}
-
-/**
  * return string
  */
 if (!function_exists('prefixNumber')) {
@@ -201,66 +137,24 @@ if (!function_exists('replaceAll')) {
     }
 }
 
-if (!function_exists('getArrayFirst')) {
+if (!function_exists('bindTo')) {
     /**
-     * Get property value fom class
+     * Bind the given Closure
      *
-     * @param iterable      $array
-     * @param callable|null $callback
+     * @param \Closure $closure
+     * @param object|null $newthis The object to which the given anonymous function should be bound, or NULL for the closure to be unbound.
+     * @param mixed $newscope The class scope to which associate the closure is to be associated, or 'static' to keep the current one.
+     * If an object is given, the type of the object will be used instead.
+     * This determines the visibility of protected and private methods of the bound object.
      *
-     * @return mixed
-     *
+     * @return Closure Returns the newly created Closure object
      */
-    function getArrayFirst(iterable $array, callable $callback = null)
+    function bindTo($closure, $newthis = null, $newscope = 'static')
     {
-        try {
-            reset($array);
-
-            $key = key($array);
-            $value = current($array); //$array[ $key ];
-        } catch (Exception | Error $exception) {
-            foreach($array as $k => $v) {
-                $key = $k;
-                $value = $v;
-                break;
-            }
+        if(isClosure($closure) && $newthis) {
+            return $closure->bindTo($newthis, $newscope);
         }
 
-        $_row = [
-            $value,
-            $key,
-        ];
-        $callback = is_callable($callback) ? $callback : function ($value, $key) {
-            return [$value, $key];
-        };
-
-        return is_callable($callback) ? $callback(...$_row) : $_row;
-    }
-}
-
-if(!function_exists('Row')) {
-    /**
-     * Alias for getArrayFirst()
-     *
-     * @param iterable      $array
-     * @param callable|null $callback
-     *
-     * @return array|mixed
-     */
-    function Row(iterable $array, callable $callback = null) {
-        return getArrayFirst(...func_get_args());
-    }
-}
-
-if(!function_exists('getNumbers')) {
-    /**
-     * Returns Numbers only from the given string
-     *
-     * @param $string
-     *
-     * @return string
-     */
-    function getNumbers($string) {
-        return preg_filter( "/[^0-9]+/", "", $string);
+        return $closure;
     }
 }
