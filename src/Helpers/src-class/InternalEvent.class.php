@@ -1,8 +1,8 @@
 <?php
 
-use App\Traits\ForwardsCallToInstance;
-use App\Traits\ForwardsGetToInstance;
-use App\Traits\ForwardsStaticCallToInstance;
+use mPhpMaster\Support\Traits\TForwardsCallToInstance;
+use mPhpMaster\Support\Traits\TForwardsGetToInstance;
+use mPhpMaster\Support\Traits\TForwardsStaticCallToInstance;
 use Illuminate\Support\Traits\Tappable;
 
 /**
@@ -10,9 +10,9 @@ use Illuminate\Support\Traits\Tappable;
  */
 class InternalEvent
 {
-    use ForwardsCallToInstance;
-    use ForwardsStaticCallToInstance;
-    use ForwardsGetToInstance;
+    use TForwardsCallToInstance;
+    use TForwardsStaticCallToInstance;
+    use TForwardsGetToInstance;
     use Tappable;
 
     public static $events = [];
@@ -58,7 +58,7 @@ class InternalEvent
      */
     public static function event($category, $name = null)
     {
-        $newEvent = function ($name) use (&$category, &$name) {
+        $newEvent = function () use (&$category, &$name) {
             if ( func_num_args() === 2 ) {
                 [$category, $name] = func_get_args();
             }
@@ -168,7 +168,7 @@ class InternalEvent
 
             return $_instance;
         }
-        
+
         return $instance;
 /*
         if ( !$instance[ $name ] ) {
@@ -178,7 +178,7 @@ class InternalEvent
         }
 
         $instance = &$instance[ $this->current_category ];
-        
+
         if ( method_exists($this, $name) ) {
             return $this->{$name}(...$arguments);
         }
@@ -207,15 +207,15 @@ class InternalEvent
             if($this->current_category) {
                 $event = $this->__invoke($this->current_category, $name);
                 $_event = &$event;
-                
+
                 return $_event;
             }
-            
+
             return function ($category = null, $_name = null) use (&$name){
                 return $this->__invoke($category, $_name ?? $name);
             };
         }
-        
+
         $this->current_category = &$category;
         if ( is_null($category) ) {
             return function ($category = null, $name = nul) {
