@@ -54,8 +54,11 @@ class DebuggerMiddleware
             })->all();
 
             if ( $request->wantsJson() ) {
+                $uses = str_ireplace(['//','\\\\'], ['/', '/'],str_ireplace('@', '::', currentRoute()->action['uses']));
+                $uses = str_ireplace(['/','\\'], '/',$uses);
+
                 return response()->json([
-                    'Class' => str_ireplace('@', '::', currentRoute()->action['uses']),
+                    'Class' => $uses,
                     'Info' => [
                         'Controller' => class_basename(currentController()),
                         'ActionName' => currentActionName(),
