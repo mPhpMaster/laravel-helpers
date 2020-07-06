@@ -7,9 +7,19 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Collection;
 
 /**
+ * defaine LOAD_PATH as custom path
+ */
+
+$app_helpers_path = defined('LOAD_PATH') ? LOAD_PATH : dirname(str_before(__DIR__, DIRECTORY_SEPARATOR . 'src')) . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . '' . 'Helpers'. DIRECTORY_SEPARATOR .'src';
+
+/**
  *
  */
-define( 'HELPERS_DIR', __DIR__ . DIRECTORY_SEPARATOR . '' );
+define('HELPERS_DIR', __DIR__ . DIRECTORY_SEPARATOR . '');
+/**
+ *
+ */
+define('APP_HELPERS_DIR', $app_helpers_path);
 
 /**
  * Class HelpersLoader
@@ -57,8 +67,8 @@ class HelpersLoader
                 is_dir($helpers_dir))
                 ? $helpers_dir : HELPERS_DIR;
 
-        if (!$helpers_dir) {
-            debug( [ "Failed to load Path: " => $helpers_dir ] );
+        if ( !$helpers_dir ) {
+            debug(["Failed to load Path: " => $helpers_dir]);
         }
 
         $this->path = $helpers_dir;
@@ -69,11 +79,11 @@ class HelpersLoader
         /**
          * @var \Symfony\Component\Finder\SplFileInfo $f
          */
-        $files->map( static function (\Symfony\Component\Finder\SplFileInfo $f) {
-            if (!in_array( $f->getRealPath(), self::$included, true ) ) {
-                if( ends_with( pathinfo($f->getFilename(), PATHINFO_FILENAME), self::ALLOWED_SUFFIX ) ) {
-                    if( "." . $f->getExtension() === self::ALLOWED_EXTENSION ) {
-                        if( $f->isFile() && $f->isReadable() ) {
+        $files->map(static function (\Symfony\Component\Finder\SplFileInfo $f) use ($helpers_dir) {
+            if ( !in_array($f->getRealPath(), self::$included, true) ) {
+                if ( ends_with(pathinfo($f->getFilename(), PATHINFO_FILENAME), self::ALLOWED_SUFFIX) ) {
+                    if ( "." . $f->getExtension() === self::ALLOWED_EXTENSION ) {
+                        if ( $f->isFile() && $f->isReadable() ) {
                             include_once $f->getRealPath();
                             self::$included[] = $f->getRealPath();
                         }
@@ -86,6 +96,10 @@ class HelpersLoader
 
 }
 
-new HelpersLoader( HELPERS_DIR . 'src' );
-new HelpersLoader( HELPERS_DIR . 'src-class' );
-new HelpersLoader( HELPERS_DIR . 'macro' );
+new HelpersLoader(HELPERS_DIR . 'src');
+new HelpersLoader(HELPERS_DIR . 'src-class');
+new HelpersLoader(HELPERS_DIR . 'macro');
+
+foreach ((array)APP_HELPERS_DIR as $path) {
+    new HelpersLoader($path);
+}
