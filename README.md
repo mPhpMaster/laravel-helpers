@@ -1,6 +1,7 @@
 # Laravel Helpers
 
 - `php artisan mphpmaster:app:setup` to setup the app (Use `--seed` or `-s` to run seeders).
+- `composer a:routes` Use `artisan route:list` and write the output to `routes.txt`.
 - `composer helpers` Use `ide-helper` to regenerate ide helpers files.
 - `composer c:c` Use `artisan` to clear **cache**, **route**, **config** and **view** files.
 - Autoload functions cycle:

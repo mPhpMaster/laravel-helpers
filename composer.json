@@ -7,7 +7,7 @@
         "laravel/framework": ">=5.8",
         "laravel/helpers": "^1.1"
     },
-    "license": "GPL-3.0-or-later",
+    "license": "MIT",
     "authors": [
         {
             "name": "mPhpMaster",
@@ -31,5 +31,23 @@
             ]
         }
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "scripts": {
+        "helpers": [
+            "@php -r \"@unlink('.phpstorm.meta.php');@unlink('_ide_helper.php');@unlink('_ide_helper_models.php');\"",
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:meta",
+            "@php artisan ide-helper:model -N",
+            "@php artisan ide-helper:eloquent"
+        ],
+        "c:c": [
+            "@php artisan cache:clear",
+            "@php artisan route:clear",
+            "@php artisan config:clear",
+            "@php artisan view:clear"
+        ],
+        "a:routes": [
+            "@php artisan route:list --no-ansi > routes.txt"
+        ]
+    }
 }
