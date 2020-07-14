@@ -1,7 +1,25 @@
 {
-    "name": "mphpmaster/laravel-helpers",
+    "name": "@mphpmaster/laravel-helpers",
     "version": "0.2.0",
-    "dependencies": {},
+    "description": "Laravel Helpers By hlaCk",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/mPhpMaster/laravel-helpers.git"
+    },
+    "keywords": [
+        "laravel",
+        "helpers"
+    ],
+    "author": "mPhpMaster",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/mPhpMaster/laravel-helpers/issues"
+    },
+    "homepage": "https://github.com/mPhpMaster/laravel-helpers#readme",
     "publishConfig": {
         "registry": "https://npm.pkg.github.com/"
     }
