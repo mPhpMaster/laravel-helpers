@@ -38,40 +38,53 @@ if ( !function_exists('unzip') ) {
     }
 }
 
+
+if ( !function_exists('includeSubFiles') ) {
+    /**
+     * Include php files
+     */
+    function includeSubFiles($__DIR__, $__FILE__ = null, callable $incCallBack = null): void
+    {
+        $__FILE__ = $__FILE__ ? rtrim(basename($__FILE__), '.php') : "";
+        $__DIR__ = $__DIR__ ? rtrim($__DIR__, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR : "";
+        $sub_path = $__DIR__ . /*($__DIR__ && $__FILE__ ? DIRECTORY_SEPARATOR : "") .*/
+            $__FILE__;
+
+        if ( file_exists($sub_path) ) {
+            collect(File::files($sub_path))->map(function ($v) use ($incCallBack) {
+                if ( $v->getExtension() != 'php' ) return false;
+
+                if ( $incCallBack && is_callable($incCallBack) ) {
+                    $incCallBack($v->getPathname());
+                } else {
+                    include_once $v->getPathname();
+                }
+            });
+        }
+    }
+}
+
 if ( !function_exists('includeAllSubFiles') ) {
     /**
      * Include php files
      */
-    function includeAllSubFiles($__DIR__, $__FILE__ = "", callable $incCallBack = null)//: \Illuminate\Support\Collection
+    function includeAllSubFiles($__DIR__, $__FILE__ = "", callable $incCallBack = null): void
     {
-        $__DIR__ = rtrim($__DIR__, DIRECTORY_SEPARATOR) . str_start($__FILE__, DIRECTORY_SEPARATOR);
+        $__DIR__ = rtrim($__DIR__, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $__FILE__;
 
-//        if (!is_callable($incCallBack)) {
-//            $incCallBack = function($v) { return $v; };
-//        }
-
-        $mCojntetnt = function ($v) use ($incCallBack) {
-            if ( $v->getExtension() != 'php' ) return false;
-
-            if ( $incCallBack && is_callable($incCallBack) ) {
-                return $incCallBack($v->getPathname());
-            }
-
-            return include($v->getPathname());
-
-        };
-
-        $__DIR__ = fixPath($__DIR__);
         if ( file_exists($__DIR__) ) {
-            return collect((new Filesystem)->allFiles($__DIR__))
-                ->map($mCojntetnt);
-        } else {
-            dE(
-                "Path [{$__DIR__}] not exists!"
-            );
-        }
+            collect(File::allFiles($__DIR__))->map(function ($v) use ($incCallBack) {
+                if ( $v->getExtension() != 'php' ) return false;
 
-        return null;
+                if ( $incCallBack && is_callable($incCallBack) ) {
+                    $incCallBack($v->getPathname());
+                } else {
+                    include_once $v->getPathname();
+                }
+
+                return $v;
+            });
+        }
     }
 }
 

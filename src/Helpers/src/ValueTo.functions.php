@@ -2,7 +2,7 @@
 /**
  * return string
  */
-if (!function_exists('valueToDate')) {
+if ( !function_exists('valueToDate') ) {
     /**
      * Returns value as date format
      *
@@ -19,7 +19,7 @@ if (!function_exists('valueToDate')) {
 /**
  * return string
  */
-if (!function_exists('valueToDateTime')) {
+if ( !function_exists('valueToDateTime') ) {
     /**
      * Returns value as date and time format
      *
@@ -36,19 +36,20 @@ if (!function_exists('valueToDateTime')) {
 /**
  * return array
  */
-if (!function_exists('valueToArray')) {
+if ( !function_exists('valueToArray') ) {
     /**
      * Returns value as Array
      *
-     * @param $value
+     * @param      $value
      *
      * @param bool $forceToArray
+     *
      * @return null|array
      */
     function valueToArray($value, bool $forceToArray = false)
     {
-        if ($value instanceof Traversable) {
-            return iterator_to_array( $value );
+        if ( $value instanceof Traversable ) {
+            return iterator_to_array($value);
         }
         $collect = toCollect($value);
 
@@ -59,7 +60,7 @@ if (!function_exists('valueToArray')) {
 /**
  * return array
  */
-if (!function_exists('valueToDotArray')) {
+if ( !function_exists('valueToDotArray') ) {
     /**
      * Returns value as Array
      *
@@ -71,7 +72,7 @@ if (!function_exists('valueToDotArray')) {
     {
         $array = [];
 
-        collect($value)->mapWithKeys(function ($value, $key) use(&$array) {
+        collect($value)->mapWithKeys(function ($value, $key) use (&$array) {
             return array_set($array, $key, $value);
         });
 
@@ -82,16 +83,121 @@ if (!function_exists('valueToDotArray')) {
 /**
  * return object
  */
-if (!function_exists('valueToObject')) {
+if ( !function_exists('valueToObject') ) {
+    /**
+     * Cast value as Object
+     *
+     * @param $value
+     *
+     * @return object
+     */
+    function valueToObject($value)
+    {
+        return (object)$value;
+    }
+}
+
+/**
+ * return object
+ */
+if ( !function_exists('arrayToObject') ) {
+    /**
+     * Returns array as Object
+     *
+     * @param $value
+     *
+     * @return object
+     */
+    function arrayToObject($value)
+    {
+        $object = (object)[];
+        foreach ((array)$value as $key => $item) {
+            if ( is_array($item) ) {
+                $object->$key = arrayToObject($item);
+            } else {
+                $object->$key = $item;
+            }
+        }
+
+        return $object;
+    }
+}
+
+if ( !function_exists('arrayToStdClass') ) {
     /**
      * Returns value as Object
      *
      * @param $value
      *
-     * @return null|object
+     * @return object
      */
-    function valueToObject($value)
+    function arrayToStdClass(array $value)
     {
-        return (object)$value;
+        $stdClass = new \stdClass;
+        $item = null;
+        foreach ($value as $key => &$item) {
+            $stdClass->$key = is_array($item) ? arrayToStdClass($item) : $item;
+        }
+        unset($item);
+
+        return $stdClass;
+    }
+}
+
+if ( !function_exists('toVar') ) {
+    /**
+     * Returns value as boolean
+     *
+     * @param $var
+     *
+     * @return bool
+     */
+    function toVar($value = null, \Closure $callable = null): Closure
+    {
+        if ( $callable && ($callable instanceof \Closure) ) {
+            return function () use (&$callable, &$value) {
+                /** @var $callable \Closure */
+                return $callable->call(new class ($value) {
+                    /**
+                     * @var mixed
+                     */
+                    public $var = null;
+
+                    /**
+                     *  constructor.
+                     *
+                     * @param mixed $var
+                     */
+                    public function __construct(&$var = null)
+                    {
+                        $this->var = &$var;
+                    }
+
+                    /**
+                     * @return string
+                     */
+                    public function __toString()
+                    {
+                        return (string)$this->var;
+                    }
+                }, ...func_get_args());
+            };
+        }
+
+        return function () use (&$value) {
+            return $value;
+        };
+    }
+}
+
+if ( !function_exists('toDynamicObject') ) {
+    /**
+     * @param iterable $data
+     *
+     * @return \mPhpMaster\Support\DynamicObject
+     */
+    function toDynamicObject(iterable $data): \mPhpMaster\Support\DynamicObject
+    {
+        return $data instanceof \DynamicObject ? $data : \DynamicObject::make($data);
     }
 }

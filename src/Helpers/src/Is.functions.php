@@ -359,27 +359,14 @@ if ( !function_exists('isRelation') ) {
     }
 }
 
-if ( !function_exists('getModelKey') ) {
+if ( !function_exists('isDynamicObject') ) {
     /**
-     * Returns Model Key Only!
+     * @param DynamicObject|mixed $data
      *
-     * @param $object
-     *
-     * @return mixed|object|int
+     * @return bool
      */
-    function getModelKey($object)
+    function isDynamicObject($data): bool
     {
-        if ( isModel($object) ) {
-            $key = $object->getKeyName() ?: 'id';
-            if ( !($return = ($object->getKey() ?: $object->{$key})) ) {
-                $return = object_get($object, $key) ?: array_get($object->toArray(), $key);
-            }
-
-            if ( $return ) {
-                return $return;
-            }
-        }
-
-        return $object;
+        return $data instanceof DynamicObject;
     }
 }

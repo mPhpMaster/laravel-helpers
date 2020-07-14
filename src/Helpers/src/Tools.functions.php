@@ -1,20 +1,31 @@
-<?php
+<?php /** @noinspection ForgottenDebugOutputInspection */
 
+use Illuminate\Support\Facades\Route;
 use mPhpMaster\Support\Suffixer;
 use mPhpMaster\Support\With;
-use Illuminate\Support\Facades\Route;
 
-if (!defined('e'))
+if ( !defined('e') )
+    /**
+     *
+     */
     define('e', 'else');
 
 //class isPlainVar { public function __construct($var="var") { $this->plain = $var; } };
-if (!defined('UNUSED'))
+if ( !defined('UNUSED') )
+    /**
+     *
+     */
     define('UNUSED', gzcompress(serialize(['plain' => 0x0011]), 9));
 //    define('UNUSED', gzcompress(serialize(new isPlainVar('Variable')), 9));
 
 //dd(UNUSED);
-if (!function_exists('toLocaleDate')) {
+if ( !function_exists('toLocaleDate') ) {
 
+    /**
+     * @param $date
+     *
+     * @return mixed
+     */
     function toLocaleDate($date)
     {
         $ar = [
@@ -118,7 +129,7 @@ if (!function_exists('toLocaleDate')) {
 
 
         try {
-            if (!app()->isLocale('ar') || !$date)
+            if ( !app()->isLocale('ar') || !$date )
                 return $date;
 
 
@@ -133,105 +144,21 @@ if (!function_exists('toLocaleDate')) {
     }
 }
 
-if (!function_exists('globalCompacts')) {
+if ( !function_exists('whenUsed') ) {
     /**
-     * get global vars to compact array.
+     * @param          $var
+     * @param callable $callable
      *
-     * @return array
+     * @return bool
      */
-    function globalCompacts()
-    {
-        global $auth_user;
-        // Share user logged in
-        $auth_user = AuthUser();
-        return compact('auth_user');
-    }
-}
-
-if (!function_exists('appendGlobalCompacts')) {
-    /**
-     * add global vars to compact array.
-     *
-     * @param array $compactValues
-     *
-     * @return array
-     */
-    function appendGlobalCompacts(array $compactValues)
-    {
-        return collect($compactValues ?: [])->merge(globalCompacts())->all();
-    }
-}
-
-if (!function_exists('real_path')) {
-    /**
-     * return given path without ../
-     *
-     * @param null $path
-     * @param string $DIRECTORY_SEPARATOR
-     *
-     * @return string
-     */
-    function real_path($path = null, $DIRECTORY_SEPARATOR = "/")
-    {
-        $_DIRECTORY_SEPARATOR = $DIRECTORY_SEPARATOR == "/" ? "\\" : "/";
-        if ($path) $path = str_ireplace($_DIRECTORY_SEPARATOR, $DIRECTORY_SEPARATOR, $path);
-
-        $backslash = "..{$DIRECTORY_SEPARATOR}";
-        if (stripos($path, $backslash) !== false) {
-            $path = collect(explode($backslash, $path))->reverse();
-            $path = $path->map(function ($v, $i) use ($path) {
-                $_v = dirname($v);
-                return $i == $path->count() - 1 ? $v :
-                    ($_v == '.' ? '' : $_v);
-            });
-            $path = str_ireplace(
-                $DIRECTORY_SEPARATOR . $DIRECTORY_SEPARATOR,
-                $DIRECTORY_SEPARATOR,
-                $path->reverse()->implode($DIRECTORY_SEPARATOR)
-            );
-        }
-
-        return collect($path)->first();
-    }
-}
-
-if (!function_exists('whenUsed')) {
     function whenUsed($var, callable $callable): bool
     {
-        if ($var !== UNUSED) {
+        if ( $var !== UNUSED ) {
             $callable($var);
             return true;
         }
 
         return false;
-    }
-}
-
-if ( !function_exists('getModel') ) {
-    /**
-     * Returns model of query|model.
-     *
-     * @param \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Relations\Relation|\Illuminate\Database\Eloquent\Model $model
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    function getModel($model)
-    {
-        try {
-            if ( is_object($model) ) {
-                return $model->getModel();
-            }
-        } catch (Exception $exception) {
-            try {
-                if ( is_object($model) ) {
-                    return $model->getQuery()->getModel();
-                }
-            } catch (Exception $exception2) {
-
-            }
-        }
-
-        return null;
     }
 }
 
@@ -308,59 +235,7 @@ if ( !function_exists('whenNotEmpty') ) {
     }
 }
 
-if ( !function_exists('getFirstValueByKey') ) {
-    /**
-     * Get first existing key from object.
-     *
-     * @param \Illuminate\Support\Collection|array|mixed           $request
-     * @param \Illuminate\Contracts\Support\Arrayable|array|string $keys
-     * @param mixed|null                                           $default
-     *
-     * @return mixed
-     */
-    function getFirstValueByKey($request, $keys, $default = null)
-    {
-        $request = toCollect($request);
-        $return = $default;
-        toCollect($keys)->each(function ($key) use (&$return, $request) {
-            if ( $request->has($key) ) {
-                $return = $request->get($key);
-                return false;
-            }
-            return true;
-        });
-
-        return $return;
-    }
-}
-
-if ( !function_exists('getFirstKeyByKey') ) {
-    /**
-     * Get first existing key from object.
-     *
-     * @param \Illuminate\Support\Collection|array|mixed           $request
-     * @param \Illuminate\Contracts\Support\Arrayable|array|string $keys
-     * @param mixed|null                                           $default
-     *
-     * @return mixed
-     */
-    function getFirstKeyByKey($request, $keys, $default = null)
-    {
-        $request = toCollect($request);
-        $return = $default;
-        toCollect($keys)->each(function ($key) use (&$return, $request) {
-            if ( $request->has($key) ) {
-                $return = $key;
-                return false;
-            }
-            return true;
-        });
-
-        return $return;
-    }
-}
-
-if (!function_exists('makeWith')) {
+if ( !function_exists('makeWith') ) {
     /**
      * @param mixed ...$value
      *
@@ -415,7 +290,9 @@ if ( !function_exists('returnClosure') ) {
             $_data = returnNull();
         }
 
-        return function () use ($_data) { return value($_data); };
+        return function () use ($_data) {
+            return value($_data);
+        };
     }
 }
 
@@ -471,7 +348,9 @@ if ( !function_exists('returnThis') ) {
      */
     function returnThis()
     {
-        return returnClosureBinder(function () { return $this; }, ...func_get_args());
+        return returnClosureBinder(function () {
+            return $this;
+        }, ...func_get_args());
     }
 }
 
@@ -526,7 +405,7 @@ if ( !function_exists('returnClosureBinder') ) {
             };
         }
 
-        if(func_num_args() > 1) {
+        if ( func_num_args() > 1 ) {
             $args = func_get_args();
             array_shift($args);
             return $return(...$args);
@@ -596,113 +475,123 @@ if ( !function_exists('returnFalse') ) {
 // endregion: return
 
 #region IS
-if (!function_exists('isUsedCount')) {
-    function isUsedCount(...$var): int
-    {
-        $unUsedArgs = array_filter($var, function ($_var) {
-            return isUsed($_var);
-        });
-
-        return count($unUsedArgs);
-    }
-}
-
-if (!function_exists('isUsedAll')) {
-    function isUsedAll(...$var): bool
-    {
-        return isUsedCount(...$var) === count($var);
-    }
-}
-
-if (!function_exists('isUsedAny')) {
-    function isUsedAny(...$var): bool
-    {
-        return isUsedCount(...$var) > 0;
-    }
-}
-
-if (!function_exists('isUsed')) {
+if ( !function_exists('isUsed') ) {
+    /**
+     * @param mixed $var
+     *
+     * @return bool
+     */
     function isUsed($var): bool
     {
-        return $is_used = $var !== UNUSED;
+        return $var !== UNUSED;
     }
 }
 
-if (!function_exists('isPlain')) {
-    function isPlain($var): bool
+if ( !function_exists('isUnused') ) {
+    /**
+     * @param mixed $var
+     *
+     * @return bool
+     */
+    function isUnused($var): bool
     {
         return $var === UNUSED;
     }
 }
 
-if (!function_exists('ifSet')) {
+if ( !function_exists('ifSet') ) {
+    /**
+     * @param mixed $var
+     * @param string|mixed $true
+     * @param string|mixed $false
+     *
+     * @return bool|string|null
+     */
     function ifSet($var, $true = UNUSED, $false = UNUSED)
     {
-        $true = isUsed($true) ? $true : (isset($var) ? $var : true);
-        $false = isUsed($false) ? $false : null;
+        isUnused($true) && ($true = $var ?? returnTrue());
+        isUnused($false) && ($false = returnNull());
 
-        return $var ? $true : $false;
-//        return isset($var) ? $true : $false;
+        return value(isset($var) ? $true : $false);
     }
 }
 
-if (!function_exists('firstSet')) {
+if ( !function_exists('firstSet') ) {
+    /**
+     * @param mixed ...$var
+     *
+     * @return mixed|null
+     */
     function firstSet(...$var)
     {
         foreach ($var as $_var)
-            if (isset($_var))
+            if ( isset($_var) )
                 return $_var;
 
         return null;
     }
 }
 
-if (!function_exists('getAny')) {
-    function &getAny(...$vars)
+if ( !function_exists('getAny') ) {
+    /**
+     * @param mixed ...$vars
+     *
+     * @return mixed|null
+     */
+    function getAny(...$vars)
     {
-        foreach ($vars as &$_var) {
-            if ($_var) return $_var;
+        foreach ($vars as $_var) {
+            if ( $_var ) {
+                return $_var;
+            }
         }
-
-        $null = null;
-        return $null;
-    }
-}
-
-if (!function_exists('test')) {
-    function test(...$vars)
-    {
-        foreach ($vars as $_var)
-            if ($_var = value($_var)) return $_var;
 
         return null;
     }
 }
 
-if (!function_exists('iif')) {
+if ( !function_exists('test') ) {
     /**
-     * Test Condition and return on of two parameters
+     * Apply `value` function to each argument. when value returns something true ? return it.
+     *
+     * @param mixed ...$vars
+     *
+     * @return mixed|null
+     */
+    function test(...$vars)
+    {
+        foreach ($vars as $_var)
+            if ( $_var = value($_var) ) {
+                return $_var;
+            }
+
+        return null;
+    }
+}
+
+if ( !function_exists('iif') ) {
+    /**
+     * Test Condition and return one of two parameters
      *
      * @param mixed $var Condition
-     *
      * @param mixed $true Return this if Condition == true
      * @param mixed $false Return this when Condition fail
      *
      * @return mixed
      */
-    function iif($var, $true = true, $false = false)
+    function iif($var, $true = null, $false = null)
     {
-        return $var ? $true : $false;
+        return value($var ? $true : $false);
     }
 }
 #endregion
 
 #region HAS
-if (!function_exists('hasTrait')) {
+if ( !function_exists('hasTrait') ) {
     /**
      * Check if given class has trait.
      *
-     * @param mixed $class <p>
+     * @param mixed  $class <p>
      *                          Either a string containing the name of the class to
      *                          check, or an object.
      *                          </p>
@@ -734,12 +623,12 @@ if (!function_exists('hasTrait')) {
     }
 }
 
-if (!function_exists('hasKey')) {
+if ( !function_exists('hasKey') ) {
     /**
      * Check if given array has key if has key call $callable.
      *
-     * @param array $array
-     * @param string $key
+     * @param array        $array
+     * @param string       $key
      * @param Closure|null $callable
      *
      * @return bool|mixed
@@ -748,25 +637,24 @@ if (!function_exists('hasKey')) {
     {
         try {
             $has = array_key_exists($key, $array);
-            if ($callable && is_callable($callable)) {
+            if ( $callable && is_callable($callable) ) {
                 return $callable->call($array, $array);
             }
 
             return $has === true;
         } catch (Exception $exception) {
             d($exception->getMessage());
-            $hasTrait = false;
         }
 
         return false;
     }
 }
 
-if (!function_exists('hasScope')) {
+if ( !function_exists('hasScope') ) {
     /**
      * Check if given class has the given scope name.
      *
-     * @param mixed $class <p>
+     * @param mixed  $class <p>
      *                          Either a string containing the name of the class to
      *                          check, or an object.
      *                          </p>
@@ -781,13 +669,12 @@ if (!function_exists('hasScope')) {
         try {
             $hasScopeRC = new ReflectionClass($class);
             $scopeName = strtolower(studly_case($scopeName));
-            $scopeName = starts_with($scopeName, "scope") ? substr($scopeName, strlen("scope")) : $scopeName;
+            starts_with($scopeName, "scope") && ($scopeName = substr($scopeName, strlen("scope")));
 
             $hasScope = collect($hasScopeRC->getMethods())->map(function ($c) use ($scopeName) {
                     /**
                      * @var $c ReflectionMethod
                      */
-
                     $name = strtolower(studly_case($c->getName()));
                     $name = starts_with($name, "scope") ? substr($name, strlen("scope")) : false;
 
@@ -803,11 +690,11 @@ if (!function_exists('hasScope')) {
     }
 }
 
-if (!function_exists('hasConst')) {
+if ( !function_exists('hasConst') ) {
     /**
      * Check if given class has the given const.
      *
-     * @param mixed $class <p>
+     * @param mixed  $class <p>
      *                          Either a string containing the name of the class to
      *                          check, or an object.
      *                          </p>
@@ -821,7 +708,7 @@ if (!function_exists('hasConst')) {
     {
         $hasScope = false;
         try {
-            if (is_object($class) || is_string($class)) {
+            if ( is_object($class) || is_string($class) ) {
                 $reflect = new ReflectionClass($class);
                 $hasScope = array_key_exists($const, $reflect->getConstants());
             }
@@ -836,172 +723,8 @@ if (!function_exists('hasConst')) {
 }
 #endregion
 
-#region CURRENT
-if (!function_exists('currentController')) {
-    /**
-     * @return \Illuminate\Routing\Controller|null
-     */
-    function currentController()
-    {
-        $route = Route::current();
-        if (!$route) return null;
-
-        if (isset($route->controller) || method_exists($route, 'getController')) {
-            return isset($route->controller) ? $route->controller : $route->getController();
-        }
-
-        $action = $route->getAction();
-        if ($action && isset($action['controller'])) {
-            $currentAction = $action['controller'];
-            list($controller, $method) = explode('@', $currentAction);
-            return $controller ? app($controller) : $controller;
-        }
-
-        return null;
-    }
-}
-
-if (!function_exists('currentRoute')) {
-    /**
-     * Returns current route
-     *
-     * @return \Illuminate\Foundation\Application|\Illuminate\Routing\Route|mixed
-     */
-    function currentRoute()
-    {
-        $route = Route::current();
-        $route = $route ?: app(Route::class);
-
-        return $route;
-    }
-}
-
-if (!function_exists('currentNamespace')) {
-    /**
-     * Returns namespace of current controller
-     *
-     * @return null|string Namespace
-     */
-    function currentNamespace()
-    {
-        try {
-            $currentController = currentController();
-            if ($currentController && (
-                    (is_string($currentController) && class_exists($currentController)) ||
-                    is_object($currentController)
-                )) {
-                $class = get_class($currentController);
-                $namespace = (new ReflectionClass($class))->getNamespaceName();
-            } else {
-                return null;
-            }
-        } catch (ReflectionException $exception) {
-            return null;
-        }
-
-        return $namespace;
-    }
-}
-#endregion
-
 #region GET
-if (!function_exists('getRequestedPage')) {
-    /**
-     * Returns page from request
-     *
-     * @return int|bool
-     */
-    function getRequestedPage()
-    {
-        if (!request()->has('page')) return false;
-
-        $page = request()->get('page', 1);
-        return strtolower($page) === 'all' ? 0 : $page;
-    }
-}
-
-if (!function_exists('getMethodName')) {
-    /**
-     * Returns method name by given Route->uses
-     *
-     * @param string $method
-     *
-     * @return string
-     */
-    function getMethodName(string $method)
-    {
-        if (empty($method)) return '';
-
-        if (stripos($method, '::') !== false)
-            $method = collect(explode('::', $method))->last();
-
-        if (stripos($method, '@') !== false)
-            $method = collect(explode('@', $method))->last();
-
-        return $method;
-    }
-}
-
-if (!function_exists('getCurrentNamespace')) {
-    /**
-     * Returns current namespace of current class|object
-     *
-     * @param null $append
-     *
-     * @return null|string
-     */
-    function getCurrentNamespace($append = null, $backtrace_times = 1)
-    {
-        $caller = debug_backtrace();
-        $caller = $caller[$backtrace_times];
-        $class = null;
-        try {
-            if (isset($caller['class'])) {
-                $class = (new ReflectionClass($caller['class']))->getNamespaceName();
-            }
-            if (isset($caller['object'])) {
-                $class = (new ReflectionClass(get_class($caller['object'])))->getNamespaceName();
-            }
-        } catch (ReflectionException $exception) {
-//			d($exception);
-            return null;
-        }
-        if ($append) $append = str_ireplace("/", "\\", $append);
-        if ($class) $class = str_ireplace("/", "\\", $class);
-
-        if ($class) $class = real_path("{$class}" . ($append ? "\\{$append}" : ""));
-
-        return $class;
-    }
-}
-
-if (!function_exists('getControllerPermissionPrefix')) {
-    /**
-     * Returns prefix of permissions name
-     *
-     * @param \Illuminate\Routing\Controller|string|null $controller Controller or controller name, default: {@see currentController()}
-     * @param string|null $permission_name Permission name
-     * @param string $separator Permission name separator
-     *
-     * @return string
-     */
-    function getControllerPermissionPrefix($controller = null, $permission_name = null, $separator = "_"): string
-    {
-        $controller = $controller instanceof \Illuminate\Routing\Controller ? get_class($controller) : ($controller ? trim($controller) : get_class(currentController()));
-
-        $controller = str_before(class_basename($controller), "Controller");
-
-        $controller .= $permission_name ? ucfirst($permission_name) : '';
-
-        $controller = snake_case($controller);
-
-        $controller = $permission_name ? $controller : str_finish($controller, "_");
-
-        return str_ireplace("_", $separator, $controller);
-    }
-}
-
-if (!function_exists('suffixerMaker')) {
+if ( !function_exists('suffixerMaker') ) {
     /**
      * Alias for: {@link Suffixer::makeer}
      *
@@ -1012,12 +735,12 @@ if (!function_exists('suffixerMaker')) {
         return Suffixer::makeer(...func_get_args());
     }
 }
-if (!function_exists('str_prefix')) {
+if ( !function_exists('str_prefix') ) {
     /**
      * Add a prefix to string but only if string2 is not empty.
      *
-     * @param string $string string to prefix
-     * @param string $prefix prefix
+     * @param string      $string string to prefix
+     * @param string      $prefix prefix
      * @param string|null $string2 string2 to prefix the return
      *
      * @return string|null
@@ -1031,12 +754,13 @@ if (!function_exists('str_prefix')) {
         return ltrim($newString, $prefix);
     }
 }
-if (!function_exists('str_suffix')) {
+
+if ( !function_exists('str_suffix') ) {
     /**
      * Add a suffix to string but only if string2 is not empty.
      *
-     * @param string $string string to suffix
-     * @param string $suffix suffix
+     * @param string      $string string to suffix
+     * @param string      $suffix suffix
      * @param string|null $string2 string2 to suffix the return
      *
      * @return string|null
@@ -1049,12 +773,12 @@ if (!function_exists('str_suffix')) {
     }
 }
 
-if (!function_exists('str_words_limit')) {
+if ( !function_exists('str_words_limit') ) {
     /**
      * Limit string words.
      *
-     * @param string $string string to limit
-     * @param int $limit word limit
+     * @param string      $string string to limit
+     * @param int         $limit word limit
      * @param string|null $suffix suffix the string
      *
      * @return string
@@ -1070,7 +794,7 @@ if (!function_exists('str_words_limit')) {
         $return = substr($string, 0, stripos($string, $lastWord) + strlen($lastWord)) . ' ' . $suffix;
 
         $m = [];
-        if (preg_match_all('#<(\w+).+?#is', $return, $m)) {
+        if ( preg_match_all('#<(\w+).+?#is', $return, $m) ) {
             $m = is_array($m) && is_array($m[1]) ? array_reverse($m[1]) : [];
             foreach ($m as $HTMLTAG) {
                 $return .= "</{$HTMLTAG}>";
@@ -1081,9 +805,10 @@ if (!function_exists('str_words_limit')) {
     }
 }
 
-if (!function_exists('basenameOf')) {
+if ( !function_exists('basenameOf') ) {
     /**
      * Returns basename of the given string after replace slashes and back slashes to DIRECTORY_SEPARATOR
+     *
      * @param string $string
      *
      * @return string

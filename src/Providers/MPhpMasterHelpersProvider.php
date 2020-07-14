@@ -78,7 +78,7 @@ class MPhpMasterHelpersProvider extends ServiceProvider {
             $cutBasePath = 'cutBasePath';
         }
 
-        Collection::make(glob(trim(base_path( '/../mixins/*Invoke.php' ))))
+        Collection::make(glob(trim(real_path(  __DIR__.'/../mixins/*Invoke.php' ))))
             ->mapWithKeys( static function ($path) {
                 return [
                     "mPhpMaster\\Support\\mixins\\" . pathinfo($path, PATHINFO_FILENAME)

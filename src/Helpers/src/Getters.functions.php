@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection ForgottenDebugOutputInspection */
+
 /**
  * Created by PhpStorm.
  * User: MyTh
@@ -250,6 +251,42 @@ if ( !function_exists('getClass') ) {
     }
 }
 
+if ( !function_exists('getRealClassName') ) {
+    /**
+     * Returns the real class name.
+     *
+     * @param string|object $class <p> The tested class. This parameter may be omitted when inside a class. </p>
+     *
+     * @return string|false <p> The name of the class of which <i>`class`</i> is an instance.</p>
+     * <p>
+     *      Returns <i>`false`</i> if <i>`class`</i> is not an <i>`class`</i>.
+     *      If <i>`class`</i> is omitted when inside a class, the name of that class is returned.
+     * </p>
+     */
+    function getRealClassName($class)
+    {
+        if ( is_object($class) ) {
+            $class = get_class($class);
+        }
+        throw_if(!class_exists($class), new Exception("Class `{$class}` not exists!"));
+
+        try {
+            $_class = eval("return new class extends {$class} { public function getResourceValueAttribute(): string { return \"\"; } };");
+
+        } catch (Exception $exception ) {
+            dE(
+                $exception->getMessage()
+            );
+        }
+
+        if($_class && is_object($_class)) {
+            return get_parent_class($_class);
+        }
+
+        return false;
+    }
+}
+
 if ( !function_exists("filesMap") ) {
     /**
      * Get Files names into collect()->mapWithKeys()->filter()->toArray() list as [ FilenameWithoutExtension => $callabke(RealPath) ]
@@ -351,5 +388,171 @@ if ( !function_exists('take') ) {
         }
 
         return slice($items, 0, $limit);
+    }
+}
+
+if ( !function_exists('getFirst') ) {
+    /**
+     * @param mixed ...$vars
+     *
+     * @return mixed|null
+     */
+    function getFirst(...$vars)
+    {
+        foreach ($vars as $_var) {
+            if ( $_var ) {
+                return $_var;
+            }
+        }
+
+        return null;
+    }
+}
+
+if ( !function_exists('getFirstValueByKey') ) {
+    /**
+     * Get first existing key from object.
+     *
+     * @param \Illuminate\Support\Collection|array|mixed           $request
+     * @param \Illuminate\Contracts\Support\Arrayable|array|string $keys
+     * @param mixed|null                                           $default
+     *
+     * @return mixed
+     */
+    function getFirstValueByKey($request, $keys, $default = null)
+    {
+        $request = toCollect($request);
+        $return = $default;
+        toCollect($keys)->each(function ($key) use (&$return, $request) {
+            if ( $request->has($key) ) {
+                $return = $request->get($key);
+                return false;
+            }
+            return true;
+        });
+
+        return $return;
+    }
+}
+
+if ( !function_exists('getFirstKeyByKey') ) {
+    /**
+     * Get first existing key from object.
+     *
+     * @param \Illuminate\Support\Collection|array|mixed           $request
+     * @param \Illuminate\Contracts\Support\Arrayable|array|string $keys
+     * @param mixed|null                                           $default
+     *
+     * @return mixed
+     */
+    function getFirstKeyByKey($request, $keys, $default = null)
+    {
+        $request = toCollect($request);
+        $return = $default;
+        toCollect($keys)->each(function ($key) use (&$return, $request) {
+            if ( $request->has($key) ) {
+                $return = $key;
+                return false;
+            }
+            return true;
+        });
+
+        return $return;
+    }
+}
+
+if ( !function_exists('getRequestedPage') ) {
+    /**
+     * Returns page from request
+     *
+     * @return int|bool
+     */
+    function getRequestedPage()
+    {
+        if ( !request()->has('page') ) return false;
+
+        $page = request()->get('page', 1);
+        return strtolower($page) === 'all' ? 0 : $page;
+    }
+}
+
+if ( !function_exists('getMethodName') ) {
+    /**
+     * Returns method name by given Route->uses
+     *
+     * @param string $method
+     *
+     * @return string
+     */
+    function getMethodName(string $method)
+    {
+        if ( empty($method) ) return '';
+
+        if ( stripos($method, '::') !== false )
+            $method = collect(explode('::', $method))->last();
+
+        if ( stripos($method, '@') !== false )
+            $method = collect(explode('@', $method))->last();
+
+        return $method;
+    }
+}
+
+if ( !function_exists('getCurrentNamespace') ) {
+    /**
+     * Returns current namespace of current class|object
+     *
+     * @param null $append
+     *
+     * @return null|string
+     */
+    function getCurrentNamespace($append = null, $backtrace_times = 1)
+    {
+        $caller = debug_backtrace();
+        $caller = $caller[ $backtrace_times ];
+        $class = null;
+        try {
+            if ( isset($caller['class']) ) {
+                $class = (new ReflectionClass($caller['class']))->getNamespaceName();
+            }
+            if ( isset($caller['object']) ) {
+                $class = (new ReflectionClass(get_class($caller['object'])))->getNamespaceName();
+            }
+        } catch (ReflectionException $exception) {
+//			d($exception);
+            return null;
+        }
+        if ( $append ) $append = str_ireplace("/", "\\", $append);
+        if ( $class ) $class = str_ireplace("/", "\\", $class);
+
+        if ( $class ) $class = real_path("{$class}" . ($append ? "\\{$append}" : ""));
+
+        return $class;
+    }
+}
+
+if ( !function_exists('getControllerPermissionPrefix') ) {
+    /**
+     * Returns prefix of permissions name
+     *
+     * @param \Illuminate\Routing\Controller|string|null $controller Controller or controller name, default: {@see currentController()}
+     * @param string|null                                $permission_name Permission name
+     * @param string                                     $separator Permission name separator
+     *
+     * @return string
+     */
+    function getControllerPermissionPrefix($controller = null, $permission_name = null, $separator = "_"): string
+    {
+        $controller = $controller instanceof \Illuminate\Routing\Controller ? get_class($controller) : ($controller ? trim($controller) : get_class(currentController()));
+
+        $controller = str_before(class_basename($controller), "Controller");
+
+        $controller .= $permission_name ? ucfirst($permission_name) : '';
+
+        $controller = snake_case($controller);
+
+        $controller = $permission_name ? $controller : str_finish($controller, "_");
+
+        return str_ireplace("_", $separator, $controller);
     }
 }

@@ -64,10 +64,13 @@ if (!function_exists('dE')) {
     /**
      *
      */
-    function dE()
+    function dE(...$args)
     {
         debugEnable();
-        d(...func_get_args());
+
+        dumpDebug(@getDebugBacktrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10), ...$args);
+
+        die(1);
     }
 }
 

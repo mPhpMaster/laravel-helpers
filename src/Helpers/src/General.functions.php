@@ -49,25 +49,6 @@ if (!function_exists('tool_title_locale')) {
 }
 
 /**
- * return appLocale
- */
-if (!function_exists('currentLocale')) {
-    /**
-     * return appLocale
-     *
-     * @return string
-     */
-    function currentLocale($full = false): string
-    {
-        if ($full)
-            return (string)app()->getLocale();
-
-        $locale = current(explode("-", app()->getLocale()));
-        return $locale ?: "";
-    }
-}
-
-/**
  * return string
  */
 if (!function_exists('prefixNumber')) {

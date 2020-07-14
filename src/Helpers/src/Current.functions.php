@@ -5,6 +5,25 @@
 
 use Illuminate\Support\Facades\Route;
 
+/**
+ * return appLocale
+ */
+if (!function_exists('currentLocale')) {
+    /**
+     * return appLocale
+     *
+     * @return string
+     */
+    function currentLocale($full = false): string
+    {
+        if ($full)
+            return (string)app()->getLocale();
+
+        $locale = current(explode("-", app()->getLocale()));
+        return $locale ?: "";
+    }
+}
+
 if (!function_exists('currentActionName')) {
     /**
      * @param null $action

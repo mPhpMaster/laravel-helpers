@@ -12,6 +12,8 @@ use Illuminate\Support\Collection;
 /**
  * Execute a callable if the collection isn't empty, then return the collection.
  *
+ * @mixin Collection
+ *
  * @param callable callback
  *
  * @return \Illuminate\Support\Collection
@@ -35,14 +37,16 @@ class PaginateInvoke
          *
          * @return LengthAwarePaginator
          */
-        return function($perPage, $total = null, $page = null, $pageName = 'page'): LengthAwarePaginator {
+        return function($perPage = null, array $only = ['*'], $pageName = 'page', $page = null, int $total = null): LengthAwarePaginator {
+//        return function($perPage, $total = null, $page = null, $pageName = 'page'): LengthAwarePaginator {
             /** @var \Illuminate\Database\Eloquent\Model $self */
-            $self = $this;
+            $only = Collection::make($only)->filter(fn($i)=>$i&&$i!=='*')->toArray();
+            $self = count($only) ? $this->only($only) : $this;
             $page = $page ?: LengthAwarePaginator::resolveCurrentPage($pageName);
             return new LengthAwarePaginator(
                 $self->forPage($page, $perPage),
                 $total ?: $self->count(),
-                $perPage,
+                $perPage ?: 15,
                 $page,
                 [
                     'path' => LengthAwarePaginator::resolveCurrentPath(),
