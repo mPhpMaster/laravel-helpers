@@ -104,9 +104,9 @@ class DynamicObject extends \stdClass implements Arrayable
      */
     public function add(...$data)
     {
-        $test = (array)$this;
+        $test = (array) $this;
         $test[] = 'TEST' . static::class;
-        $newKey = (int)array_search('TEST' . static::class, $test);
+        $newKey = (int) array_search('TEST' . static::class, $test);
         foreach ($data as $_data) {
             foreach ((array)$_data as $key => $value) {
                 $key = intval(is_numeric($key) ? $newKey++ : $key);
