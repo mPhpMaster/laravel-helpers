@@ -233,7 +233,7 @@ if ( !function_exists('getClass') ) {
     /**
      * Returns the name of the class of an object
      *
-     * @param object $object [optional] <p> The tested object. This parameter may be omitted when inside a class. </p>
+     * @param object $object|string [optional] <p> The tested object. This parameter may be omitted when inside a class. </p>
      *
      * @return string|false <p> The name of the class of which <i>`object`</i> is an instance.</p>
      * <p>
@@ -247,7 +247,7 @@ if ( !function_exists('getClass') ) {
             return get_class(valueToObject($object));
         }
 
-        return false;
+        return $object && is_string($object) && class_exists($object) ? $object : false;
     }
 }
 

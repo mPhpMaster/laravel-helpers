@@ -37,7 +37,7 @@ class CustomFunctions
 
                 try {
                     $_class = app($class);
-                    $is_class = is_object($_class) ? $_class instanceof \App\Models\AppModel : false;
+                    $is_class = is_object($_class) ? getModelAbstractClass($_class) : false;
 
                     if ( $is_class ) {
                         if ( function_exists($_class_name = basenameOf($class)) ) {
