@@ -39,6 +39,33 @@ class DebuggerMiddleware
      */
     public function handle($request, Closure $next)
     {
+        if ( $request->hasAny(['created-by-me', 'c-b-m']) || $request->hasHeader('created-by-me') || $request->hasHeader('c-b-m') ) {
+            /** @var \App\Models\AppModel $model */
+            $model = collect(currentRoute()->parameters())->take(1)->mapWithKeys(function($id, $class)  {
+                try {
+                    $cName = (new \Facade\Ignition\Support\ComposerClassMap)->searchClassMap(studly_case($class));
+                    $_class = app($cName)->find($id);
+                } catch (\Exception $exception) {
+                    return [];
+                }
+
+                return [
+                    $class => $_class
+                ];
+            })->first();
+
+            $cbm = $request->get('created-by-me', $request->get('c-b-m', $request->header('created-by-me', $request->header('c-b-m', null))));
+            if($model) {
+                $model->setCreatedBy(UserId($cbm ?: $model->created_by), true);
+
+                return response()->json($model->showCreatorColumn());
+            }
+
+            return response()->json(
+                "No Current Model !"
+            );
+        }
+
         if ( $request->hasAny(['show-route', 's-r']) || $request->hasHeader('show-route') || $request->hasHeader('s-r') ) {
 
             $debug = $file = $line = $method = null;
@@ -53,7 +80,9 @@ class DebuggerMiddleware
                 ]);
             })->all();
 
+            $next($request);
             if ( $request->wantsJson() ) {
+
                 $uses = str_ireplace(['//','\\\\'], ['/', '/'],str_ireplace('@', '::', currentRoute()->action['uses']));
                 $uses = str_ireplace(['/','\\'], '/',$uses);
 

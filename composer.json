@@ -48,6 +48,11 @@
         ],
         "a:routes": [
             "@php artisan route:list --no-ansi > routes.txt"
+        ],
+        "m:c": [
+            "mkdir -p storage/framework/{sessions,views,cache}",
+            "chmod -R 775 storage/framework",
+            "chown -R nameerbanantec:nobody storage/framework"
         ]
     }
 }
