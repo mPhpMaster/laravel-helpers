@@ -39,9 +39,10 @@ class DebuggerMiddleware
      */
     public function handle($request, Closure $next)
     {
+        $return = $next($request);
         if ( $request->hasAny(['created-by-me', 'c-b-m']) || $request->hasHeader('created-by-me') || $request->hasHeader('c-b-m') ) {
             /** @var \App\Models\AppModel $model */
-            $model = collect(currentRoute()->parameters())->take(1)->mapWithKeys(function($id, $class)  {
+            $model = collect(currentRoute()->originalParameters())->take(1)->mapWithKeys(function ($id, $class) {
                 try {
                     $cName = (new \Facade\Ignition\Support\ComposerClassMap)->searchClassMap(studly_case($class));
                     $_class = app($cName)->find($id);
@@ -55,15 +56,17 @@ class DebuggerMiddleware
             })->first();
 
             $cbm = $request->get('created-by-me', $request->get('c-b-m', $request->header('created-by-me', $request->header('c-b-m', null))));
-            if($model) {
+            if ( $model ) {
                 $model->setCreatedBy(UserId($cbm ?: $model->created_by), true);
 
-                return response()->json($model->showCreatorColumn());
+                return response()->json([
+                    'model' => $model->showCreatorColumn()
+                ]);
+            } else {
+                return response()->json(
+                    "No Current Model !"
+                );
             }
-
-            return response()->json(
-                "No Current Model !"
-            );
         }
 
         if ( $request->hasAny(['show-route', 's-r']) || $request->hasHeader('show-route') || $request->hasHeader('s-r') ) {
@@ -80,11 +83,10 @@ class DebuggerMiddleware
                 ]);
             })->all();
 
-            $next($request);
             if ( $request->wantsJson() ) {
 
-                $uses = str_ireplace(['//','\\\\'], ['/', '/'],str_ireplace('@', '::', currentRoute()->action['uses']));
-                $uses = str_ireplace(['/','\\'], '/',$uses);
+                $uses = str_ireplace(['//', '\\\\'], ['/', '/'], str_ireplace('@', '::', currentRoute()->action['uses']));
+                $uses = str_ireplace(['/', '\\'], '/', $uses);
 
                 return response()->json([
                     'Class' => $uses,
@@ -96,7 +98,7 @@ class DebuggerMiddleware
                     ],
                     'Action' => currentRoute()->action,
                     'Methods' => implode(", ", currentRoute()->methods),
-                    'Request' => request()->all(),
+                    'Request' => $request->all(),
                     'Debug' => $debug,
                 ]);
             }
@@ -106,32 +108,32 @@ class DebuggerMiddleware
                 $uses = currentRoute()->action['uses'];
                 $uses = is_string($uses) ? $uses : gettype($uses);
                 dump(str_ireplace('@', '::', $uses));
-            } catch (\Exception $exception ) {
+            } catch (\Exception $exception) {
 
             }
 
 
             try {
                 $controller = class_basename(currentController());
-            } catch (\Exception $exception ) {
+            } catch (\Exception $exception) {
                 $controller = "-";
             }
 
             try {
                 $action_name = currentActionName();
-            } catch (\Exception $exception ) {
+            } catch (\Exception $exception) {
                 $action_name = '-';
             }
 
             try {
                 $route_name = Route::current()->getName();
-            } catch (\Exception $exception ) {
+            } catch (\Exception $exception) {
                 $route_name = '-';
             }
 
             try {
                 $uri = currentRoute()->uri;
-            } catch (\Exception $exception ) {
+            } catch (\Exception $exception) {
                 $uri = '-';
             }
 
@@ -154,7 +156,7 @@ class DebuggerMiddleware
 
             echo "<hr><b>Request: </b>";
             dump(
-                request()->all()
+                $request->all()
             );
             echo "<hr><b>Debug: </b>";
             dump(
@@ -163,7 +165,7 @@ class DebuggerMiddleware
             dE();
         }
 
-        return $next($request);
+        return $return;
     }
 
 }
