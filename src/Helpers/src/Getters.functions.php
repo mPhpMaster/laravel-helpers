@@ -9,7 +9,6 @@
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Arr;
 
 /**
  * return column_{appLocale}
@@ -119,9 +118,17 @@ if ( !function_exists('cutBasePath') ) {
     function cutBasePath($_fullFilePath = null, $prefix = '')
     {
         $fullFilePath = $_fullFilePath ?:
-            Arr::get(@current(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)), 'file', null);
+            array_get(
+                head(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)),
+                'file',
+                null
+            );
 
-        return $prefix . str_ireplace(base_path() . DIRECTORY_SEPARATOR, '', $fullFilePath ?: __FILE__);
+        return $prefix . str_ireplace(
+                fixPath(base_path() . DIRECTORY_SEPARATOR),
+                '',
+                fixPath($fullFilePath ?: __FILE__)
+            );
     }
 }
 
@@ -233,7 +240,7 @@ if ( !function_exists('getClass') ) {
     /**
      * Returns the name of the class of an object
      *
-     * @param object $object|string [optional] <p> The tested object. This parameter may be omitted when inside a class. </p>
+     * @param object $object |string [optional] <p> The tested object. This parameter may be omitted when inside a class. </p>
      *
      * @return string|false <p> The name of the class of which <i>`object`</i> is an instance.</p>
      * <p>
@@ -273,13 +280,13 @@ if ( !function_exists('getRealClassName') ) {
         try {
             $_class = eval("return new class extends {$class} { public function getResourceValueAttribute(): string { return \"\"; } };");
 
-        } catch (Exception $exception ) {
+        } catch (Exception $exception) {
             dE(
                 $exception->getMessage()
             );
         }
 
-        if($_class && is_object($_class)) {
+        if ( $_class && is_object($_class) ) {
             return get_parent_class($_class);
         }
 

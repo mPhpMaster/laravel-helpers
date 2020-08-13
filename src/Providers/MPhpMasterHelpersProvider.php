@@ -2,7 +2,6 @@
 
 namespace mPhpMaster\Support\Providers;
 
-use App\Models\AppModel;
 use Illuminate\Database\Schema\Builder;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Arr;
@@ -10,6 +9,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Illuminate\Support\Stringable;
 
 /**
  * Class MPhpMasterHelpersProvider
@@ -18,6 +18,8 @@ use Illuminate\Support\Str;
  */
 class MPhpMasterHelpersProvider extends ServiceProvider
 {
+    const DIR__ = __DIR__ . '/../mixins';
+
     /**
      * Register services.
      *
@@ -67,7 +69,7 @@ class MPhpMasterHelpersProvider extends ServiceProvider
          * Helpers
          */
         require_once __DIR__ . '/../Helpers/HelpersLoader.php';
-        if(config('app.debug')) {
+        if ( config('app.debug') ) {
             new \CustomFunctions;
         }
     }
@@ -89,12 +91,13 @@ class MPhpMasterHelpersProvider extends ServiceProvider
             $cutBasePath = 'cutBasePath';
         }
 
-        Collection::make(glob(trim(real_path(__DIR__ . '/../mixins/*Invoke.php'))))
+        Collection::make(
+            glob(real_path($cutBasePath(self::DIR__ . "/*Invoke.php")))
+        )
             ->mapWithKeys(static function ($path) {
+                $file_name = pathinfo($path, PATHINFO_FILENAME);
                 return [
-                    "mPhpMaster\\Support\\mixins\\" . pathinfo($path, PATHINFO_FILENAME)
-                    =>
-                        Str::replaceLast('Invoke', '', pathinfo($path, PATHINFO_FILENAME)),
+                    "mPhpMaster\\Support\\mixins\\" . $file_name => Str::replaceLast('Invoke', '', $file_name),
                 ];
             })
             ->reject(static function ($macro) {

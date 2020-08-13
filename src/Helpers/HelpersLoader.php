@@ -85,6 +85,7 @@ class HelpersLoader
                     if ( "." . $f->getExtension() === self::ALLOWED_EXTENSION ) {
                         if ( $f->isFile() && $f->isReadable() ) {
                             include_once $f->getRealPath();
+
                             self::$included[] = $f->getRealPath();
                         }
                     }

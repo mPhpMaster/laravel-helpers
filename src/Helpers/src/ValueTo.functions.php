@@ -201,3 +201,18 @@ if ( !function_exists('toDynamicObject') ) {
         return $data instanceof \DynamicObject ? $data : \DynamicObject::make($data);
     }
 }
+
+if ( !function_exists('getValue') ) {
+    /**
+     * Return the default value of the given value.
+     *
+     * @param mixed $value
+     * @param mixed ...$arguments
+     *
+     * @return mixed
+     */
+    function getValue($value, ...$arguments)
+    {
+        return isClosure($value) || isCallable($value) ? $value(...$arguments) : $value;
+    }
+}

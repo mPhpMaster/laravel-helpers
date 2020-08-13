@@ -58,6 +58,23 @@ if ( !function_exists('isClosure') ) {
 /**
  * return bool
  */
+if ( !function_exists('isCallable') ) {
+    /**
+     * Check if the given var is callable && not string.
+     *
+     * @param mixed|null $callable
+     *
+     * @return bool
+     */
+    function isCallable($callable): bool
+    {
+        return is_callable($callable) && !is_string($callable);
+    }
+}
+
+/**
+ * return bool
+ */
 if ( !function_exists('isArrayableOrArray') ) {
     /**
      * Check if the given var is Array | is Arrayable (has ->toArray()).

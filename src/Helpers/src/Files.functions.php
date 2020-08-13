@@ -38,7 +38,6 @@ if ( !function_exists('unzip') ) {
     }
 }
 
-
 if ( !function_exists('includeSubFiles') ) {
     /**
      * Include php files
@@ -51,7 +50,7 @@ if ( !function_exists('includeSubFiles') ) {
             $__FILE__;
 
         if ( file_exists($sub_path) ) {
-            collect(File::files($sub_path))->map(function ($v) use ($incCallBack) {
+            collect((new Filesystem)->files($sub_path))->map(function ($v) use ($incCallBack) {
                 if ( $v->getExtension() != 'php' ) return false;
 
                 if ( $incCallBack && is_callable($incCallBack) ) {
@@ -68,33 +67,83 @@ if ( !function_exists('includeAllSubFiles') ) {
     /**
      * Include php files
      */
-    function includeAllSubFiles($__DIR__, $__FILE__ = "", callable $incCallBack = null): void
+    function includeAllSubFiles($__DIR__, $__FILE__ = "", callable $incCallBack = null)
     {
         $__DIR__ = rtrim($__DIR__, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $__FILE__;
 
         if ( file_exists($__DIR__) ) {
-            collect(File::allFiles($__DIR__))->map(function ($v) use ($incCallBack) {
-                if ( $v->getExtension() != 'php' ) return false;
+            return collect((new Filesystem)->allFiles($__DIR__))
+                ->map(function ($v) use ($incCallBack) {
+                    /** @var \Symfony\Component\Finder\SplFileInfo $v */
+                    if ( $v->getExtension() !== 'php' ) {
+                        return false;
+                    }
 
-                if ( $incCallBack && is_callable($incCallBack) ) {
-                    $incCallBack($v->getPathname());
-                } else {
-                    include_once $v->getPathname();
-                }
+                    if ( $incCallBack && is_callable($incCallBack) ) {
+                        return $incCallBack($v->getPathname());
+                    }
 
-                return $v;
-            });
+                    return includeIfExists($v->getPathname());
+                    //                return $v;
+                });
         }
+
+        return collect();
     }
 }
 
 if ( !function_exists('includeIfExists') ) {
     /**
      * Include file if exist
+     *
+     * @param string              $file
+     * @param callable|mixed|null $when_not_exists
+     *
+     * @return null|mixed
      */
-    function includeIfExists($file)
+    function includeIfExists($file, $when_not_exists = null)
     {
-        return file_exists($file) ? include($file) : false;
+        return file_exists($file) ? include($file) : getValue($when_not_exists);
+    }
+}
+
+if ( !function_exists('includeOnceIfExists') ) {
+    /**
+     * Include file Once if exist
+     *
+     * @param string              $file
+     * @param callable|mixed|null $when_not_exists
+     * @param callable|mixed|null $when_already_included
+     *
+     * @return bool|mixed
+     */
+    function includeOnceIfExists($file, $when_not_exists = null, $when_already_included = null)
+    {
+        if ( file_exists($file) ) {
+            if ( ($return = include_once($file)) === true ) {
+                $return = isClosure($when_already_included) ? getValue($when_already_included, ...[$file]) : $when_already_included;
+            }
+        } else {
+            $return = $when_not_exists = isClosure($when_not_exists) ? getValue($when_not_exists, ...[$file]) : $when_not_exists;
+        }
+
+        return getValue($return, ...[$file]);
+    }
+}
+
+if ( !function_exists('includeIfExists') ) {
+    /**
+     * Include file if exist
+     *
+     * @param string $file
+     * @param bool   $once
+     *
+     * @return false|mixed
+     */
+    function includeIfExists($file, $once = true)
+    {
+        $include = $once ? "include_once" : "include";
+        return file_exists($file) && is_callable($include) ? $include($file) : false;
     }
 }
 
@@ -117,38 +166,45 @@ if ( !function_exists('fixPath') ) {
     }
 }
 
-if ( !function_exists('includeMenuPartials') ) {
+if ( !function_exists('includeMenus') ) {
     /**
      * Include menu files
      *
-     * @param string     $partialsDir
-     * @param string     $partialsFile
+     * @param string     $menuDir
      * @param null|array $mergeWith
      * @param string     $partialsDirName
      *
      * @return array
      */
-    function includeMenuPartials($partialsDir, $partialsFile, $mergeWith = null, $partialsDirName = "partials")
+    function includeMenus($menuDir, $mergeWith = null, $partialsDirName = "menus")
     {
         $partialsDirName = trim($partialsDirName, "\\");
 
-        $menus = toCollect(includeAllSubFiles(
-            $partialsDir . "\\{$partialsDirName}\\",
-            str_before(basenameOf($partialsFile), ".php"),
-            fn($file) => includeIfExists($file)
-        ));
         $menu = collect();
-        $menus->each(function ($v) use (&$menu) {
-            $menu = $menu->mergeRecursive($v);
-        });
+        $menus = toCollect(
+            includeAllSubFiles(
+                $menuDir . "\\{$partialsDirName}\\",
+                "",
+                function ($file) {
+                    return includeOnceIfExists($file, [], []);
+                }
+            )
+        );
+//        dd(
+//            $menus
+//        );
+//        $menus->each(function ($v) use (&$menu) {
+//            $menu = $menu->mergeRecursive($v);
+//        });
 
+        $menu = $menus;
         if ( !is_null($mergeWith) ) {
             $menu = $menu->mergeRecursive($mergeWith);
         }
 
 //if($menu->isEmpty()) {
 //    dump([
-//        $partialsDir . "\\{$partialsDirName}\\",
+//        $menuDir . "\\{$partialsDirName}\\",
 //        str_before(basenameOf($partialsFile), ".php"),
 //        $menu->all()
 //    ]);
