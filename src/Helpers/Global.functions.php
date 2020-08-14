@@ -97,6 +97,18 @@ if ( !function_exists('isLoggedIn') ) {
     }
 }
 
+if ( !function_exists('whenLoggedIn') ) {
+    /**
+     * return first argument if user is logged in otherwise return second argument.
+     *
+     * @return mixed
+     */
+    function whenLoggedIn(callable $when_true = null, callable $when_false = null)
+    {
+        return getValue($isLoggedIn = isLoggedIn() ? $when_true : $when_false, $isLoggedIn, User());
+    }
+}
+
 if ( !function_exists('isViewMode') ) {
     /**
      * get current route

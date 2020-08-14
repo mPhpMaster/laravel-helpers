@@ -18,7 +18,7 @@ use Illuminate\Support\Stringable;
  */
 class MPhpMasterHelpersProvider extends ServiceProvider
 {
-    const DIR__ = __DIR__ . '/../mixins';
+    const MIXINS_DIR__ = __DIR__ . '/../mixins';
 
     /**
      * Register services.
@@ -92,7 +92,8 @@ class MPhpMasterHelpersProvider extends ServiceProvider
         }
 
         Collection::make(
-            glob(real_path($cutBasePath(self::DIR__ . "/*Invoke.php")))
+//            glob(real_path($cutBasePath(self::MIXINS_DIR__ . "/*Invoke.php")))
+            glob(fixPath(real_path($cutBasePath("/*Invoke.php", self::MIXINS_DIR__))))
         )
             ->mapWithKeys(static function ($path) {
                 $file_name = pathinfo($path, PATHINFO_FILENAME);
