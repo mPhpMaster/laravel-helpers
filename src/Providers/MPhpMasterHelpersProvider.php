@@ -9,7 +9,6 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
-use Illuminate\Support\Stringable;
 
 /**
  * Class MPhpMasterHelpersProvider
@@ -69,6 +68,7 @@ class MPhpMasterHelpersProvider extends ServiceProvider
          * Helpers
          */
         require_once __DIR__ . '/../Helpers/HelpersLoader.php';
+
         if ( config('app.debug') ) {
             new \CustomFunctions;
         }
