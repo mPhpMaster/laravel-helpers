@@ -39,8 +39,9 @@ class DebuggerMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $return = $next($request);
+        $return = null;
         if ( $request->hasAny(['created-by-me', 'c-b-m']) || $request->hasHeader('created-by-me') || $request->hasHeader('c-b-m') ) {
+            $return ??= $next($request);
             /** @var \App\Models\AppModel $model */
             $model = collect(currentRoute()->originalParameters())->take(1)->mapWithKeys(function ($id, $class) {
                 try {
@@ -70,7 +71,7 @@ class DebuggerMiddleware
         }
 
         if ( $request->hasAny(['show-route', 's-r']) || $request->hasHeader('show-route') || $request->hasHeader('s-r') ) {
-
+            $return ??= $next($request);
             $debug = $file = $line = $method = null;
             /** @var string|null $string */
             $string = null;
@@ -165,6 +166,7 @@ class DebuggerMiddleware
             dE();
         }
 
+        $return ??= $next($request);
         return $return;
     }
 

@@ -470,16 +470,41 @@ if ( !function_exists('getFirstKeyByKey') ) {
 
 if ( !function_exists('getRequestedPage') ) {
     /**
-     * Returns page from request
+     * @param int                           $default
+     * @param \Illuminate\Http\Request|null $request
      *
-     * @return int|bool
+     * @return int|null
      */
-    function getRequestedPage()
+    function getRequestedPage(int $default = 0, \Illuminate\Http\Request &$request = null)
     {
-        if ( !request()->has('page') ) return false;
+        $request ??= request();
+        if ( !$request->has('page') ) {
+            return $default ?? null;
+        }
 
-        $page = request()->get('page', 1);
+        $page = $request->get('page', $default);
         return strtolower($page) === 'all' ? 0 : $page;
+    }
+}
+
+if ( !function_exists('getRequestedPageCount') ) {
+    /**
+     * @param int                           $default
+     * @param \Illuminate\Http\Request|null $request
+     * @param string                        $key
+     *
+     * @return int|null
+     */
+    function getRequestedPageCount(int $default = null, \Illuminate\Http\Request &$request = null, $key = "itemsPerPage")
+    {
+        $request ??= request();
+        $default ??= config('app.per_page', null);
+        if ( !$request->has($key) ) {
+            return $default;
+        }
+
+        $itemsPerPage = $request->get($key, $default);
+        return strtolower($itemsPerPage) === 'all' ? -1 : $itemsPerPage;
     }
 }
 

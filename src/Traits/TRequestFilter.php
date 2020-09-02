@@ -60,7 +60,7 @@ trait TRequestFilter
             }
         });
 
-        return $query;
+        return $query->latest();
     }
 
     /**
@@ -79,7 +79,7 @@ trait TRequestFilter
             $query = $query->where($k, $v);
         });
 
-        return $query;
+        return $query->latest();
     }
 
 }
