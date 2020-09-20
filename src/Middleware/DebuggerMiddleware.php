@@ -85,8 +85,14 @@ class DebuggerMiddleware
             })->all();
 
             if ( $request->wantsJson() ) {
+                try {
+                    $uses = currentRoute()->action['uses'];
+                } catch (\Exception $exception) {
+                    $return = $next($request);
+                    $uses = currentRoute()->action['uses'];
+                }
 
-                $uses = str_ireplace(['//', '\\\\'], ['/', '/'], str_ireplace('@', '::', currentRoute()->action['uses']));
+                $uses = str_ireplace(['//', '\\\\'], ['/', '/'], str_ireplace('@', '::', $uses));
                 $uses = str_ireplace(['/', '\\'], '/', $uses);
 
                 return response()->json([
