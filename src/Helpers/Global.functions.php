@@ -299,16 +299,58 @@ if ( !function_exists('ViewMode') ) {
     }
 }
 
+if ( !function_exists('notify') ) {
+    /**
+     * Send the given notification to the given notifiable entities.
+     *
+     * @param  \App\Models\AppModel|\Illuminate\Support\Collection|array|mixed  $notifiables
+     * @param  mixed  $notification
+     *
+     * @return \Illuminate\Contracts\Bus\Dispatcher|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    function notify($notifiables, $notification)
+    {
+        return dispatcher(\Illuminate\Contracts\Notifications\Dispatcher::class)->send($notifiables, $notification);
+    }
+}
+
+if ( !function_exists('notifyNow') ) {
+    /**
+     * Send the given notification to the given notifiable entities immediately.
+     *
+     * @param  \App\Models\AppModel|\Illuminate\Support\Collection|array|mixed  $notifiables
+     * @param  mixed  $notification
+     *
+     * @return \Illuminate\Contracts\Bus\Dispatcher|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    function notifyNow($notifiables, $notification)
+    {
+        return dispatcher()->sendNow($notifiables, $notification);
+    }
+}
+
 if ( !function_exists('appDispatch') ) {
     /**
-     * Send the given command to the dispatcher for execution.
+     * @param        $command
+     * @param string $dispatcher_class
      *
-     * @param object $command
-     *
-     * @return void
+     * @return \Illuminate\Contracts\Bus\Dispatcher|\Illuminate\Contracts\Foundation\Application|mixed
      */
-    function appDispatch($command)
+    function appDispatch($command, $dispatcher_class = \Illuminate\Bus\Dispatcher::class)
     {
-        return app(\Illuminate\Contracts\Bus\Dispatcher::class)->dispatch($command);
+        $dispatcher = dispatcher($dispatcher_class);
+        return $command ? $dispatcher->dispatch($command) : $dispatcher;
+    }
+}
+
+if ( !function_exists('dispatcher') ) {
+    /**
+     * @param string $dispatcher_class
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Bus\Dispatcher|mixed
+     */
+    function dispatcher($dispatcher_class = \Illuminate\Contracts\Bus\Dispatcher::class)
+    {
+        return app($dispatcher_class ?: \Illuminate\Contracts\Bus\Dispatcher::class);
     }
 }
