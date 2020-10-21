@@ -52,7 +52,7 @@
         "m:c": [
             "mkdir -p storage/framework/{sessions,views,cache}",
             "chmod -R 775 storage/framework",
-            "chown -R nameerbanantec:nobody storage/framework"
+            "chown -R `whoami`:nobody storage/framework"
         ]
     }
 }
