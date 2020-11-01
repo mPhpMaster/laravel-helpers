@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 /**
  * Trait TRequestFilter
  *
- * @method static \Illuminate\Database\Eloquent\Builder requestFilter() RequestFilter::requestFilter()
+ * @method static \Illuminate\Database\Eloquent\Builder|static requestFilter() TRequestFilter::requestFilter()
  *
  * @see TRequestFilter::scopeRequestFilter()
  *
@@ -15,7 +15,6 @@ use Illuminate\Support\Str;
  */
 trait TRequestFilter
 {
-
     /**
      * Returns array of allowed keys to filter with
      *
@@ -81,5 +80,4 @@ trait TRequestFilter
 
         return $query->latest();
     }
-
 }
