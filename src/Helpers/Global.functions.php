@@ -120,6 +120,32 @@ if ( !function_exists('isViewMode') ) {
         return strtolower(trim($mode)) == strtolower(trim(ViewMode()));
     }
 }
+
+if ( !function_exists('stringContains') ) {
+    /**
+     * Determine if a given string contains a given substring.
+     *
+     * @param string          $haystack
+     * @param string|string[] $needles
+     * @param bool            $ignore_case
+     *
+     * @return bool
+     */
+    function stringContains($haystack, $needles, $ignore_case = false)
+    {
+        foreach ((array)$needles as $needle) {
+            if ( $ignore_case ) {
+                $needle = snake_case($needle);
+                $haystack = snake_case($haystack);
+            }
+            if ( $needle !== '' && mb_strpos($haystack, $needle) !== false ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
 // endregion: is
 
 // region: current
@@ -303,8 +329,8 @@ if ( !function_exists('notify') ) {
     /**
      * Send the given notification to the given notifiable entities.
      *
-     * @param  \App\Models\AppModel|\Illuminate\Support\Collection|array|mixed  $notifiables
-     * @param  mixed  $notification
+     * @param \App\Models\AppModel|\Illuminate\Support\Collection|array|mixed $notifiables
+     * @param mixed                                                           $notification
      *
      * @return \Illuminate\Contracts\Bus\Dispatcher|\Illuminate\Contracts\Foundation\Application|mixed
      */
@@ -318,8 +344,8 @@ if ( !function_exists('notifyNow') ) {
     /**
      * Send the given notification to the given notifiable entities immediately.
      *
-     * @param  \App\Models\AppModel|\Illuminate\Support\Collection|array|mixed  $notifiables
-     * @param  mixed  $notification
+     * @param \App\Models\AppModel|\Illuminate\Support\Collection|array|mixed $notifiables
+     * @param mixed                                                           $notification
      *
      * @return \Illuminate\Contracts\Bus\Dispatcher|\Illuminate\Contracts\Foundation\Application|mixed
      */

@@ -12,6 +12,8 @@ if (!function_exists('currentLocale')) {
     /**
      * return appLocale
      *
+     * @param bool $full
+     *
      * @return string
      */
     function currentLocale($full = false): string
@@ -19,7 +21,8 @@ if (!function_exists('currentLocale')) {
         if ($full)
             return (string)app()->getLocale();
 
-        $locale = current(explode("-", app()->getLocale()));
+        $locale = str_replace('_', '-', app()->getLocale());
+        $locale = current(explode("-", $locale));
         return $locale ?: "";
     }
 }

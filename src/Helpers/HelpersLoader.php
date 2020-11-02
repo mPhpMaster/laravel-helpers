@@ -97,6 +97,8 @@ class HelpersLoader
 
 }
 
+new HelpersLoader(HELPERS_DIR . 'src-interfaces');
+new HelpersLoader(HELPERS_DIR . 'src-traits');
 new HelpersLoader(HELPERS_DIR . 'src');
 new HelpersLoader(HELPERS_DIR . 'src-class');
 new HelpersLoader(HELPERS_DIR . 'macro');

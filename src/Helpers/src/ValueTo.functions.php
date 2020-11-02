@@ -202,6 +202,19 @@ if ( !function_exists('toDynamicObject') ) {
     }
 }
 
+if ( !function_exists('toVarObject') ) {
+    /**
+     * @param mixed      $value
+     * @param mixed|null $key
+     *
+     * @return \VarObject
+     */
+    function toVarObject($value, $key = null): VarObject
+    {
+        return new VarObject($value, $key);
+    }
+}
+
 if ( !function_exists('getValue') ) {
     /**
      * Return the default value of the given value.
