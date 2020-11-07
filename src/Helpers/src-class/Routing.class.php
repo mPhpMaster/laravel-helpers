@@ -1,4 +1,7 @@
 <?php
+/*
+ * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ */
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Traits\Tappable;

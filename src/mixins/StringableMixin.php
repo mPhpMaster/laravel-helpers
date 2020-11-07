@@ -1,10 +1,6 @@
 <?php
 /*
- * Copyright (c) 2020. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
- * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
- * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
- * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
- * Vestibulum commodo. Ut rhoncus gravida arcu.
+ * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
 namespace mPhpMaster\Support\mixins;
@@ -131,21 +127,102 @@ class StringableMixin
     /**
      * @return \Closure
      */
-    public function removeNumbers()
+    public function contains()
     {
-        return function (string $str) {
-            return preg_replace('/[0-9]+/', '', $str);
+        /**
+         * Determine if a given string contains a given substring.
+         *
+         * @param string          $haystack
+         * @param string|string[] $needles
+         * @param bool            $ignore_case
+         *
+         * @return bool
+         */
+        return function ($haystack, $needles, $ignore_case = false) {
+            foreach ((array)$needles as $needle) {
+                if ( $ignore_case ) {
+                    $needle = snake_case($needle);
+                    $haystack = snake_case($haystack);
+                }
+                if ( $needle !== '' && mb_strpos($haystack, $needle) !== false ) {
+                    return true;
+                }
+            }
+
+            return false;
         };
     }
 
     /**
      * @return \Closure
      */
-    public function onlyNumbers()
+    public function ends()
     {
-        return function (string $str) {
-            return preg_replace('/[^0-9]/', '', $str);
+        /**
+         * Determine if a given string ends with a given substring.
+         *
+         * @param string          $haystack
+         * @param string|string[] $needles
+         *
+         * @return bool
+         */
+        return function ($haystack, $needles) {
+            foreach ((array)$needles as $needle) {
+                if ( $needle !== '' && substr($haystack, -strlen($needle)) === (string)$needle ) {
+                    return true;
+                }
+            }
+
+            return false;
         };
     }
 
+    /**
+     * @return \Closure
+     */
+    public function starts()
+    {
+        /**
+         * Determine if a given string starts with a given substring.
+         *
+         * @param string          $haystack
+         * @param string|string[] $needles
+         *
+         * @return bool
+         */
+        return function ($haystack, $needles) {
+            foreach ((array)$needles as $needle) {
+                if ( (string)$needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0 ) {
+                    return true;
+                }
+            }
+
+            return false;
+        };
+    }
+
+    /**
+     * @return \Closure
+     */
+    public function containsAll()
+    {
+        /**
+         * Determine if a given string contains all array values.
+         *
+         * @param string   $haystack
+         * @param string[] $needles
+         *
+         * @return bool
+         */
+        return function ($haystack, array $needles)
+        {
+            foreach ($needles as $needle) {
+                if ( !$this->contains($haystack, $needle) ) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+    }
 }

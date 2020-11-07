@@ -1,4 +1,8 @@
-<?php /** @noinspection ForgottenDebugOutputInspection */
+<?php
+/*
+ * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ */
+/** @noinspection ForgottenDebugOutputInspection */
 
 use Illuminate\Support\Facades\Route;
 use mPhpMaster\Support\Suffixer;

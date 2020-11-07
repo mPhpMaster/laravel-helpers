@@ -1,7 +1,6 @@
 <?php
-/**
- * Copyright (c) $year. By: hlaCk (https://github.com/mPhpMaster)
- *
+/*
+ * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 namespace mPhpMaster\Support\Facades;
 

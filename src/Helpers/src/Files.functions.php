@@ -1,4 +1,7 @@
 <?php
+/*
+ * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ */
 
 use Illuminate\Filesystem\Filesystem;
 
@@ -50,12 +53,17 @@ if ( !function_exists('includeSubFiles') ) {
             $__FILE__;
 
         if ( file_exists($sub_path) ) {
-            collect((new Filesystem)->files($sub_path))->map(function ($v) use ($incCallBack) {
-                if ( $v->getExtension() != 'php' ) return false;
+            collect((new Filesystem)
+                ->files($sub_path))
+                ->map(function ($v) use ($incCallBack) {
+                    if ( trimLower($v->getExtension()) !== 'php' ) {
+                        return false;
+                    }
 
                 if ( $incCallBack && is_callable($incCallBack) ) {
                     $incCallBack($v->getPathname());
-                } else {
+                    }
+
                     include_once $v->getPathname();
                 }
             });

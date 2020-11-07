@@ -1,4 +1,7 @@
 <?php
+/*
+ * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ */
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Filesystem\Filesystem;
@@ -220,7 +223,7 @@ class AbstractRouting
             $repoPath = trim(str_ireplace( "/", "\\", "{$repoNamespace}/{$repoName}"), "\\");
             return [$name => $repoPath];
         });
-        
+
         return $allRegistred->get($abstract, null);
     }
 }

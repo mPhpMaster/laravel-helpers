@@ -1,4 +1,8 @@
 <?php
+/*
+ * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ */
+
 /**
  * Created by PhpStorm.
  * User: Administrator

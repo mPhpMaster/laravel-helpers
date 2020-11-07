@@ -1,10 +1,6 @@
 <?php
 /*
- * Copyright (c) 2020. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
- * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
- * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
- * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
- * Vestibulum commodo. Ut rhoncus gravida arcu.
+ * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
 //if ( !function_exists('') ) {
@@ -26,7 +22,7 @@ if ( !function_exists('grep') ) {
     {
         $is = is_array($data) ? $data : [$data];
         return mapEach($is, function ($value) use ($grep) {
-            if ( StringContains($value, $grep) ) {
+            if ( stringContains($value, $grep) ) {
                 return $value;
             }
             return null;
@@ -45,7 +41,7 @@ if ( !function_exists('getInterfaces') ) {
     {
         $result = array_values(get_declared_interfaces());
         if ( !is_null($grep) ) {
-            $result = filterEach($result,$grep, false);
+            $result = filterEach($result, $grep, false);
         }
 
         return $result;
@@ -62,7 +58,7 @@ if ( !function_exists('getClasses') ) {
     {
         $result = array_values(get_declared_classes());
         if ( !is_null($grep) ) {
-            $result = filterEach($result,$grep, false);
+            $result = filterEach($result, $grep, false);
         }
 
         return $result;
@@ -79,7 +75,7 @@ if ( !function_exists('getTraits') ) {
     {
         $result = array_values(get_declared_traits());
         if ( !is_null($grep) ) {
-            $result = filterEach($result,$grep, false);
+            $result = filterEach($result, $grep, false);
         }
 
         return $result;
@@ -96,7 +92,7 @@ if ( !function_exists('getAllDeclared') ) {
     {
         $result = array_merge(getClasses(), getInterfaces(), getTraits());
         if ( !is_null($grep) ) {
-            $result = filterEach($result,$grep, false);
+            $result = filterEach($result, $grep, false);
         }
 
         return array_values($result);
@@ -203,22 +199,25 @@ if ( !function_exists('mapEach') ) {
 
 if ( !function_exists('filterEach') ) {
     /**
-     * @param array|mixed $array
-     * @param callable    $callback
-     *
-     * @param bool        $strict
+     * @param array|mixed   $array
+     * @param callable|null $for
+     * @param bool          $strict
      *
      * @return array
      */
     function filterEach($array, $for = null, $strict = false)
     {
-        return dataForEach($array, function ($v) use ($for, $strict) {
-            return StringContains($v, $for) !== false ||
-                ($strict === false && StringContains(snake_case($v), mapEach($for, fromCallable('snake_case'))) !== false);
-        }, function ($returns, $put, $skip, $data) use ($strict) {
+        $callback = function ($v) use ($for, $strict, $array) {
+            $v = is_bool($v) && $v ? "true" : "false";
+            return stringContains($v, $for) !== false ||
+                ($strict === false && stringContains(snake_case($v), mapEach($for, fromCallable('snake_case'))) !== false);
+        };
+        $map = function ($returns, $put, $skip, $data) use ($strict) {
             $pass = $strict ? $returns !== false : !!$returns;
             ($pass && $put($data['value'])) || $skip;
-        });
+        };
+
+        return dataForEach($array, $callback, $map);
     }
 }
 // endregion: data loop

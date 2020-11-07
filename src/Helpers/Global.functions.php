@@ -1,10 +1,6 @@
 <?php
 /*
- * Copyright (c) 2020. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
- * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
- * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
- * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
- * Vestibulum commodo. Ut rhoncus gravida arcu.
+ * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
 use Illuminate\Support\Facades\Route;
@@ -124,12 +120,12 @@ if ( !function_exists('isRunningInConsole') ) {
 
         if ( isset($_ENV['APP_RUNNING_IN_CONSOLE']) || isset($_SERVER['APP_RUNNING_IN_CONSOLE']) ) {
             return ($runningInConsole = $_ENV['APP_RUNNING_IN_CONSOLE']) ||
-                        ($runningInConsole = $_SERVER['APP_RUNNING_IN_CONSOLE']) === 'true';
+                ($runningInConsole = $_SERVER['APP_RUNNING_IN_CONSOLE']) === 'true';
         }
 
         return $runningInConsole = $runningInConsole ?: (
             \Illuminate\Support\Env::get('APP_RUNNING_IN_CONSOLE') ??
-                (\PHP_SAPI === 'cli' || \PHP_SAPI === 'phpdbg' || in_array(php_sapi_name(), ['cli', 'phpdb']))
+            (\PHP_SAPI === 'cli' || \PHP_SAPI === 'phpdbg' || in_array(php_sapi_name(), ['cli', 'phpdb']))
         );
     }
 }
@@ -161,6 +157,27 @@ if ( !function_exists('isViewMode') ) {
     }
 }
 
+if ( !function_exists('stringContainsAll') ) {
+    /**
+     * Determine if a given string contains all array values.
+     *
+     * @param string   $haystack
+     * @param string[] $needles
+     *
+     * @return bool
+     */
+    function stringContainsAll($haystack, array $needles)
+    {
+        foreach ($needles as $needle) {
+            if ( !stringContains($haystack, $needle) ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+
 if ( !function_exists('stringContains') ) {
     /**
      * Determine if a given string contains a given substring.
@@ -171,14 +188,58 @@ if ( !function_exists('stringContains') ) {
      *
      * @return bool
      */
-    function stringContains($haystack, $needles, $ignore_case = false)
+    function stringContains(string $haystack, $needles, $ignore_case = false)
     {
         foreach ((array)$needles as $needle) {
             if ( $ignore_case ) {
                 $needle = snake_case($needle);
                 $haystack = snake_case($haystack);
             }
-            if ( $needle !== '' && mb_strpos($haystack, $needle) !== false ) {
+
+            if ( is_string($haystack) && is_string($needle) && $needle !== '' && mb_strpos($haystack, $needle) !== false ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+if ( !function_exists('stringEnds') ) {
+    /**
+     * Determine if a given string ends with a given substring.
+     *
+     * @param string          $haystack
+     * @param string|string[] $needles
+     *
+     * @return bool
+     */
+    function stringEnds($haystack, $needles)
+    {
+        foreach ((array)$needles as $needle) {
+            if ( $needle !== '' && substr($haystack, -strlen($needle)) === (string)$needle ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+}
+
+if ( !function_exists('stringStarts') ) {
+    /**
+     * Determine if a given string starts with a given substring.
+     *
+     * @param string          $haystack
+     * @param string|string[] $needles
+     *
+     * @return bool
+     */
+    function stringStarts($haystack, $needles)
+    {
+        foreach ((array)$needles as $needle) {
+            if ( (string)$needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0 ) {
                 return true;
             }
         }

@@ -1,16 +1,12 @@
 <?php
 /*
- * Copyright (c) 2020. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
- * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
- * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
- * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
- * Vestibulum commodo. Ut rhoncus gravida arcu.
+ * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
 /**
  * Class VarObject
  */
-class VarObject implements hasToString, Stringable, Jsonable, Arrayable
+class VarObject implements \IteratorAggregate, \Countable, hasToString, Stringable, Jsonable, Arrayable
 {
     use THasToString;
 
@@ -191,14 +187,21 @@ class VarObject implements hasToString, Stringable, Jsonable, Arrayable
             }
 
             if ( $_type = snake_case(str_after($method, 'is')) ) {
-                $check_type = strtolower(gettype($this->value())) === strtolower($_type);
+                $check_type = strtolower($valueType = gettype($this->value())) === strtolower($_type);
+
                 $_type = studly_case($_type);
+                if ( $valueType === 'object' && ($valueType = get_class($this->value())) ) {
                 $check_class = (
                     class_exists($_type) ||
                     interface_exists($_type) ||
                     trait_exists($_type, true) ||
                     function_exists($_type)
                 ) ? ($this->value() instanceof $_type) : false;
+                }
+
+//                $_value = $this->value();
+//                return $valueType instanceof $_type;
+
                 dE(
                     [
                         $_type,
@@ -209,6 +212,9 @@ class VarObject implements hasToString, Stringable, Jsonable, Arrayable
                     $this->value() instanceof $_type
                 );
 
+//                dE(
+//                    $check_type , $check_class
+//                );
                 return $check_type || $check_class || false;
             }
         }
@@ -290,5 +296,25 @@ class VarObject implements hasToString, Stringable, Jsonable, Arrayable
             return $callback($value);
         };
         return $instance->bindTo($this, $this);
+    }
+
+    /**
+     * Returns an iterator for attributes.
+     *
+     * @return \ArrayIterator An \ArrayIterator instance
+     */
+    public function getIterator()
+    {
+        return new \ArrayIterator($this->toArray());
+    }
+
+    /**
+     * Returns the number of attributes.
+     *
+     * @return int The number of attributes
+     */
+    public function count()
+    {
+        return $this->key && $this->value ? 1 : 0;
     }
 }

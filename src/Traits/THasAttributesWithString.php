@@ -1,4 +1,7 @@
 <?php
+/*
+ * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ */
 
 namespace mPhpMaster\Support\Traits;
 
@@ -7,7 +10,7 @@ namespace mPhpMaster\Support\Traits;
  *
  * @mixin \mPhpMaster\Support\Interfaces\IHasAttributesWithString
  * @mixin \Illuminate\Database\Eloquent\Model
- * 
+ *
  * @package mPhpMaster\Support\Traits
  */
 trait THasAttributesWithString
