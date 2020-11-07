@@ -181,13 +181,15 @@ class VarObject implements hasToString, Stringable, Jsonable, Arrayable
         if ( str_start($method, "is") ) {
             if ( function_exists($_method = snake_case($method)) || function_exists($_method = studly_case($method)) ) {
                 return call_user_func_array($_method, [$this->value()]);
-            } elseif ( $_type = snake_case(str_after($method, 'is')) ) {
+            }
+
+            if ( $_type = snake_case(str_after($method, 'is')) ) {
                 $check_type = strtolower(gettype($this->value())) === strtolower($_type);
                 $_type = studly_case($_type);
                 $check_class = (
                     class_exists($_type) ||
                     interface_exists($_type) ||
-                    trait_exists($_type) ||
+                    trait_exists($_type, true) ||
                     function_exists($_type)
                 ) ? ($this->value() instanceof $_type) : false;
                 dE(
