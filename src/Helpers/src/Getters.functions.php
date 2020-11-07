@@ -240,7 +240,56 @@ if ( !function_exists('getNumbers') ) {
     {
         return preg_filter("/[^0-9]*/", "", $string);
     }
+    }
+
+if ( !function_exists('replaceArabicNumbers') ) {
+    /**
+     * replace ۱۲۳۴۵۶۷۸۹۰ to 1234567890
+
+     * @param $string
+     *
+     * @return string
+     */
+    function replaceArabicNumbers($string)
+    {
+        return preg_replace_callback(
+            "/[\x{06F0}-\x{06F9}\x]+/u" ,
+            fn ($_m) => str_ireplace(
+                ['۱','۲','۳','۴','۵','۶','۷','۸','۹','۰'],
+                ['1','2','3','4','5','6','7','8','9','0'],
+            head((array)$_m)
+            ) ,
+            $string
+        );
 }
+}
+
+//if ( !function_exists('getNumbers') ) {
+//    /**
+//     * Returns Numbers only from the given string
+//     *
+//     * @param $string
+//     *
+//     * @return string
+//     */
+//    function getNumbers($string)
+//    {
+//preg_match_all('/[\-{1}?](?:\d+|\d{1,3}(?:,\d{3})+)?(?:\.\d+)?/', $string, $all);
+//preg_match_all('/([\-{1}]?[0-9]{1,3}(?:,[0-9]{3})*\.[0-9]+)/', $string, $all);
+//preg_match_all('!\d+\.*\d*!', $string, $all);
+//        $pats = [
+//            '/[\-{1}?](?:\d+|\d{1,3}(?:,\d{3})+)?(?:\.\d+)?/',
+//            '/([\-{1}]?[0-9]{1,3}(?:,[0-9]{3})*\.[0-9]+)/',
+//            '!\d+\.*\d*!',
+//            '/(?P<digit>[\d\.\-]+)/',
+//            '/[0-9]+/',
+//            '/[^0-9]/',
+//            '/[^0-9\.\-]/'
+//        ];
+//
+//
+//    }
+//}
 
 if ( !function_exists('replaceArabicNumbers') ) {
     /**

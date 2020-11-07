@@ -22,7 +22,6 @@ use Illuminate\Support\Str;
  */
 trait TRequestFilter
 {
-
     /**
      * Returns array of allowed keys to filter with
      *
@@ -88,5 +87,4 @@ trait TRequestFilter
 
         return $query->latest();
     }
-
 }

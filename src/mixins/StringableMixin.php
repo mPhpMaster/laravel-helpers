@@ -128,4 +128,24 @@ class StringableMixin
         };
     }
 
+    /**
+     * @return \Closure
+     */
+    public function removeNumbers()
+    {
+        return function (string $str) {
+            return preg_replace('/[0-9]+/', '', $str);
+        };
+    }
+
+    /**
+     * @return \Closure
+     */
+    public function onlyNumbers()
+    {
+        return function (string $str) {
+            return preg_replace('/[^0-9]/', '', $str);
+        };
+    }
+
 }
