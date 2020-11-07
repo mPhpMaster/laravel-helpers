@@ -61,6 +61,24 @@ if (!function_exists('currentModel')) {
     }
 }
 
+if (!function_exists('routeParameter')) {
+    /**
+     * @param array $default
+     *
+     * @return array|mixed|null
+     */
+    function routeParameter($key = null, $default = null)
+    {
+        $parameters = currentRoute()->parameters;
+
+        if(!$parameters) {
+            return $default;
+        }
+
+        return  is_null($key) ? $parameters : array_get($parameters, $key, $default);
+    }
+}
+
 if (!function_exists('currentUrl')) {
     /**
      * Returns current url.

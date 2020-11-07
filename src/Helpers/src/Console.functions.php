@@ -15,20 +15,24 @@ if (!function_exists( 'isDebugEnabled')) {
                 return false;
             }
 
-            $fromWeb = !app('request')->headers->has('app-name') && !App::runningInConsole();
-            $fromConsole = !app('request')->headers->has('app-name') && App::runningInConsole();
-            $fromApi = app('request')->headers->has('app-name') && !App::runningInConsole();
+            static $requestHasAppName = null;
+            $runningInConsole = isRunningInConsole();
+
+            $requestHasAppName = $requestHasAppName ?? app('request')->headers->has('app-name');
+
+            $fromWeb = !$requestHasAppName && !$runningInConsole;
+            $fromConsole = !$requestHasAppName && $runningInConsole;
+            $fromApi = $requestHasAppName && !$runningInConsole;
 
             if ($fromConsole === true || session('disable_d') === false) {
                 return true;
-            } else if ($fromApi === true) {
-                return false;
-            } else if ($fromWeb === true) {
+            }
+
+            if ( $fromApi === true || $fromWeb === true ) {
                 return false;
             }
 
-            return
-                !app('request')->headers->has('app-name') && !App::runningInConsole();
+            return $fromWeb;
 
         } catch (Exception $exception) {
             return false;
@@ -53,7 +57,7 @@ if (!function_exists('debugEnable')) {
      */
     function debugEnable(\Illuminate\Session\SessionManager $session = null, $status = true)
     {
-        $session = $session ?: session();
+        $session ??= session();
         $session->put('disable_d', !$status);
         $session->save();
 

@@ -268,9 +268,10 @@ if ( !function_exists('dumpDebug') ) {
             '<small>By: <b>' . cutBasePath($file) . ':' . $line . '</b>;  ' . $class . $type . '<b>' . $method . '</b></small> <br>'
         );
 
-        if ( $lastDebug && is_array($lastDebug) && App::runningInConsole() ) {
+        $runningInConsole = isRunningInConsole();
+        if ( $lastDebug && is_array($lastDebug) && $runningInConsole ) {
             consoleBox($lastDebug, STR_PAD_RIGHT, 'End Of Debug');
-        } else if ( $lastDebug && !App::runningInConsole() ) {
+        } else if ( $lastDebug && !$runningInConsole ) {
             echo($lastDebug);
         }
     }

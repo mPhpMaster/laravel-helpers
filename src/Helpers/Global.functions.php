@@ -109,6 +109,42 @@ if ( !function_exists('whenLoggedIn') ) {
     }
 }
 
+if ( !function_exists('isRunningInConsole') ) {
+    /**
+     * @return bool
+     * @noinspection ForgottenDebugOutputInspection
+     */
+    function isRunningInConsole()
+    {
+        static $runningInConsole = null;
+
+        if ( isset($_ENV['APP_RUNNING_IN_CONSOLE']) || isset($_SERVER['APP_RUNNING_IN_CONSOLE']) ) {
+            return ($runningInConsole = $_ENV['APP_RUNNING_IN_CONSOLE']) ||
+                        ($runningInConsole = $_SERVER['APP_RUNNING_IN_CONSOLE']) === 'true';
+        }
+
+        return $runningInConsole = $runningInConsole ?: (
+            \Illuminate\Support\Env::get('APP_RUNNING_IN_CONSOLE') ??
+                (\PHP_SAPI === 'cli' || \PHP_SAPI === 'phpdbg' || in_array(php_sapi_name(), ['cli', 'phpdb']))
+        );
+    }
+}
+
+
+if ( !function_exists('whenRunningInConsole') ) {
+    /**
+     * return first argument if user is logged in otherwise return second argument.
+     *
+     * @return mixed
+     */
+    function whenRunningInConsole(callable $when_true = null, callable $when_false = null)
+    {
+        return is_callable($value = $isRunningInConsole = isRunningInConsole() ? $when_true : $when_false) ?
+            call_user_func_array($value, [$isRunningInConsole, User()]) :
+            $value;
+    }
+}
+
 if ( !function_exists('isViewMode') ) {
     /**
      * get current route
