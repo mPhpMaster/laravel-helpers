@@ -1,6 +1,10 @@
 <?php
-/**
- * Copyright © 2020 mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+/*
+ * Copyright (c) 2020. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 
 namespace mPhpMaster\Support\mixins;
@@ -46,7 +50,7 @@ class StringableMixin
                 getTrans('Byte', 'B'),
                 getTrans('KiloBytes', 'KB'),
                 getTrans('MegaByte', 'MB'),
-                    getTrans('GigaByte', 'GB'),
+                getTrans('GigaByte', 'GB'),
                 getTrans('TeraByte', 'TB')
             ];
 
@@ -86,11 +90,11 @@ class StringableMixin
     {
         return function (string $path = null, $options = FILEINFO_MIME_TYPE) {
             $path = is_null($path) ? $this->value : $path;
-            $path = (string) ($path instanceof Stringable ? "{$path}" : $path);
+            $path = (string)($path instanceof Stringable ? "{$path}" : $path);
 
-            $finfo = $path ?  (new \finfo($options))->file($path) : "";
+            $finfo = $path ? (new \finfo($options))->file($path) : "";
 
-            return new static( $finfo );
+            return new static($finfo);
         };
     }
 
@@ -100,7 +104,27 @@ class StringableMixin
     public function get()
     {
         return function () {
-            return (string) $this->value . "";
+            return (string)$this->value . "";
+        };
+    }
+
+    /**
+     * @return \Closure
+     */
+    public function removeNumbers()
+    {
+        return function (string $str) {
+            return preg_replace('/[0-9]+/', '', $str);
+        };
+    }
+
+    /**
+     * @return \Closure
+     */
+    public function onlyNumbers()
+    {
+        return function (string $str) {
+            return preg_replace('/[^0-9]/', '', $str);
         };
     }
 

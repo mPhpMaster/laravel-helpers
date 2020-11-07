@@ -1,6 +1,10 @@
 <?php
-/**
- * Copyright © 2020 mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+/*
+ * Copyright (c) 2020. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 
 use Illuminate\Filesystem\Filesystem;
@@ -60,18 +64,22 @@ class HelpersLoader
      */
     public function __construct($helpers_dir = null)
     {
-        $helpers_dir =
+        $_helpers_dir =
             ($helpers_dir &&
                 file_exists($helpers_dir) &&
                 is_readable($helpers_dir) &&
                 is_dir($helpers_dir))
-                ? $helpers_dir : HELPERS_DIR;
+                ? $helpers_dir : false;
 
-        if ( !$helpers_dir ) {
-            debug(["Failed to load Path: " => $helpers_dir]);
+        if ( !$_helpers_dir ) {
+            if( isRunningInConsole() ) {
+                dump(" # Failed to load Path: {$helpers_dir}" );
+            }
+
+            return;
         }
 
-        $this->path = $helpers_dir;
+        $this->path = $helpers_dir = $_helpers_dir;
 
         /** @var Collection $files */
         $files = toCollect((new Filesystem)->files($this->path));
@@ -97,6 +105,8 @@ class HelpersLoader
 
 }
 
+new HelpersLoader(HELPERS_DIR . 'src-interfaces');
+new HelpersLoader(HELPERS_DIR . 'src-traits');
 new HelpersLoader(HELPERS_DIR . 'src');
 new HelpersLoader(HELPERS_DIR . 'src-class');
 new HelpersLoader(HELPERS_DIR . 'macro');

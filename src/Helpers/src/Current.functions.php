@@ -1,6 +1,10 @@
 <?php
-/**
- * Copyright © 2020 mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+/*
+ * Copyright (c) 2020. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 
 use Illuminate\Support\Facades\Route;
@@ -12,6 +16,8 @@ if (!function_exists('currentLocale')) {
     /**
      * return appLocale
      *
+     * @param bool $full
+     *
      * @return string
      */
     function currentLocale($full = false): string
@@ -19,7 +25,8 @@ if (!function_exists('currentLocale')) {
         if ($full)
             return (string)app()->getLocale();
 
-        $locale = current(explode("-", app()->getLocale()));
+        $locale = str_replace('_', '-', app()->getLocale());
+        $locale = current(explode("-", $locale));
         return $locale ?: "";
     }
 }
@@ -55,6 +62,24 @@ if (!function_exists('currentModel')) {
     function currentModel($default = null)
     {
         return array_first(currentRoute()->parameters()) ?: $default;
+    }
+}
+
+if (!function_exists('routeParameter')) {
+    /**
+     * @param array $default
+     *
+     * @return array|mixed|null
+     */
+    function routeParameter($key = null, $default = null)
+    {
+        $parameters = currentRoute()->parameters;
+
+        if(!$parameters) {
+            return $default;
+        }
+
+        return  is_null($key) ? $parameters : array_get($parameters, $key, $default);
     }
 }
 

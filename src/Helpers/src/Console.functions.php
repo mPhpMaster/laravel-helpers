@@ -1,9 +1,13 @@
 <?php
-/**
- * Copyright © 2020 mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+/*
+ * Copyright (c) 2020. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 
-if (!function_exists( 'isDebugEnabled')) {
+if ( !function_exists('isDebugEnabled') ) {
     /**
      * @return bool
      */
@@ -11,24 +15,28 @@ if (!function_exists( 'isDebugEnabled')) {
     {
         try {
             $request = request();
-            if (($request->is('api/*') || $request->expectsJson()) && session('disable_d') !== false) {
+            if ( ($request->is('api/*') || $request->expectsJson()) && session('disable_d') !== false ) {
                 return false;
             }
 
-            $fromWeb = !app('request')->headers->has('app-name') && !App::runningInConsole();
-            $fromConsole = !app('request')->headers->has('app-name') && App::runningInConsole();
-            $fromApi = app('request')->headers->has('app-name') && !App::runningInConsole();
+            static $requestHasAppName = null;
+            $runningInConsole = isRunningInConsole();
 
-            if ($fromConsole === true || session('disable_d') === false) {
+            $requestHasAppName = $requestHasAppName ?? app('request')->headers->has('app-name');
+
+            $fromWeb = !$requestHasAppName && !$runningInConsole;
+            $fromConsole = !$requestHasAppName && $runningInConsole;
+            $fromApi = $requestHasAppName && !$runningInConsole;
+
+            if ( $fromConsole === true || session('disable_d') === false ) {
                 return true;
-            } else if ($fromApi === true) {
-                return false;
-            } else if ($fromWeb === true) {
+            }
+
+            if ( $fromApi === true || $fromWeb === true ) {
                 return false;
             }
 
-            return
-                !app('request')->headers->has('app-name') && !App::runningInConsole();
+            return $fromWeb;
 
         } catch (Exception $exception) {
             return false;
@@ -36,7 +44,7 @@ if (!function_exists( 'isDebugEnabled')) {
     }
 }
 
-if (!function_exists('isDebugDisabled')) {
+if ( !function_exists('isDebugDisabled') ) {
     /**
      * @return bool
      */
@@ -46,21 +54,21 @@ if (!function_exists('isDebugDisabled')) {
     }
 }
 
-if (!function_exists('debugEnable')) {
+if ( !function_exists('debugEnable') ) {
     /**
      * @param \Illuminate\Session\SessionManager|null $session
      * @param bool                                    $status
      */
     function debugEnable(\Illuminate\Session\SessionManager $session = null, $status = true)
     {
-        $session = $session ?: session();
+        $session ??= session();
         $session->put('disable_d', !$status);
         $session->save();
 
-     }
+    }
 }
 
-if (!function_exists('dE')) {
+if ( !function_exists('dE') ) {
     /**
      *
      */
@@ -74,7 +82,7 @@ if (!function_exists('dE')) {
     }
 }
 
-if (!function_exists('duE')) {
+if ( !function_exists('duE') ) {
     /**
      *
      */
@@ -86,7 +94,7 @@ if (!function_exists('duE')) {
 }
 
 
-if (!function_exists('makeCol')) {
+if ( !function_exists('makeCol') ) {
     /**
      * @param        $text
      * @param array  $intend
@@ -107,19 +115,19 @@ if (!function_exists('makeCol')) {
     {
         return str_repeat($intend[1], $intend[0]) .
             $intend[2] .
-            isConsole( '', "<{$elm} class='{$class}'>") .
+            isConsole('', "<{$elm} class='{$class}'>") .
 
-               str_ireplace($replacer[0],
+            str_ireplace($replacer[0],
                 isConsole($replacer[1], "</{$elm}>{$replacer[1]}<{$elm} class='{$class}'>"),
                 "{$text}{$replacer[0]}") .
-            isConsole( ' ', "</{$elm}> ");
+            isConsole(' ', "</{$elm}> ");
     }
 }
 
 /**
  * Drow box with text inside it
  */
-if (!function_exists('consoleBox')) {
+if ( !function_exists('consoleBox') ) {
     /**
      * @param string $msgs
      * @param int    $align
@@ -127,7 +135,7 @@ if (!function_exists('consoleBox')) {
      */
     function consoleBox($msgs = '', $align = STR_PAD_RIGHT, $title = 'Debug')
     {
-        if (!isDebugEnabled()) {
+        if ( !isDebugEnabled() ) {
             return;
         }
 
@@ -153,17 +161,17 @@ if (!function_exists('consoleBox')) {
                 . $default['border']['right']
             ) . PHP_EOL;
 
-        toCollect($msgs)->each( static function ($msg) use ($align, $text_length, $default) {
+        toCollect($msgs)->each(static function ($msg) use ($align, $text_length, $default) {
             echo isConsole(
                 $default['border']['left'] .
-                prefixText( $msg, ' ', $text_length, $align) .
+                prefixText($msg, ' ', $text_length, $align) .
                 $default['border']['right'] . PHP_EOL
             );
         });
 
         echo isConsole(
                 $default['border']['left'] .
-                prefixText( '', $default['border']['center'], $text_length, STR_PAD_BOTH) .
+                prefixText('', $default['border']['center'], $text_length, STR_PAD_BOTH) .
                 $default['border']['right']
             ) . PHP_EOL;
     }

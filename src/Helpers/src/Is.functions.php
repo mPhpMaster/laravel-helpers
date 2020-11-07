@@ -1,5 +1,13 @@
 <?php
+/*
+ * Copyright (c) 2020. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
+ */
 
+use App\Helpers\Interfaces\IInvocable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -41,6 +49,23 @@ if ( !function_exists('isArrayable') ) {
 /**
  * return bool
  */
+if ( !function_exists('isAssocArray') ) {
+    /**
+     * @param array $array
+     *
+     * @return bool
+     */
+    function isAssocArray(array $array): bool
+    {
+        $keys = array_keys($array);
+
+        return array_keys($keys) !== $keys;
+    }
+}
+
+/**
+ * return bool
+ */
 if ( !function_exists('isClosure') ) {
     /**
      * Check if the given var is Closure.
@@ -68,7 +93,7 @@ if ( !function_exists('isCallable') ) {
      */
     function isCallable($callable): bool
     {
-        return is_callable($callable) && !is_string($callable);
+        return is_callable($callable)/* && !is_string($callable)*/ && !($callable instanceof Closure);
     }
 }
 
@@ -103,6 +128,24 @@ if ( !function_exists('isAllable') ) {
     function isAllable($array): bool
     {
         return method_exists($array, 'all');
+    }
+}
+
+/**
+ * return bool
+ */
+if ( !function_exists('isInvocable') ) {
+    /**
+     * @param mixed $object
+     *
+     * @return bool
+     */
+    function isInvocable($object): bool
+    {
+        return
+            method_exists($object, '__invoke') ||
+            is_callable($object) ||
+            $object instanceof IInvocable;
     }
 }
 
@@ -385,5 +428,17 @@ if ( !function_exists('isDynamicObject') ) {
     function isDynamicObject($data): bool
     {
         return $data instanceof DynamicObject;
+    }
+}
+
+if ( !function_exists('hasArabicChars') ) {
+    /**
+     * @param $string |mixed $string
+     *
+     * @return bool
+     */
+    function hasArabicChars($string): bool
+    {
+        return preg_match("/[\x{0600}-\x{06FF}\x]{1,32}/u", $string);
     }
 }

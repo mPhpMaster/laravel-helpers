@@ -1,7 +1,10 @@
 <?php
-/**
- * Copyright © 2020 mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
- * Debug helpers
+/*
+ * Copyright (c) 2020. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 
 use Illuminate\Support\Arr;
@@ -268,9 +271,10 @@ if ( !function_exists('dumpDebug') ) {
             '<small>By: <b>' . cutBasePath($file) . ':' . $line . '</b>;  ' . $class . $type . '<b>' . $method . '</b></small> <br>'
         );
 
-        if ( $lastDebug && is_array($lastDebug) && App::runningInConsole() ) {
+        $runningInConsole = isRunningInConsole();
+        if ( $lastDebug && is_array($lastDebug) && $runningInConsole ) {
             consoleBox($lastDebug, STR_PAD_RIGHT, 'End Of Debug');
-        } else if ( $lastDebug && !App::runningInConsole() ) {
+        } else if ( $lastDebug && !$runningInConsole ) {
             echo($lastDebug);
         }
     }

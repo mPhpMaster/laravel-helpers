@@ -1,6 +1,10 @@
 <?php
-/**
- * Copyright © 2020 mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+/*
+ * Copyright (c) 2020. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+ * Morbi non lorem porttitor neque feugiat blandit. Ut vitae ipsum eget quam lacinia accumsan.
+ * Etiam sed turpis ac ipsum condimentum fringilla. Maecenas magna.
+ * Proin dapibus sapien vel ante. Aliquam erat volutpat. Pellentesque sagittis ligula eget metus.
+ * Vestibulum commodo. Ut rhoncus gravida arcu.
  */
 
 use Illuminate\Support\Facades\Route;
@@ -109,6 +113,42 @@ if ( !function_exists('whenLoggedIn') ) {
     }
 }
 
+if ( !function_exists('isRunningInConsole') ) {
+    /**
+     * @return bool
+     * @noinspection ForgottenDebugOutputInspection
+     */
+    function isRunningInConsole()
+    {
+        static $runningInConsole = null;
+
+        if ( isset($_ENV['APP_RUNNING_IN_CONSOLE']) || isset($_SERVER['APP_RUNNING_IN_CONSOLE']) ) {
+            return ($runningInConsole = $_ENV['APP_RUNNING_IN_CONSOLE']) ||
+                        ($runningInConsole = $_SERVER['APP_RUNNING_IN_CONSOLE']) === 'true';
+        }
+
+        return $runningInConsole = $runningInConsole ?: (
+            \Illuminate\Support\Env::get('APP_RUNNING_IN_CONSOLE') ??
+                (\PHP_SAPI === 'cli' || \PHP_SAPI === 'phpdbg' || in_array(php_sapi_name(), ['cli', 'phpdb']))
+        );
+    }
+}
+
+
+if ( !function_exists('whenRunningInConsole') ) {
+    /**
+     * return first argument if user is logged in otherwise return second argument.
+     *
+     * @return mixed
+     */
+    function whenRunningInConsole(callable $when_true = null, callable $when_false = null)
+    {
+        return is_callable($value = $isRunningInConsole = isRunningInConsole() ? $when_true : $when_false) ?
+            call_user_func_array($value, [$isRunningInConsole, User()]) :
+            $value;
+    }
+}
+
 if ( !function_exists('isViewMode') ) {
     /**
      * get current route
@@ -118,6 +158,32 @@ if ( !function_exists('isViewMode') ) {
     function isViewMode($mode)
     {
         return strtolower(trim($mode)) == strtolower(trim(ViewMode()));
+    }
+}
+
+if ( !function_exists('stringContains') ) {
+    /**
+     * Determine if a given string contains a given substring.
+     *
+     * @param string          $haystack
+     * @param string|string[] $needles
+     * @param bool            $ignore_case
+     *
+     * @return bool
+     */
+    function stringContains($haystack, $needles, $ignore_case = false)
+    {
+        foreach ((array)$needles as $needle) {
+            if ( $ignore_case ) {
+                $needle = snake_case($needle);
+                $haystack = snake_case($haystack);
+            }
+            if ( $needle !== '' && mb_strpos($haystack, $needle) !== false ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 // endregion: is
@@ -299,16 +365,58 @@ if ( !function_exists('ViewMode') ) {
     }
 }
 
+if ( !function_exists('notify') ) {
+    /**
+     * Send the given notification to the given notifiable entities.
+     *
+     * @param \App\Models\AppModel|\Illuminate\Support\Collection|array|mixed $notifiables
+     * @param mixed                                                           $notification
+     *
+     * @return \Illuminate\Contracts\Bus\Dispatcher|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    function notify($notifiables, $notification)
+    {
+        return dispatcher(\Illuminate\Contracts\Notifications\Dispatcher::class)->send($notifiables, $notification);
+    }
+}
+
+if ( !function_exists('notifyNow') ) {
+    /**
+     * Send the given notification to the given notifiable entities immediately.
+     *
+     * @param \App\Models\AppModel|\Illuminate\Support\Collection|array|mixed $notifiables
+     * @param mixed                                                           $notification
+     *
+     * @return \Illuminate\Contracts\Bus\Dispatcher|\Illuminate\Contracts\Foundation\Application|mixed
+     */
+    function notifyNow($notifiables, $notification)
+    {
+        return dispatcher()->sendNow($notifiables, $notification);
+    }
+}
+
 if ( !function_exists('appDispatch') ) {
     /**
-     * Send the given command to the dispatcher for execution.
+     * @param        $command
+     * @param string $dispatcher_class
      *
-     * @param object $command
-     *
-     * @return void
+     * @return \Illuminate\Contracts\Bus\Dispatcher|\Illuminate\Contracts\Foundation\Application|mixed
      */
-    function appDispatch($command)
+    function appDispatch($command, $dispatcher_class = \Illuminate\Bus\Dispatcher::class)
     {
-        return app(\Illuminate\Contracts\Bus\Dispatcher::class)->dispatch($command);
+        $dispatcher = dispatcher($dispatcher_class);
+        return $command ? $dispatcher->dispatch($command) : $dispatcher;
+    }
+}
+
+if ( !function_exists('dispatcher') ) {
+    /**
+     * @param string $dispatcher_class
+     *
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Bus\Dispatcher|mixed
+     */
+    function dispatcher($dispatcher_class = \Illuminate\Contracts\Bus\Dispatcher::class)
+    {
+        return app($dispatcher_class ?: \Illuminate\Contracts\Bus\Dispatcher::class);
     }
 }
