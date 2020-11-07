@@ -107,20 +107,53 @@ class StringableMixin
     /**
      * @return \Closure
      */
-    public function removeNumbers()
+    public function contains()
     {
-        return function (string $str) {
-            return preg_replace('/[0-9]+/', '', $str);
+        /**
+         * Determine if a given string contains a given substring.
+         *
+         * @param string          $haystack
+         * @param string|string[] $needles
+         * @param bool            $ignore_case
+         *
+         * @return bool
+         */
+        return function ($haystack, $needles, $ignore_case = false) {
+            foreach ((array)$needles as $needle) {
+                if ( $ignore_case ) {
+                    $needle = snake_case($needle);
+                    $haystack = snake_case($haystack);
+                }
+                if ( $needle !== '' && mb_strpos($haystack, $needle) !== false ) {
+                    return true;
+                }
+            }
+
+            return false;
         };
     }
 
     /**
      * @return \Closure
      */
-    public function onlyNumbers()
+    public function ends()
     {
-        return function (string $str) {
-            return preg_replace('/[^0-9]/', '', $str);
+        /**
+         * Determine if a given string ends with a given substring.
+         *
+         * @param string          $haystack
+         * @param string|string[] $needles
+         *
+         * @return bool
+         */
+        return function ($haystack, $needles) {
+            foreach ((array)$needles as $needle) {
+                if ( $needle !== '' && substr($haystack, -strlen($needle)) === (string)$needle ) {
+                    return true;
+                }
+            }
+
+            return false;
         };
     }
 

@@ -152,6 +152,60 @@ if ( !function_exists('getValue') ) {
     }
 }
 
+if ( !function_exists('valueFromJson') ) {
+    /**
+     * @param string|null $_data
+     * @param null|mixed  $default
+     *
+     * @return array|mixed
+     */
+    function valueFromJson(?string $_data, $default = null)
+    {
+        try {
+            $data = json_decode($_data, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Exception $exception) {
+            $data = value($default ?? false);
+        }
+
+        return $data;
+    }
+}
+
+if ( !function_exists('valueToJson') ) {
+    /**
+     * @param string|array|null $_data
+     * @param null|mixed        $default
+     *
+     * @return string|mixed
+     */
+    function valueToJson($_data = null, $default = null)
+    {
+        $_data = is_string($_data) ? valueFromJson($_data, $_data) : $_data;
+        try {
+            $data = json_encode($_data);
+        } catch (\Exception $exception) {
+            $data = value($default ?? false);
+        }
+
+        return $data;
+    }
+}
+
+if ( !function_exists('getValue') ) {
+    /**
+     * Return the default value of the given value.
+     *
+     * @param mixed $value
+     * @param mixed ...$arguments
+     *
+     * @return mixed
+     */
+    function getValue($value, ...$arguments)
+    {
+        return isClosure($value) || isCallable($value) ? $value(...$arguments) : $value;
+    }
+}
+
 /**
  * return object
  */

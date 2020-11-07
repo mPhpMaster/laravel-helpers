@@ -181,8 +181,12 @@ class VarObject implements \IteratorAggregate, \Countable, hasToString, Stringab
      */
     public function __call($method, $args)
     {
+
         if ( str_start($method, "is") ) {
-            if ( function_exists($_method = snake_case($method)) || function_exists($_method = studly_case($method)) ) {
+            if (
+                function_exists($_method = snake_case($method)) ||
+                function_exists($_method = studly_case($method))
+            ) {
                 return call_user_func_array($_method, [$this->value()]);
             }
 
@@ -191,12 +195,18 @@ class VarObject implements \IteratorAggregate, \Countable, hasToString, Stringab
 
                 $_type = studly_case($_type);
                 if ( $valueType === 'object' && ($valueType = get_class($this->value())) ) {
-                $check_class = (
-                    class_exists($_type) ||
-                    interface_exists($_type) ||
-                    trait_exists($_type, true) ||
-                    function_exists($_type)
-                ) ? ($this->value() instanceof $_type) : false;
+                if ( $valueType === 'object' && ($valueType = get_class($this->value())) ) {
+                    $check_class = (
+                        class_exists($_type) ||
+                        interface_exists($_type) ||
+                        trait_exists($_type, true) ||
+                        function_exists($_type)
+                    ) ? ($this->value() instanceof $_type) : false;
+                }
+
+//                $_value = $this->value();
+//                return $valueType instanceof $_type;
+
                 }
 
 //                $_value = $this->value();

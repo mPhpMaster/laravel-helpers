@@ -178,6 +178,27 @@ if ( !function_exists('stringContainsAll') ) {
     }
 }
 
+if ( !function_exists('stringContainsAll') ) {
+    /**
+     * Determine if a given string contains all array values.
+     *
+     * @param string   $haystack
+     * @param string[] $needles
+     *
+     * @return bool
+     */
+    function stringContainsAll($haystack, array $needles)
+    {
+        foreach ($needles as $needle) {
+            if ( !stringContains($haystack, $needle) ) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+
 if ( !function_exists('stringContains') ) {
     /**
      * Determine if a given string contains a given substring.
