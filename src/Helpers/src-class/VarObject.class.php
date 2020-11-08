@@ -195,19 +195,22 @@ class VarObject implements \IteratorAggregate, \Countable, hasToString, Stringab
 
                 $_type = studly_case($_type);
                 if ( $valueType === 'object' && ($valueType = get_class($this->value())) ) {
-                if ( $valueType === 'object' && ($valueType = get_class($this->value())) ) {
+//                    if ( $valueType = get_class($this->value()) ) {
+//                    if ( $valueType === 'object' ) {
                     $check_class = (
                         class_exists($_type) ||
                         interface_exists($_type) ||
                         trait_exists($_type, true) ||
                         function_exists($_type)
-                    ) ? ($this->value() instanceof $_type) : false;
+                    )
+                        ? ($this->value() instanceof $_type)
+                        : false;
+//                    }
                 }
 
 //                $_value = $this->value();
 //                return $valueType instanceof $_type;
-
-                }
+//                }
 
 //                $_value = $this->value();
 //                return $valueType instanceof $_type;

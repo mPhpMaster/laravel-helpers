@@ -112,7 +112,6 @@ if ( !function_exists('whenLoggedIn') ) {
 if ( !function_exists('isRunningInConsole') ) {
     /**
      * @return bool
-     * @noinspection ForgottenDebugOutputInspection
      */
     function isRunningInConsole()
     {
@@ -154,27 +153,6 @@ if ( !function_exists('isViewMode') ) {
     function isViewMode($mode)
     {
         return strtolower(trim($mode)) == strtolower(trim(ViewMode()));
-    }
-}
-
-if ( !function_exists('stringContainsAll') ) {
-    /**
-     * Determine if a given string contains all array values.
-     *
-     * @param string   $haystack
-     * @param string[] $needles
-     *
-     * @return bool
-     */
-    function stringContainsAll($haystack, array $needles)
-    {
-        foreach ($needles as $needle) {
-            if ( !stringContains($haystack, $needle) ) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }
 
