@@ -17,6 +17,7 @@ if ( !function_exists('getGenerators') ) {
     function getGenerators($key = null, $default = null)
     {
         static $generators = [];
+
         // get all
         if ( is_null($key) ) {
             return $generators;

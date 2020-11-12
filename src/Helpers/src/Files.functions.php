@@ -59,9 +59,9 @@ if ( !function_exists('includeSubFiles') ) {
                         return false;
                     }
 
-                    if ( $incCallBack && is_callable($incCallBack) ) {
-                        $incCallBack($v->getPathname());
-                    }
+                if ( $incCallBack && is_callable($incCallBack) ) {
+                    $incCallBack($v->getPathname());
+                }
 
                     include_once $v->getPathname();
                 });

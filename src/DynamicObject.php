@@ -5,7 +5,6 @@
 
 namespace mPhpMaster\Support;
 
-
 use Illuminate\Contracts\Support\Arrayable;
 
 /**

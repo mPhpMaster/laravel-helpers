@@ -261,7 +261,7 @@ if ( !function_exists('getNumbers') ) {
     {
         return preg_filter("/[^0-9]*/", "", $string);
     }
-    }
+}
 
 if ( !function_exists('replaceArabicNumbers') ) {
     /**
@@ -278,11 +278,11 @@ if ( !function_exists('replaceArabicNumbers') ) {
             fn ($_m) => str_ireplace(
                 ['۱','۲','۳','۴','۵','۶','۷','۸','۹','۰'],
                 ['1','2','3','4','5','6','7','8','9','0'],
-            head((array)$_m)
+                head((array)$_m)
             ) ,
             $string
         );
-}
+    }
 }
 
 //if ( !function_exists('getNumbers') ) {
