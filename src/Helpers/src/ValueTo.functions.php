@@ -282,7 +282,7 @@ if ( !function_exists('trimLower') ) {
      *
      * @return string
      */
-    function trimLower(string $string)
+    function trimLower(?string $string)
     {
         return strtolower(trim($string));
     }
@@ -294,7 +294,7 @@ if ( !function_exists('trimUpper') ) {
      *
      * @return string
      */
-    function trimUpper(string $string)
+    function trimUpper(?string $string)
     {
         return strtoupper(trim($string));
     }
