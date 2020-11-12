@@ -202,15 +202,9 @@ class VarObject implements \IteratorAggregate, \Countable, hasToString, Stringab
                         interface_exists($_type) ||
                         trait_exists($_type, true) ||
                         function_exists($_type)
-                    )
-                        ? ($this->value() instanceof $_type)
-                        : false;
+                    ) ? ($this->value() instanceof $_type) : false;
 //                    }
                 }
-
-//                $_value = $this->value();
-//                return $valueType instanceof $_type;
-//                }
 
 //                $_value = $this->value();
 //                return $valueType instanceof $_type;

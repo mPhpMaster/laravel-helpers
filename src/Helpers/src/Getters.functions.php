@@ -4,13 +4,6 @@
  */
 /** @noinspection ForgottenDebugOutputInspection */
 
-/**
- * Created by PhpStorm.
- * User: MyTh
- * Date: 16/4/2019
- * Time: 7:42 AM
- */
-
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\Filesystem;
 

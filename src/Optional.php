@@ -3,13 +3,6 @@
  * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 15/12/2019
- * Time: 7:28 PM
- */
-
 namespace mPhpMaster\Support;
 
 use ArrayAccess;

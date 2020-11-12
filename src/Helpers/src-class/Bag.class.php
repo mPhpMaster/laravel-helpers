@@ -1,11 +1,14 @@
 <?php
+/*
+ * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ */
 
 use Illuminate\Contracts\Support\Arrayable;
 
 /**
  * Class Bag
  */
-class Bag implements Arrayable 
+class Bag implements Arrayable
 {
     /**
      * @var array
@@ -73,12 +76,12 @@ class Bag implements Arrayable
             $var = &$this->vars[ $name ];
             return $var;
         }
-        
+
         if ( isset($this->functions[ $name ]) ) {
             $var = &$this->functions[ $name ];
             return $var;
         }
-        
+
         return null;
     }
 
@@ -89,8 +92,8 @@ class Bag implements Arrayable
     public function __call($method, $args)
     {
         throw_unless(isset($this->functions[ $method ]), new BadMethodCallException("Method $method does not exist."), $args);
-        
-        return call_user_func_array($this->functions[ $method ], $args);    
+
+        return call_user_func_array($this->functions[ $method ], $args);
     }
 
     public function toArray()
