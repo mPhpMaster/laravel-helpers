@@ -53,8 +53,7 @@ if ( !function_exists('includeSubFiles') ) {
             $__FILE__;
 
         if ( file_exists($sub_path) ) {
-            collect((new Filesystem)
-                ->files($sub_path))
+            collect((new Filesystem)->files($sub_path))
                 ->map(function ($v) use ($incCallBack) {
                     if ( trimLower($v->getExtension()) !== 'php' ) {
                         return false;
@@ -65,7 +64,7 @@ if ( !function_exists('includeSubFiles') ) {
                 }
 
                     include_once $v->getPathname();
-            });
+                });
         }
     }
 }

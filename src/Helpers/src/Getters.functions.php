@@ -93,6 +93,29 @@ if ( !function_exists('getFillable') ) {
     }
 }
 
+/**
+ * return model hidden}
+ */
+if ( !function_exists('getHidden') ) {
+    /**
+     * Returns Model hidden.
+     *
+     * @param string $model Model class.
+     *
+     * @return null|array
+     */
+    function getHidden(string $model)
+    {
+        if ( $model && class_exists($model) ) {
+            $class = new $model;
+            /** @var $class \Illuminate\Database\Eloquent\Model */
+            return $class->getHidden();
+        }
+
+        return null;
+    }
+}
+
 if ( !function_exists('getTrans') ) {
     /**
      * Returns Translation or return default.
@@ -238,7 +261,7 @@ if ( !function_exists('getNumbers') ) {
     {
         return preg_filter("/[^0-9]*/", "", $string);
     }
-    }
+}
 
 if ( !function_exists('replaceArabicNumbers') ) {
     /**
@@ -255,7 +278,7 @@ if ( !function_exists('replaceArabicNumbers') ) {
             fn ($_m) => str_ireplace(
                 ['۱','۲','۳','۴','۵','۶','۷','۸','۹','۰'],
                 ['1','2','3','4','5','6','7','8','9','0'],
-            head((array)$_m)
+                head((array)$_m)
             ) ,
             $string
         );

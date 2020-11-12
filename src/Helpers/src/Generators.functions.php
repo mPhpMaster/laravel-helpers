@@ -12,7 +12,7 @@ if ( !function_exists('getGenerators') ) {
      * @param null $key
      * @param null $default
      *
-     * @return \Faker\Generator|\Faker\Generator[]|mixed|null
+     * @return \Faker\Generator|\Faker\Generator[]|mixed
      */
     function getGenerators($key = null, $default = null)
     {
@@ -77,7 +77,7 @@ if ( !function_exists('generator') ) {
         $generators = getGenerators();
 
         $defaultCode = getLanguageCodeByLocale(config('app.faker_locale', 'ar_SA'));
-        $getLocale = function ($locale = CURRENT_GENERATOR): string {
+        $getLocale = function ($locale = CURRENT_GENERATOR): ?string {
             return getLocaleByLanguageCode(($locale ?? CURRENT_GENERATOR) === CURRENT_GENERATOR ? currentLocale(true) : $locale);
         };
 
