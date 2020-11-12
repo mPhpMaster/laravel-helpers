@@ -93,6 +93,29 @@ if ( !function_exists('getFillable') ) {
     }
 }
 
+/**
+ * return model hidden}
+ */
+if ( !function_exists('getHidden') ) {
+    /**
+     * Returns Model hidden.
+     *
+     * @param string $model Model class.
+     *
+     * @return null|array
+     */
+    function getHidden(string $model)
+    {
+        if ( $model && class_exists($model) ) {
+            $class = new $model;
+            /** @var $class \Illuminate\Database\Eloquent\Model */
+            return $class->getHidden();
+        }
+
+        return null;
+    }
+}
+
 if ( !function_exists('getTrans') ) {
     /**
      * Returns Translation or return default.
