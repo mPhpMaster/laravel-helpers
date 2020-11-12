@@ -140,67 +140,6 @@ if ( !function_exists('isCallableDeep') ) {
 /**
  * return bool
  */
-if ( !function_exists('isCallableDeep') ) {
-    /**
-     * Check if the given var is Closure or|and callable or|and string or|and Array or|and object.
-     *
-     * @param mixed $closure
-     * @param bool  $mustBeCallable
-     * @param bool  $mustBeClosure
-     * @param bool  $mustBeString
-     * @param bool  $mustBeArray
-     * @param bool  $mustBeObject
-     *
-     * @return bool
-     */
-    function isCallableDeep($closure,
-                            bool $mustBeCallable = false,
-                            bool $mustBeClosure = false,
-                            bool $mustBeString = false,
-                            bool $mustBeArray = false,
-                            bool $mustBeObject = false): bool
-    {
-        $_result = [
-            'callable' => is_callable($closure),
-            'closure' => isClosure($closure),
-            'string' => is_string($closure),
-            'array' => is_array($closure),
-            'object' => is_object($closure),
-        ];
-
-        if(
-            ($mustBeCallable === true && $_result['callable'] === false) ||
-            ($mustBeClosure === true && $_result['closure'] === false) ||
-            ($mustBeString === true && $_result['string'] === false) ||
-            ($mustBeArray === true && $_result['array'] === false) ||
-            ($mustBeObject === true && $_result['object'] === false)
-        ) {
-            return false;
-        }
-        if(
-            ($mustBeCallable === false && $_result['callable'] === true) ||
-            ($mustBeClosure === false && $_result['closure'] === true) ||
-            ($mustBeString === false && $_result['string'] === true) ||
-            ($mustBeArray === false && $_result['array'] === true) ||
-            ($mustBeObject === false && $_result['object'] === true)
-        ) {
-            return true;
-        }
-
-        return count(filterEach($_result, true)) > 0;
-//        $result = $mustBeCallable ? is_callable($closure) : $result;
-//        $result = $mustBeClosure ? isClosure($closure) : $result;
-//        $result = $mustBeString ? is_string($closure) : $result;
-//        $result = $mustBeArray ? is_array($closure) : $result;
-//        $result = $mustBeObject ? is_object($closure) : $result;
-//
-//        return $result;
-    }
-}
-
-/**
- * return bool
- */
 if ( !function_exists('isCallable') ) {
     /**
      * Check if the given var is callable && not string.

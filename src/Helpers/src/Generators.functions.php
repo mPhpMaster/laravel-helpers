@@ -17,6 +17,7 @@ if ( !function_exists('getGenerators') ) {
     function getGenerators($key = null, $default = null)
     {
         static $generators = [];
+
         // get all
         if ( is_null($key) ) {
             return $generators;
@@ -47,6 +48,11 @@ if ( !function_exists('setGenerators') ) {
 }
 
 if ( !function_exists('generatorExist') ) {
+    /**
+     * @param $locale
+     *
+     * @return bool
+     */
     function generatorExist($locale) {
         $generators = filterEach(array_keys(getGenerators()), $locale);
 

@@ -152,60 +152,6 @@ if ( !function_exists('getValue') ) {
     }
 }
 
-if ( !function_exists('valueFromJson') ) {
-    /**
-     * @param string|null $_data
-     * @param null|mixed  $default
-     *
-     * @return array|mixed
-     */
-    function valueFromJson(?string $_data, $default = null)
-    {
-        try {
-            $data = json_decode($_data, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Exception $exception) {
-            $data = value($default ?? false);
-        }
-
-        return $data;
-    }
-}
-
-if ( !function_exists('valueToJson') ) {
-    /**
-     * @param string|array|null $_data
-     * @param null|mixed        $default
-     *
-     * @return string|mixed
-     */
-    function valueToJson($_data = null, $default = null)
-    {
-        $_data = is_string($_data) ? valueFromJson($_data, $_data) : $_data;
-        try {
-            $data = json_encode($_data);
-        } catch (\Exception $exception) {
-            $data = value($default ?? false);
-        }
-
-        return $data;
-    }
-}
-
-if ( !function_exists('getValue') ) {
-    /**
-     * Return the default value of the given value.
-     *
-     * @param mixed $value
-     * @param mixed ...$arguments
-     *
-     * @return mixed
-     */
-    function getValue($value, ...$arguments)
-    {
-        return isClosure($value) || isCallable($value) ? $value(...$arguments) : $value;
-    }
-}
-
 /**
  * return object
  */
@@ -221,9 +167,8 @@ if ( !function_exists('arrayToObject') ) {
     {
         if ( is_object($value) || is_array($value) ) {
 
-            $_value = json_decode(json_encode($value));
-//            $_value->by = "hlack";
-            return $_value;
+            //            $_value->by = "hlack";
+            return json_decode(json_encode($value));
         }
 
         $object = (object)[];
@@ -331,67 +276,13 @@ if ( !function_exists('toVarObject') ) {
     }
 }
 
-if ( !function_exists('getValue') ) {
-    /**
-     * Return the default value of the given value.
-     *
-     * @param mixed $value
-     * @param mixed ...$arguments
-     *
-     * @return mixed
-     */
-    function getValue($value, ...$arguments)
-    {
-        return isClosure($value) || isCallable($value) ? $value(...$arguments) : $value;
-    }
-}
-
-if ( !function_exists('valueFromJson') ) {
-    /**
-     * @param string|null $_data
-     * @param null|mixed  $default
-     *
-     * @return array|mixed
-     */
-    function valueFromJson(?string $_data, $default = null)
-    {
-        try {
-            $data = json_decode($_data, true);
-        } catch (\Exception $exception) {
-            $data = value($default ?? false);
-        }
-
-        return $data;
-    }
-}
-
-if ( !function_exists('valueToJson') ) {
-    /**
-     * @param string|array|null $_data
-     * @param null|mixed        $default
-     *
-     * @return string|mixed
-     */
-    function valueToJson($_data = null, $default = null)
-    {
-        $_data = is_string($_data) ? valueFromJson($_data, $_data) : $_data;
-        try {
-            $data = json_encode($_data);
-        } catch (\Exception $exception) {
-            $data = value($default ?? false);
-        }
-
-        return $data;
-    }
-}
-
 if ( !function_exists('trimLower') ) {
     /**
      * @param string $string
      *
      * @return string
      */
-    function trimLower(string $string)
+    function trimLower(?string $string)
     {
         return strtolower(trim($string));
     }
@@ -403,8 +294,30 @@ if ( !function_exists('trimUpper') ) {
      *
      * @return string
      */
-    function trimUpper(string $string)
+    function trimUpper(?string $string)
     {
         return strtoupper(trim($string));
     }
 }
+
+if ( !function_exists('wrapWith') ) {
+    /**
+     * If the given value is not an array, wrap it in one. and assign it to the given key.
+     *
+     * @param array|mixed $value
+     * @param string      $key
+     *
+     * @return array|array[]
+     */
+    function wrapWith($value, string $key): array
+    {
+        if ( is_array($value) ) {
+            if ( isset($value[ $key ]) ) {
+                return $value;
+            }
+        }
+
+        return [$key => $value];
+    }
+}
+

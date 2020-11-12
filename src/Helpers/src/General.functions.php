@@ -142,8 +142,14 @@ if ( !function_exists('replaceAll') ) {
         }
 
         toCollect((array)$searchAndReplace)->each(function ($replace, $search) use (&$subject) {
-            if (
-            isCallableDeep($replace, false, false, false, false, false)
+            if ( !is_string($replace) && isCallableDeep(
+                $replace,
+                false,
+                false,
+                false,
+                false,
+                false
+                )
             ) {
                 $_args = [
                     'search' => $search,

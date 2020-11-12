@@ -3,15 +3,7 @@
  * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 30/1/2020
- * Time: 3:31 PM
- */
-
 namespace mPhpMaster\Support;
-
 
 use Illuminate\Contracts\Support\Arrayable;
 
