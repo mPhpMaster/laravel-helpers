@@ -107,7 +107,7 @@ if ( !function_exists('isCallableDeep') ) {
             'object' => is_object($closure),
         ];
 
-        if(
+        if (
             ($mustBeCallable === true && $_result['callable'] === false) ||
             ($mustBeClosure === true && $_result['closure'] === false) ||
             ($mustBeString === true && $_result['string'] === false) ||
@@ -116,7 +116,7 @@ if ( !function_exists('isCallableDeep') ) {
         ) {
             return false;
         }
-        if(
+        if (
             ($mustBeCallable === false && $_result['callable'] === true) ||
             ($mustBeClosure === false && $_result['closure'] === true) ||
             ($mustBeString === false && $_result['string'] === true) ||
@@ -151,7 +151,7 @@ if ( !function_exists('isCallable') ) {
     function isCallable($callable): bool
     {
 //        return is_callable($callable)/* && !is_string($callable)*/ && !($callable instanceof Closure);
-        return is_callable($callable) && !is_string($callable)/* && !($callable instanceof Closure)*/;
+        return is_callable($callable) && !is_string($callable)/* && !($callable instanceof Closure)*/ ;
     }
 }
 
@@ -474,6 +474,58 @@ if ( !function_exists('isRelation') ) {
         }
 
         return false;
+    }
+}
+
+if ( !function_exists('isCarbon') ) {
+    /**
+     * @param object $object
+     *
+     * @return bool
+     */
+    function isCarbon($object)
+    {
+        try {
+            return (isInstanceOf($object, \Carbon\Carbon::class)) || is_a($object, \Carbon\Carbon::class);
+        } catch (Exception $exception) {
+
+        }
+
+        return false;
+    }
+}
+
+if ( !function_exists('isDateTime') ) {
+    /**
+     * @param object $object
+     *
+     * @return bool
+     */
+    function isDateTime($object)
+    {
+        try {
+            return (isInstanceOf($object, DateTime::class)) || is_a($object, DateTime::class);
+        } catch (Exception $exception) {
+
+        }
+
+        return false;
+    }
+}
+
+if ( !function_exists('isMobileNumber') ) {
+    /**
+     * @param mixed|null $value
+     *
+     * @return bool
+     */
+    function isMobileNumber($value = null)
+    {
+        try {
+            return is_numeric($value) && stringStarts($value, "05") && strlen($value) === 10;
+        } catch (Exception $exception) {
+            return false;
+        }
     }
 }
 

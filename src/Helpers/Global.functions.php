@@ -480,3 +480,128 @@ if ( !function_exists('dispatcher') ) {
         return app($dispatcher_class ?: \Illuminate\Contracts\Bus\Dispatcher::class);
     }
 }
+
+if ( !function_exists('carbonParse') ) {
+    /**
+     * @param mixed $value
+     * @param mixed $default
+     *
+     * @return \Carbon\Carbon|\Illuminate\Foundation\Application|mixed|null
+     */
+    function carbonParse($value, $default = null)
+    {
+        try {
+            return carbon()->parse(fixDate(trim($value ?: $default)));
+        } catch (Exception $exception) {
+            return $default;
+        }
+    }
+}
+
+if ( !function_exists('get_type') ) {
+    /**
+     * @param mixed $value
+     * @param array $options
+     *
+     * @return string
+     */
+    function get_type($value, $options = [
+        'class_name' => true,
+        'numeric_type' => true,
+        'custom_type' => true,
+    ]): string
+    {
+        static $all_options = [
+            'class_name' => true,
+            'numeric_type' => true,
+            'custom_type' => true,
+        ];
+
+        $unknown = 'unknown';
+        foreach ($all_options as $option_name => $default_option_value) {
+            $options[ $option_name ] ??= $default_option_value;
+            $$option_name = $options[ $option_name ];
+        }
+
+        if ( $options['custom_type'] ) {
+            $type = getCustomType($value) ?: $unknown;
+            if ( !is_null($type) && $type != $unknown ) {
+                return $type;
+            }
+        }
+        $type = $unknown;
+
+        if ( is_numeric($value) ) {
+            $type = $options['numeric_type'] ? gettype($value + 0) : 'numeric';
+        }
+
+        if ( $options['class_name'] && is_object($value) ) {
+            try {
+                $class = getClass($value);
+                $type = $class ?: gettype($value);
+            } catch (Exception $exception) {
+                $type = 'object';
+            }
+        }
+
+        return $type;
+    }
+}
+
+if ( !function_exists('customType') ) {
+    /**
+     * @param array|string|null $typeName
+     * @param callable|null     $typeTester
+     *
+     * @return array|callable|mixed|null
+     */
+    function customType($typeName = null, ?callable $typeTester = null)
+    {
+        static $types = [];
+
+        $initValue = function () {
+            return false;
+        };
+        $types = $types ?? [];
+
+        if ( !($argsCount = func_num_args()) ) {
+            return $types;
+        }
+
+        if ( $argsCount === 1 ) {
+            $value = array_get($types, $typeName, $initValue);
+        }
+        array_add($types, $typeName, $initValue);
+
+        if ( $argsCount === 2 ) {
+            $typeTester = is_string($typeTester) ? Closure::fromCallable($typeTester) : $typeTester;
+            array_set($types, $typeName, $typeTester ?? $initValue);
+            $value = $typeTester ?? $initValue;
+        }
+
+        return $value ?? $initValue;
+    }
+}
+
+if ( !function_exists('getCustomType') ) {
+    /**
+     * @param mixed      $value
+     * @param mixed|null $default
+     *
+     * @return mixed|string|null
+     */
+    function getCustomType($value, $default = null)
+    {
+        $value = getValue($value, $types = customType());
+
+        foreach ($types as $_typeName => $_typeTester) {
+            if ( isCallable($_typeTester) ) {
+                if ( call_user_func($_typeTester, $value) === true ) {
+                    return $_typeName;
+                }
+            }
+        }
+
+        return $default;
+    }
+}

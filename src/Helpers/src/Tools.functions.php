@@ -2,9 +2,9 @@
 /*
  * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
+
 /** @noinspection ForgottenDebugOutputInspection */
 
-use Illuminate\Support\Facades\Route;
 use mPhpMaster\Support\Suffixer;
 use mPhpMaster\Support\With;
 
@@ -505,7 +505,7 @@ if ( !function_exists('isUnused') ) {
 
 if ( !function_exists('ifSet') ) {
     /**
-     * @param mixed $var
+     * @param mixed        $var
      * @param string|mixed $true
      * @param string|mixed $false
      *
@@ -728,6 +728,19 @@ if ( !function_exists('hasConst') ) {
 #endregion
 
 #region GET
+if ( !function_exists('fixDate') ) {
+    /**
+     * @param string $value
+     * @param string $date_delimiter
+     *
+     * @return string
+     */
+    function fixDate(string $value, $date_delimiter = '-'): string
+    {
+        return replaceAll(['/' => $date_delimiter, '\\' => $date_delimiter, '.' => $date_delimiter], $value);
+    }
+}
+
 if ( !function_exists('suffixerMaker') ) {
     /**
      * Alias for: {@link Suffixer::makeer}

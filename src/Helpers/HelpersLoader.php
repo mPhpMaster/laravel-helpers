@@ -110,3 +110,9 @@ new HelpersLoader(HELPERS_DIR . 'src-class');
 foreach ((array)APP_HELPERS_DIR as $path) {
     new HelpersLoader($path);
 }
+
+$files = (array)glob(fixPath(HELPERS_DIR . '/CustomTypes/*.php'));
+$files = array_merge($files, (array)glob(fixPath(APP_HELPERS_DIR . '/../CustomTypes/*.php')));
+foreach ($files as $file) {
+    include_once $file;
+}
