@@ -513,6 +513,24 @@ if ( !function_exists('isDateTime') ) {
     }
 }
 
+if ( !function_exists('isTraversable') ) {
+    /**
+     * @param object $object
+     *
+     * @return bool
+     */
+    function isTraversable($object)
+    {
+        try {
+            return $object instanceof Traversable;
+        } catch (Exception $exception) {
+
+        }
+
+        return false;
+    }
+}
+
 if ( !function_exists('isMobileNumber') ) {
     /**
      * @param mixed|null $value

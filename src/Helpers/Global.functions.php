@@ -481,6 +481,49 @@ if ( !function_exists('dispatcher') ) {
     }
 }
 
+if ( !function_exists('staticData') ) {
+    /**
+     * @param string|null $name
+     * @param mixed|null  $value
+     *
+     * @return mixed|null
+     */
+    function staticData(?string $name = null, ...$value)
+    {
+        static $initValue = [];
+        static $storage = null;
+        $storage = $storage ?? $initValue;
+
+        $argsCount = func_num_args();
+        if ( !$argsCount ) {
+            return $storage;
+        }
+        $name = $name ?? 'null';
+        array_add($storage, $name, $initValue);
+
+        if ( $argsCount > 1 ) {
+            if ( !empty($value) && isClosure(head($value)) ) {
+                $result = call_user_func(array_shift($value),
+                    array_get($storage, $name),
+                    $name,
+                    ...$value
+                );
+
+                array_set($storage, $name, $result ?? $initValue);
+                return $result;
+            }
+
+            array_set($storage, $name, $value ?? $initValue);
+        }
+
+        if ( $argsCount === 1 ) {
+            $value = array_get($storage, $name, $initValue);
+        }
+
+        return $value ?? $initValue;
+    }
+}
+
 if ( !function_exists('carbonParse') ) {
     /**
      * @param mixed $value
@@ -603,5 +646,15 @@ if ( !function_exists('getCustomType') ) {
         }
 
         return $default;
+    }
+}
+
+if ( !function_exists('cachedResponse') ) {
+    /**
+     * @return \CachedResponse|\Illuminate\Contracts\Foundation\Application|mixed|cached-response
+     */
+    function cachedResponse(bool $auto_save = false)
+    {
+        return app('cached-response')->initiate($auto_save);
     }
 }
