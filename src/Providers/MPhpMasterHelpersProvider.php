@@ -67,6 +67,10 @@ class MPhpMasterHelpersProvider extends ServiceProvider
             return new \mPhpMaster\Support\ExtraMacros();
         });
 
+        $this->app->singleton('cached-response', function () {
+            return new \CachedResponse();
+        });
+
         /**
          * Helpers
          */

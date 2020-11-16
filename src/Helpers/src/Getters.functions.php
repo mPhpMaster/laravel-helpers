@@ -258,23 +258,38 @@ if ( !function_exists('getNumbers') ) {
 
 if ( !function_exists('replaceArabicNumbers') ) {
     /**
-     * replace ۱۲۳۴۵۶۷۸۹۰ to 1234567890
-
+     * replace ١٢٣٤٥٦٧٨٩٠ to 1234567890
+     *
      * @param $string
      *
      * @return string
      */
     function replaceArabicNumbers($string)
     {
-        return preg_replace_callback(
-            "/[\x{06F0}-\x{06F9}\x]+/u" ,
-            fn ($_m) => str_ireplace(
-                ['۱','۲','۳','۴','۵','۶','۷','۸','۹','۰'],
-                ['1','2','3','4','5','6','7','8','9','0'],
+        $replacer = fn($_m) => str_ireplace(
+            [
+                '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩', '٠',
+            ],
+            [
+                '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+            ],
                 head((array)$_m)
-            ) ,
-            $string
         );
+
+        $patterns = [
+            "/./u"
+        ];
+
+        $_string = $string;
+        foreach ($patterns as $pattern) {
+            $_string = preg_replace_callback(
+                $pattern,
+                $replacer,
+                $_string
+            );
+        }
+
+        return $_string;
     }
 }
 

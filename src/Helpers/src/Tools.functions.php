@@ -2,7 +2,6 @@
 /*
  * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
-
 /** @noinspection ForgottenDebugOutputInspection */
 
 use mPhpMaster\Support\Suffixer;

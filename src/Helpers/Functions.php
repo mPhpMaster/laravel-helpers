@@ -210,8 +210,12 @@ if ( !function_exists('filterEach') ) {
         $callback = function ($v) use ($for, $strict, $array) {
             $v = is_bool($v) && $v ? "true" : "false";
             return stringContains($v, $for) !== false ||
-                ($strict === false && stringContains(snake_case($v), mapEach($for, fromCallable('snake_case'))) !== false);
+                (
+                    $strict === false &&
+                    stringContains(snake_case($v), mapEach($for, fromCallable('snake_case'))) !== false
+                );
         };
+
         $map = function ($returns, $put, $skip, $data) use ($strict) {
             $pass = $strict ? $returns !== false : !!$returns;
             ($pass && $put($data['value'])) || $skip;

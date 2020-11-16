@@ -151,7 +151,7 @@ if ( !function_exists('isCallable') ) {
     function isCallable($callable): bool
     {
 //        return is_callable($callable)/* && !is_string($callable)*/ && !($callable instanceof Closure);
-        return is_callable($callable) && !is_string($callable)/* && !($callable instanceof Closure)*/ ;
+        return is_callable($callable) && !is_string($callable)/* && !($callable instanceof Closure)*/;
     }
 }
 
