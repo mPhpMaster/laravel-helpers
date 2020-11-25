@@ -724,6 +724,25 @@ if ( !function_exists('hasConst') ) {
         return (bool)$hasScope;
     }
 }
+
+if ( !function_exists('getConst') ) {
+    /**
+     * Returns const value if exists, otherwise returns $default.
+     *
+     * @param string|array $const <p>
+     *                          Const name to check
+     *                          </p>
+     * @param mixed|null $default <p>
+     *                          Value to return when const not found
+     *                          </p>
+     *
+     * @return mixed
+     */
+    function getConst($const, $default = null)
+    {
+        return defined($const = is_array($const) ? implode("::", $const) : $const) ? constant($const) : $default;
+    }
+}
 #endregion
 
 #region GET

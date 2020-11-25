@@ -3,7 +3,7 @@
  * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
-use App\Traits\{ForwardsAllCallsToInstance, ForwardsGetToInstance};
+use mPhpMaster\Support\Traits\{TForwardsAllCallsToInstance, TForwardsGetToInstance};
 use mPhpMaster\Support\Optional;
 
 /**
@@ -11,13 +11,16 @@ use mPhpMaster\Support\Optional;
  *
  * Foreword calls and gets to instance using methods.
  *
- * @mixin ForwardsGetToInstance
- * @mixin ForwardsAllCallsToInstance
+ * @mixin TForwardsGetToInstance
+ * @mixin TForwardsAllCallsToInstance
  */
 class HigherOrderProxy extends Optional {
-    use ForwardsGetToInstance;
-    use ForwardsAllCallsToInstance;
+    use TForwardsGetToInstance;
+    use TForwardsAllCallsToInstance;
 
+    /**
+     * @var \HigherOrderProxy|mixed
+     */
     protected $instance;
     /**
      * @var string|null
