@@ -6,13 +6,14 @@
 namespace mPhpMaster\Support\Traits;
 
 /**
- * Trait TFileable
+ * Trait TFilenameBuilder
  *
  * @uses \mPhpMaster\Support\Interfaces\IFileable
+ * @uses \mPhpMaster\Support\Interfaces\IFilenameBuilder
  *
  * @package mPhpMaster\Support\Traits
  */
-trait TFileable
+trait TFilenameBuilder
 {
 //    protected ?string $fileName;
 //    protected ?string $fileExtension;
