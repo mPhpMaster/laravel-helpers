@@ -304,20 +304,24 @@ if ( !function_exists('wrapWith') ) {
     /**
      * If the given value is not an array, wrap it in one. and assign it to the given key.
      *
-     * @param array|mixed $value
-     * @param string      $key
+     * @param mixed       $value
+     * @param string|null $key
      *
      * @return array|array[]
      */
-    function wrapWith($value, string $key): array
+    function wrapWith($value, ?string $key = null): array
     {
         if ( is_array($value) ) {
+            if ( is_null($key) ) {
+                return array_wrap($value);
+            }
+
             if ( isset($value[ $key ]) ) {
                 return $value;
             }
         }
 
-        return [$key => $value];
+        return !is_null($key) ? [$key => $value] : array_wrap($value);
     }
 }
 
