@@ -10,11 +10,11 @@ if ( !function_exists('toCollect') ) {
     /**
      * Returns $var as collection
      *
-     * @param $var
+     * @param array|\Illuminate\Support\Collection|\Illuminate\Contracts\Support\Arrayable|mixed|null $var
      *
      * @return \Illuminate\Support\Collection
      */
-    function toCollect($var): \Illuminate\Support\Collection
+    function toCollect($var = null): \Illuminate\Support\Collection
     {
         return is_collection($var) ? $var : collect($var);
     }
@@ -429,7 +429,7 @@ if ( !function_exists('notify') ) {
     /**
      * Send the given notification to the given notifiable entities.
      *
-     * @param \App\Models\AppModel|\Illuminate\Support\Collection|array|mixed $notifiables
+     * @param \AppModel|\Illuminate\Support\Collection|array|mixed $notifiables
      * @param mixed                                                           $notification
      *
      * @return \Illuminate\Contracts\Bus\Dispatcher|\Illuminate\Contracts\Foundation\Application|mixed
@@ -444,7 +444,7 @@ if ( !function_exists('notifyNow') ) {
     /**
      * Send the given notification to the given notifiable entities immediately.
      *
-     * @param \App\Models\AppModel|\Illuminate\Support\Collection|array|mixed $notifiables
+     * @param \AppModel|\Illuminate\Support\Collection|array|mixed $notifiables
      * @param mixed                                                           $notification
      *
      * @return \Illuminate\Contracts\Bus\Dispatcher|\Illuminate\Contracts\Foundation\Application|mixed
@@ -651,7 +651,7 @@ if ( !function_exists('getCustomType') ) {
 
 if ( !function_exists('cachedResponse') ) {
     /**
-     * @return \CachedResponse|\Illuminate\Contracts\Foundation\Application|mixed|cached-response
+     * @return \CachedResponse|\Illuminate\Contracts\Foundation\Application|mixed|\CachedResponse
      */
     function cachedResponse(bool $auto_save = false)
     {
