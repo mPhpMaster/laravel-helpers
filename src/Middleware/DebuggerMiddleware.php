@@ -45,7 +45,7 @@ class DebuggerMiddleware
         $return = null;
         if ( $request->hasAny(['created-by-me', 'c-b-m']) || $request->hasHeader('created-by-me') || $request->hasHeader('c-b-m') ) {
             $return ??= $next($request);
-            /** @var \App\Models\AppModel $model */
+            /** @var \Model $model */
             $model = collect(currentRoute()->originalParameters())->take(1)->mapWithKeys(function ($id, $class) {
                 try {
                     $cName = (new \Facade\Ignition\Support\ComposerClassMap)->searchClassMap(studly_case($class));
