@@ -3,7 +3,7 @@
  * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
-use App\Helpers\Interfaces\IInvocable;
+use \mPhpMaster\Support\Interfaces\IInvocable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -28,6 +28,45 @@ if ( !function_exists('array_keys_exists') ) {
 /**
  * return bool
  */
+if ( !function_exists('isJsonable') ) {
+    /**
+     * Check if the given var is Jsonable (has ->toJson()).
+     *
+     * @param mixed|null $object
+     *
+     * @return bool
+     */
+    function isJsonable($object): bool
+    {
+        return
+            (interface_exists(\Illuminate\Contracts\Support\Jsonable::class) && $object instanceof \Illuminate\Contracts\Support\Jsonable) ||
+            (interface_exists(Jsonable::class) && $object instanceof Jsonable) ||
+            method_exists($object, 'toJson');
+    }
+}
+
+/**
+ * return bool
+ */
+if ( !function_exists('isJsonSerializable') ) {
+    /**
+     * Check if the given var is JsonSerializable (has ->jsonSerialize()).
+     *
+     * @param mixed|null $object
+     *
+     * @return bool
+     */
+    function isJsonSerializable($object): bool
+    {
+        return
+            (interface_exists(\JsonSerializable::class) && $object instanceof \JsonSerializable) ||
+            method_exists($object, 'jsonSerialize');
+    }
+}
+
+/**
+ * return bool
+ */
 if ( !function_exists('isArrayable') ) {
     /**
      * Check if the given var is Arrayable (has ->toArray()).
@@ -38,7 +77,10 @@ if ( !function_exists('isArrayable') ) {
      */
     function isArrayable($array): bool
     {
-        return $array instanceof \Illuminate\Contracts\Support\Arrayable || method_exists($array, 'toArray');
+        return
+            (interface_exists(\Illuminate\Contracts\Support\Arrayable::class) && $array instanceof \Illuminate\Contracts\Support\Arrayable) ||
+            (interface_exists(Arrayable::class) && $array instanceof Arrayable) ||
+            method_exists($array, 'toArray');
     }
 }
 
@@ -79,6 +121,27 @@ if ( !function_exists('isClosure') ) {
 /**
  * return bool
  */
+if ( !function_exists('isClass') ) {
+    /**
+     * Check if the given var is Class.
+     *
+     * @param mixed|null $object
+     *
+     * @return bool
+     */
+    function isClass($object): bool
+    {
+        try {
+            return is_object($object) && ($class_name = get_class($object));
+        } catch (Exception $exception) {
+            return false;
+        }
+    }
+}
+
+/**
+ * return bool
+ */
 if ( !function_exists('isCallableDeep') ) {
     /**
      * Check if the given var is Closure or|and callable or|and string or|and Array or|and object.
@@ -107,7 +170,7 @@ if ( !function_exists('isCallableDeep') ) {
             'object' => is_object($closure),
         ];
 
-        if(
+        if (
             ($mustBeCallable === true && $_result['callable'] === false) ||
             ($mustBeClosure === true && $_result['closure'] === false) ||
             ($mustBeString === true && $_result['string'] === false) ||
@@ -116,7 +179,7 @@ if ( !function_exists('isCallableDeep') ) {
         ) {
             return false;
         }
-        if(
+        if (
             ($mustBeCallable === false && $_result['callable'] === true) ||
             ($mustBeClosure === false && $_result['closure'] === true) ||
             ($mustBeString === false && $_result['string'] === true) ||
@@ -151,7 +214,7 @@ if ( !function_exists('isCallable') ) {
     function isCallable($callable): bool
     {
 //        return is_callable($callable)/* && !is_string($callable)*/ && !($callable instanceof Closure);
-        return is_callable($callable) && !is_string($callable)/* && !($callable instanceof Closure)*/;
+        return is_callable($callable) && !is_string($callable)/* && !($callable instanceof Closure)*/ ;
     }
 }
 
@@ -477,6 +540,76 @@ if ( !function_exists('isRelation') ) {
     }
 }
 
+if ( !function_exists('isCarbon') ) {
+    /**
+     * @param object $object
+     *
+     * @return bool
+     */
+    function isCarbon($object)
+    {
+        try {
+            return (isInstanceOf($object, \Carbon\Carbon::class)) || is_a($object, \Carbon\Carbon::class);
+        } catch (Exception $exception) {
+
+        }
+
+        return false;
+    }
+}
+
+if ( !function_exists('isDateTime') ) {
+    /**
+     * @param object $object
+     *
+     * @return bool
+     */
+    function isDateTime($object)
+    {
+        try {
+            return (isInstanceOf($object, DateTime::class)) || is_a($object, DateTime::class);
+        } catch (Exception $exception) {
+
+        }
+
+        return false;
+    }
+}
+
+if ( !function_exists('isTraversable') ) {
+    /**
+     * @param object $object
+     *
+     * @return bool
+     */
+    function isTraversable($object)
+    {
+        try {
+            return $object instanceof Traversable;
+        } catch (Exception $exception) {
+
+        }
+
+        return false;
+    }
+}
+
+if ( !function_exists('isMobileNumber') ) {
+    /**
+     * @param mixed|null $value
+     *
+     * @return bool
+     */
+    function isMobileNumber($value = null)
+    {
+        try {
+            return is_numeric($value) && stringStarts($value, "05") && strlen($value) === 10;
+        } catch (Exception $exception) {
+            return false;
+        }
+    }
+}
+
 if ( !function_exists('isDynamicObject') ) {
     /**
      * @param DynamicObject|mixed $data
@@ -498,5 +631,25 @@ if ( !function_exists('hasArabicChars') ) {
     function hasArabicChars($string): bool
     {
         return preg_match("/[\x{0600}-\x{06FF}\x]{1,32}/u", $string);
+    }
+}
+
+if ( !function_exists('hasArrayableItems') ) {
+    /**
+     * Check if the given $items is one of Collection, Arrayable, Allable, Jsonable, JsonSerializable, Traversable or array.
+     *
+     * @param mixed $items
+     *
+     * @return bool
+     */
+    function hasArrayableItems($items): bool
+    {
+        return
+            is_array($items) ||
+            ( $items instanceof \Illuminate\Support\Enumerable || isAllable($items)) ||
+            ( $items instanceof Arrayable || $items instanceof \Illuminate\Contracts\Support\Arrayable || isArrayable($items) ) ||
+            ( $items instanceof Jsonable || $items instanceof \Illuminate\Contracts\Support\Jsonable || isJsonable($items) ) ||
+            ( $items instanceof JsonSerializable || isJsonSerializable($items) ) ||
+            ( $items instanceof Traversable );
     }
 }

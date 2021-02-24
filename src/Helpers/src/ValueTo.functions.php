@@ -6,6 +6,7 @@
 /**
  * return string
  */
+
 if ( !function_exists('valueToDate') ) {
     /**
      * Returns value as date format
@@ -42,7 +43,6 @@ if ( !function_exists('valueToArray') ) {
      * Returns value as Array
      *
      * @param      $value
-     *
      * @param bool $forceToArray
      *
      * @return null|array
@@ -61,15 +61,15 @@ if ( !function_exists('valueToArray') ) {
 /**
  * return array
  */
-if ( !function_exists('valueToDotArray') ) {
+if ( !function_exists('valueToUnDotArray') ) {
     /**
-     * Returns value as Array
+     * Returns value as Array. (Array undot)
      *
      * @param $value
      *
      * @return null|array
      */
-    function valueToDotArray($value)
+    function valueToUnDotArray($value)
     {
         $array = [];
 
@@ -78,6 +78,32 @@ if ( !function_exists('valueToDotArray') ) {
         });
 
         return $array;
+    }
+}
+
+if ( !function_exists('valueToDotArray') ) {
+    /**
+     * Flatten a multi-dimensional associative array with dots.
+     *
+     * @param iterable $array
+     * @param string   $prepend
+     *
+     * @return array
+     */
+    function valueToDotArray($array, $prepend = '')
+    {
+        $results = [];
+
+        foreach ((array)$array as $key => $value) {
+            if ( !empty($value) && is_array($value) ) {
+                $results[] = valueToDotArray($value, $prepend . $key . '.');
+            } else {
+                $results[] = [$prepend . $key => $value];
+            }
+        }
+        $results = count($results) === 1 ? head($results) : array_merge(...$results);
+
+        return $results;
     }
 }
 
@@ -121,14 +147,15 @@ if ( !function_exists('valueToJson') ) {
     /**
      * @param string|array|null $_data
      * @param null|mixed        $default
+     * @param int               $options
      *
      * @return string|mixed
      */
-    function valueToJson($_data = null, $default = null)
+    function valueToJson($_data = null, $default = null, $options = 0)
     {
         $_data = is_string($_data) ? valueFromJson($_data, $_data) : $_data;
         try {
-            $data = json_encode($_data);
+            $data = json_encode($_data, $options);
         } catch (\Exception $exception) {
             $data = value($default ?? false);
         }
@@ -300,6 +327,28 @@ if ( !function_exists('trimUpper') ) {
     }
 }
 
+if ( !function_exists('withKey') ) {
+    /**
+     * If the given data is not an array, wrap it in one.
+     * If the given data is array and doesn't has $key ? add $key with $key_default_value.
+     *
+     * @param array|mixed $value
+     * @param string      $key
+     * @param mixed      $key_default_value
+     *
+     * @return array|array[]
+     */
+    function withKey($value, string $key, $key_default_value = []): array
+    {
+        $value = is_array($value) ? $value : [$value];
+        if ( isset($value[ $key ]) ) {
+            return $value;
+        }
+        $value[ $key ] = $key_default_value;
+        return $value;
+    }
+}
+
 if ( !function_exists('wrapWith') ) {
     /**
      * If the given value is not an array, wrap it in one. and assign it to the given key.
@@ -309,15 +358,90 @@ if ( !function_exists('wrapWith') ) {
      *
      * @return array|array[]
      */
-    function wrapWith($value, string $key): array
+    function wrapWith($value, string $key = null): array
     {
+        if ( is_array($value) ) {
+            if ( is_null($key) ) {
+                return array_wrap($value);
+            }
+            if ( isset($value[ $key ]) ) {
+                return $value;
+            }
+        }
+
+        return !is_null($key) ? array_add([], $key, $value) : array_wrap($value);
+    }
+}
+
+if ( !function_exists('wrapWithData') ) {
+    /**
+     * Wrap the given value with 'data' key or return it if already wrapped.
+     *
+     * @param array|mixed $value
+     *
+     * @return array|array[]
+     */
+    function wrapWithData($value): array
+    {
+        $key = 'data';
         if ( is_array($value) ) {
             if ( isset($value[ $key ]) ) {
                 return $value;
             }
         }
 
-        return [$key => $value];
+        return array_add([], $key, $value);
     }
 }
 
+if ( !function_exists('wrapWithData') ) {
+    /**
+     * Flatten a multi-dimensional associative array with dots.
+     *
+     * @param array  $array
+     * @param string $prepend
+     *
+     * @return array
+     */
+    function wrapWithData($array, $prepend = ''): array
+    {
+        $key = 'data';
+        if ( is_array($value) ) {
+            if ( isset($value[ $key ]) ) {
+                return $value;
+            }
+        }
+
+        return array_add([], $key, $value);
+    }
+}
+
+if ( !defined('NO_CHANGE') ) {
+    define('NO_CHANGE', "no-change");
+}
+
+if ( !function_exists('unwrapWith') ) {
+    /**+
+     * like data_get
+     *
+     * @param array|mixed          $data
+     * @param string|null          $key
+     * @param mixed|null|NO_CHANGE $default
+     *
+     * @return array|null|mixed
+     */
+    function unwrapWith($data, string $key = null, $default = null)
+    {
+        $default = $default === NO_CHANGE ? $data : $default;
+        $data = ($_data = getArrayableItems($data)) == [$data] ? $data : $_data;
+        if ( is_array($data) ) {
+            if ( is_null($key) ) {
+                return isAssocArray($data) ? $default : head($data);
+            }
+
+            return data_get($data, $key, $default);
+        }
+
+        return $default;
+    }
+}

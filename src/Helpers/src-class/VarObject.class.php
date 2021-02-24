@@ -3,12 +3,17 @@
  * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
+use Illuminate\Support\Traits\Tappable;
+use mPhpMaster\Support\Traits\TMacroable;
+
 /**
  * Class VarObject
  */
 class VarObject implements \IteratorAggregate, \Countable, hasToString, Stringable, Jsonable, Arrayable
 {
     use THasToString;
+    use Tappable,
+        TMacroable;
 
     /**
      * @var mixed|null
@@ -181,6 +186,9 @@ class VarObject implements \IteratorAggregate, \Countable, hasToString, Stringab
      */
     public function __call($method, $args)
     {
+        if ( ($result = $this->handleMacroCall($method, $args)) && $result !== static::$MACRO_NOT_FOUND ) {
+            return $result;
+        }
 
         if ( str_start($method, "is") ) {
             if (

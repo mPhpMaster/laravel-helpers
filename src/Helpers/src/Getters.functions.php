@@ -2,6 +2,7 @@
 /*
  * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
+
 /** @noinspection ForgottenDebugOutputInspection */
 
 use Illuminate\Database\Eloquent\Model;
@@ -189,27 +190,30 @@ if ( !function_exists('getArrayFirst') ) {
             reset($array);
 
             $key = key($array);
-            $value = current($array);
+            $value = &$array[ $key ];
+//            $value = current($array);
         } catch (Exception | Error $exception) {
             $fresh = 0;
 
-            foreach ($array as $k => $v) {
+            foreach ($array as $k => &$v) {
                 if ( $fresh === 1 ) {
                     $key = $k;
-                    $value = $v;
+                    $value = &$v;
                     $fresh++;
                 } else {
                     break;
                 }
+                unset($v);
             }
+            unset($v);
         }
 
         $_row = [
-            $value,
+            &$value,
             $key,
         ];
-        $callback = is_callable($callback) ? $callback : function ($value, $key) {
-            return [$value, $key];
+        $callback = is_callable($callback) ? $callback : function (&$_value, $_key) {
+            return [&$_value, $_key];
         };
 
         return is_callable($callback) ? $callback(...$_row) : $_row;
@@ -258,23 +262,38 @@ if ( !function_exists('getNumbers') ) {
 
 if ( !function_exists('replaceArabicNumbers') ) {
     /**
-     * replace ۱۲۳۴۵۶۷۸۹۰ to 1234567890
-
+     * replace ١٢٣٤٥٦٧٨٩٠ to 1234567890
+     *
      * @param $string
      *
      * @return string
      */
     function replaceArabicNumbers($string)
     {
-        return preg_replace_callback(
-            "/[\x{06F0}-\x{06F9}\x]+/u" ,
-            fn ($_m) => str_ireplace(
-                ['۱','۲','۳','۴','۵','۶','۷','۸','۹','۰'],
-                ['1','2','3','4','5','6','7','8','9','0'],
-                head((array)$_m)
-            ) ,
-            $string
+        $replacer = fn($_m) => str_ireplace(
+            [
+                '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩', '٠',
+            ],
+            [
+                '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+            ],
+            head((array)$_m)
         );
+
+        $patterns = [
+            "/./u"
+        ];
+
+        $_string = $string;
+        foreach ($patterns as $pattern) {
+            $_string = preg_replace_callback(
+                $pattern,
+                $replacer,
+                $_string
+            );
+        }
+
+        return $_string;
     }
 }
 
@@ -655,5 +674,35 @@ if ( !function_exists('getControllerPermissionPrefix') ) {
         $controller = $permission_name ? $controller : str_finish($controller, "_");
 
         return str_ireplace("_", $separator, $controller);
+    }
+}
+
+if ( !function_exists('getArrayableItems') ) {
+    /**
+     * Results array of items from Collection, Arrayable, Allable, Jsonable, JsonSerializable, Traversable or array.
+     *
+     * @param mixed $items
+     *
+     * @return array
+     */
+    function getArrayableItems($items)
+    {
+        if ( hasArrayableItems($items) ) {
+            if ( is_array($items) ) {
+                return $items;
+            } elseif ( $items instanceof Arrayable || $items instanceof \Illuminate\Contracts\Support\Arrayable || isArrayable($items) ) {
+                return $items->toArray();
+            } elseif ( $items instanceof \Illuminate\Support\Enumerable || isAllable($items) ) {
+                return $items->all();
+            } elseif ( $items instanceof Jsonable || $items instanceof \Illuminate\Contracts\Support\Jsonable || isJsonable($items) ) {
+                return json_decode($items->toJson(), true);
+            } elseif ( $items instanceof JsonSerializable || isJsonSerializable($items) ) {
+                return (array)$items->jsonSerialize();
+            } elseif ( $items instanceof Traversable ) {
+                return iterator_to_array($items);
+            }
+        }
+
+        return (array)$items;
     }
 }

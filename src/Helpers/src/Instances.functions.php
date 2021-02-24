@@ -80,6 +80,9 @@ if ( !function_exists('proxy') ) {
      */
     function proxy($class, ?string $getMethod = null, ?string $callMethod = null)
     {
-        return new HigherOrderProxy($class, $getMethod, $callMethod);
+        /** @var mixed|null $class */
+        return HigherOrderProxy::make($class)
+            ->setGetMethod($getMethod)
+            ->setCallMethod($callMethod);
     }
 }

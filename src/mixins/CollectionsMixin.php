@@ -10,6 +10,8 @@ use Illuminate\Support\Collection;
 /**
  * Class CollectionsMixin
  *
+ * @property  array $items
+ * @method \Illuminate\Pagination\LengthAwarePaginator paginate(?int $perPage = null, array $only = ['*'], string $pageName = 'page', ?int $page = null, ?null $total = null)
  * @package App\mixins
  */
 class CollectionsMixin
@@ -33,13 +35,35 @@ class CollectionsMixin
         return function ($callable) {
             /* @var $this \Illuminate\Support\Collection */
             return $this->mapWithKeys(static function ($item, $key) use ($callable) {
-                if (is_array($item)) {
+                if ( is_array($item) ) {
                     $item = collect($item)
                         ->mapKeysWith($callable)
                         ->toArray();
                 }
                 return [$callable($key) => $item];
             });
+        };
+    }
+
+    /**
+     * @return \Closure
+     */
+    public function mapKeys()
+    {
+        return function (callable $callback) {
+            $result = [];
+
+            foreach ($this->items as $key => $value) {
+                $assoc = $callback($value, $key);
+
+                if ( $assoc && is_array($assoc) ) {
+                    foreach ($assoc as $mapKey => $mapValue) {
+                        $result[ $mapKey ] = $mapValue;
+                    }
+                }
+            }
+
+            return new static($result);
         };
     }
 

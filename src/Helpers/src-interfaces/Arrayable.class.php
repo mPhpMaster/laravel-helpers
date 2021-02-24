@@ -16,7 +16,9 @@ if ( !interface_exists('Arrayable') && !interface_exists('Illuminate\Contracts\S
          */
         public function toArray();
     }
-} else if(interface_exists('Illuminate\Contracts\Support\Arrayable')) {
+}
+
+if( interface_exists('Illuminate\Contracts\Support\Arrayable') ) {
     class_alias('Illuminate\Contracts\Support\Arrayable', 'Arrayable');
 }
 

@@ -1,24 +1,39 @@
 <?php
 /*
- * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ * Copyright Â© 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
+
+namespace mPhpMaster\Support;
+
+use Illuminate\Support\Traits\Tappable;
+use mPhpMaster\Support\Traits\TMacroable;
 
 /**
  * Class ClassAccessWrapper
  */
 class ClassAccessWrapper
 {
+    use Tappable,
+        TMacroable;
+
     protected $_self;
     protected $_refl;
 
     public function __construct($self)
     {
+        if( !is_object($self) ) {
+            $self = app($self);
+        }
         $this->_self = $self;
-        $this->_refl = new ReflectionObject($self);
+        $this->_refl = new \ReflectionObject($self);
     }
 
     public function __call($method, $args)
     {
+        if ( ($result = $this->handleMacroCall($method, $args)) && $result !== static::$MACRO_NOT_FOUND ) {
+            return $result;
+        }
+
         $mrefl = $this->_refl->getMethod($method);
         $mrefl->setAccessible(true);
         return $mrefl->invokeArgs($this->_self, $args);

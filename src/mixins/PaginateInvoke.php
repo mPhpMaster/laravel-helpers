@@ -30,17 +30,19 @@ class PaginateInvoke
          *
          * @mixins Collection
          *
-         * @param int $perPage
-         * @param int $total
-         * @param int $page
-         * @param string $pageName
+         * @param int|null $perPage
+         * @param array    $only
+         * @param string   $pageName
+         * @param int|null $page
+         * @param int|null $total
+         * @param string   $pageName
          *
          * @return LengthAwarePaginator
          */
-        return function($perPage = null, array $only = ['*'], $pageName = 'page', $page = null, int $total = null): LengthAwarePaginator {
+        return function ($perPage = null, array $only = ['*'], $pageName = 'page', $page = null, ?int $total = null): LengthAwarePaginator {
 //        return function($perPage, $total = null, $page = null, $pageName = 'page'): LengthAwarePaginator {
             /** @var \Illuminate\Database\Eloquent\Model $self */
-            $only = Collection::make($only)->filter(fn($i)=>$i&&$i!=='*')->toArray();
+            $only = Collection::make($only)->filter(fn($i) => $i && $i !== '*')->toArray();
             $self = count($only) ? $this->only($only) : $this;
             $page = $page ?: LengthAwarePaginator::resolveCurrentPage($pageName);
             return new LengthAwarePaginator(
@@ -75,16 +77,14 @@ class PaginateInvoke
             $items : Collection::make($items);
 
         $lap = new LengthAwarePaginator($items->forPage($page, $perPage),
-                                        $items->count(),
-                                        $perPage, $page, $options);
+            $items->count(),
+            $perPage, $page, $options);
 
-        if ($baseUrl) {
+        if ( $baseUrl ) {
             $lap->setPath($baseUrl);
         }
 
         return $lap;
-
-
 
 
 //        $page = $page ?: LengthAwarePaginator::resolveCurrentPage($pageName);

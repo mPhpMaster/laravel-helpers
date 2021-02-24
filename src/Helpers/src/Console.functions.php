@@ -82,10 +82,11 @@ if ( !function_exists('duE') ) {
     /**
      *
      */
-    function duE()
+    function duE(...$args)
     {
         debugEnable();
-        du(...func_get_args());
+        dumpDebug(@getDebugBacktrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10), ...$args);
+//        du(...func_get_args());
     }
 }
 
@@ -135,7 +136,7 @@ if ( !function_exists('consoleBox') ) {
             return;
         }
 
-        $text_length = 50;
+        $text_length = 100;
         $defaults = valueToObject($default = [
             'align' => STR_PAD_BOTH,
             'title' => 'Debug',
@@ -158,6 +159,7 @@ if ( !function_exists('consoleBox') ) {
             ) . PHP_EOL;
 
         toCollect($msgs)->each(static function ($msg) use ($align, $text_length, $default) {
+            $msg = " {$msg}";
             echo isConsole(
                 $default['border']['left'] .
                 prefixText($msg, ' ', $text_length, $align) .

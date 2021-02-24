@@ -3,11 +3,17 @@
  * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
+use Illuminate\Support\Traits\Tappable;
+use mPhpMaster\Support\Traits\TMacroable;
+
 /**
  * Class CustomFunctions
  */
 class CustomFunctions
 {
+    use Tappable,
+        TMacroable;
+    
     /**
      * @var array
      */

@@ -6,6 +6,8 @@
 namespace mPhpMaster\Support;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Traits\Tappable;
+use mPhpMaster\Support\Traits\TMacroable;
 
 /**
  * Class DynamicObject
@@ -16,6 +18,9 @@ use Illuminate\Contracts\Support\Arrayable;
  */
 class DynamicObject extends \stdClass implements Arrayable, \ArrayAccess
 {
+    use Tappable,
+        TMacroable;
+
     private const DELETED = "@@@deleted";
 
     /**
@@ -27,6 +32,10 @@ class DynamicObject extends \stdClass implements Arrayable, \ArrayAccess
      */
     public function __call($key, $params)
     {
+        if ( ($result = $this->handleMacroCall($key, $params)) && $result !== static::$MACRO_NOT_FOUND ) {
+            return $result;
+        }
+
         if ( !isset($this->{$key}) ) {
             if ( $key === 'all' ) {
                 return $this->toArray();
@@ -42,14 +51,14 @@ class DynamicObject extends \stdClass implements Arrayable, \ArrayAccess
      *
      * @return \mPhpMaster\Support\DynamicObject
      */
-    public static function make( $data = [], array $except = [])
+    public static function make($data = [], array $except = [])
     {
         $obj = new self();
         foreach ($data as $key => $value) {
             if ( in_array($key, $except) ) {
                 continue;
             }
-            if(
+            if (
                 is_object($value) && (
                     isset($value->toArray) || method_exists($value, 'toArray')
                 )
@@ -74,7 +83,7 @@ class DynamicObject extends \stdClass implements Arrayable, \ArrayAccess
         foreach ($data as $key => $value) {
             if ( $value instanceof static ) {
                 $data[ $key ] = $value->toArray();
-            } else if(
+            } else if (
                 is_object($data) && (
                     isset($data->toArray) || method_exists($data, 'toArray')
                 )

@@ -11,9 +11,16 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
+use mPhpMaster\Support\Interfaces\IMakable;
 use Traversable;
 
-class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \Countable, \IteratorAggregate
+/**
+ * Class Optional
+ *
+ * @package mPhpMaster\Support
+ */
+class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \Countable, \IteratorAggregate,
+    IMakable
 {
     use Macroable {
         __call as macroCall;
@@ -30,22 +37,20 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
      * Create a new optional instance.
      *
      * @param  mixed $value
-     *
-     * @return void
      */
     public function __construct($value)
     {
-        $this->value = toCollect($value)->all();
+        $this->setValue( toCollect($value)->all() );
     }
 
     /**
-     * @param $value
+     * @param mixed[] ...$arguments
      *
-     * @return Optional
+     * @return static
      */
-    public static function make($value)
+    public static function make(...$arguments)
     {
-        return new static($value);
+        return new static(...$arguments);
     }
 
     /**
@@ -60,6 +65,10 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
         return $this->offsetGet($key);
     }
 
+    /**
+     * @param $name
+     * @param $value
+     */
     public function __set($name, $value)
     {
         $this->offsetSet($name, $value);
@@ -77,6 +86,9 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
         return $this->offsetExists($name);
     }
 
+    /**
+     * @param $name
+     */
     public function __unset($name)
     {
         $this->offsetUnset($name);
@@ -92,7 +104,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
     public function offsetExists($key)
     {
         if (Str::contains($key, '.')) {
-            return data_get($this->value, $key, UNUSED) !== UNUSED;
+            return data_get($this->getValue(), $key, UNUSED) !== UNUSED;
         }
 
         return
@@ -240,12 +252,18 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
         return null;
     }
 
+    /**
+     * @return array
+     */
     public function getArrayCopy()
     {
         $obj = new ArrayObject($this->value);
         return $obj->getArrayCopy();
     }
 
+    /**
+     * @return \ArrayObject
+     */
     public function getObjectCopy()
     {
         $obj = new ArrayObject($this->value);
@@ -264,6 +282,11 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
     }
 
 
+    /**
+     * @param null $array
+     *
+     * @return object
+     */
     public function toObject($array = null)
     {
         $array = $array ?: $this->getObjectCopy();
@@ -289,6 +312,9 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
         return $o;
     }
 
+    /**
+     * @return array|mixed
+     */
     public function all()
     {
         return $this->value;
@@ -354,7 +380,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
             return $items->toArray();
         } else if ($items instanceof Jsonable) {
             return json_decode($items->toJson(), true);
-        } else if ($items instanceof JsonSerializable) {
+        } else if ($items instanceof \JsonSerializable) {
             return $items->jsonSerialize();
         } else if ($items instanceof Traversable) {
             return iterator_to_array($items);
@@ -417,7 +443,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
      */
     public function dump()
     {
-        (toCollect(func_get_args()))
+        toCollect(func_get_args())
             ->push($this)
             ->each(function ($item) {
                 dump($item);
@@ -426,4 +452,15 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
         return $this;
     }
 
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    public function setValue($value)
+    {
+        $this->value = $value;
+
+        return $this;
+    }
 }

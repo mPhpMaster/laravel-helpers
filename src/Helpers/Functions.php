@@ -210,8 +210,12 @@ if ( !function_exists('filterEach') ) {
         $callback = function ($v) use ($for, $strict, $array) {
             $v = is_bool($v) && $v ? "true" : "false";
             return stringContains($v, $for) !== false ||
-                ($strict === false && stringContains(snake_case($v), mapEach($for, fromCallable('snake_case'))) !== false);
+                (
+                    $strict === false &&
+                    stringContains(snake_case($v), mapEach($for, fromCallable('snake_case'))) !== false
+                );
         };
+
         $map = function ($returns, $put, $skip, $data) use ($strict) {
             $pass = $strict ? $returns !== false : !!$returns;
             ($pass && $put($data['value'])) || $skip;
@@ -221,3 +225,18 @@ if ( !function_exists('filterEach') ) {
     }
 }
 // endregion: data loop
+
+if ( !function_exists('getNewValidator') ) {
+    /**
+     * @param array $data
+     * @param array $rules
+     * @param array $messages
+     * @param array $customAttributes
+     *
+     * @return \Illuminate\Validation\Validator
+     */
+    function getNewValidator($data, $rules, $messages = [], $customAttributes = [])
+    {
+        return Illuminate\Support\Facades\Validator::make($data, $rules, $messages = [], $customAttributes = []);
+    }
+}

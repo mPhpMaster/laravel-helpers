@@ -11,6 +11,7 @@ namespace mPhpMaster\Support\Traits;
  * <i>IMakable Interface {@link \mPhpMaster\Support\Interfaces\IMakable (IMakable Interface)}</>
  *
  * @mixin \mPhpMaster\Support\Interfaces\IMakable
+ * @depends \mPhpMaster\Support\Interfaces\IMakable
  *
  * @package mPhpMaster\Support\Traits
  */

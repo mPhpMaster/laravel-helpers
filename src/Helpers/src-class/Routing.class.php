@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ * Copyright Â© 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
 use App\Http\Controllers\Controller;
@@ -48,7 +48,7 @@ class Routing
      */
     function forwardAllCallsTo($name, $arguments = [])
     {
-        if (method_exists($this, $name)) {
+        if ( method_exists($this, $name) ) {
             return $this->{$name}(...$arguments);
         }
 
@@ -65,8 +65,8 @@ class Routing
     public static function makeCallWith(...$arguments)
     {
         return tap(new static, function ($caller) use ($arguments) {
-            foreach ((array) $arguments as $key => $_arguments) {
-                if(!isset($_arguments['controller'])) {
+            foreach ((array)$arguments as $key => $_arguments) {
+                if ( !isset($_arguments['controller']) ) {
                     $_arguments['controller'] = "\\" . Controller::class;
                 }
                 $arguments[ $key ] = $_arguments;
@@ -91,6 +91,7 @@ class Routing
     }
 
 // region: OOP Controller
+
     /**
      * Get the existing args/arg.
      *
@@ -100,7 +101,7 @@ class Routing
      */
     public function getArg(?string $name = null)
     {
-        if(count($this->args) == 0) return null;
+        if ( count($this->args) == 0 ) return null;
 
         return is_null($name) ? $this->args[0] : array_get($this->args[0], $name, null);
     }
@@ -108,17 +109,17 @@ class Routing
     /**
      * Add info into existing args.
      *
-     * @param string $name
+     * @param string      $name
      * @param string|null $value
      *
      * @return static
      */
     public function appendArg(string $name, ?string $value)
     {
-        if(count($this->args) == 0) $this->args[0] = [];
+        if ( count($this->args) == 0 ) $this->args[0] = [];
 
         $this->args[0][ $name ] = $value;
-        if(is_null($value) && array_key_exists($name, $this->args[0])) {
+        if ( is_null($value) && array_key_exists($name, $this->args[0]) ) {
             unset($this->args[0][ $name ]);
         }
 
@@ -134,7 +135,7 @@ class Routing
      */
     public function addName(?string $value)
     {
-        return $this->tap(function ($self) use($value) {
+        return $this->tap(function ($self) use ($value) {
             $self->appendArg('name', $value);
         });
     }
@@ -148,7 +149,7 @@ class Routing
      */
     public function addModel(?string $value)
     {
-        return $this->tap(function ($self) use($value) {
+        return $this->tap(function ($self) use ($value) {
             $self->appendArg('model', $value);
         });
     }
@@ -162,7 +163,7 @@ class Routing
      */
     public function addRepo(?string $value)
     {
-        return $this->tap(function ($self) use($value) {
+        return $this->tap(function ($self) use ($value) {
             $self->appendArg('repo', $value);
         });
     }
@@ -176,7 +177,7 @@ class Routing
      */
     public function addController(?string $value)
     {
-        return $this->tap(function ($self) use($value) {
+        return $this->tap(function ($self) use ($value) {
             $self->appendArg('controller', $value);
         });
     }
@@ -190,14 +191,14 @@ class Routing
      */
     public function registerResource(?array $args = null)
     {
-        if(!is_null($args) && !empty($args)) {
+        if ( !is_null($args) && !empty($args) ) {
             $this->args = count($this->args) == 0 ? [] : $this->args;
             $this->args[0] = $args;
         }
 
         return $this->tap(function ($self) {
             $controller = $self->getArg('controller');
-            if(!$controller) {
+            if ( !$controller ) {
                 $controller = "\\" . Controller::class;
             }
 
@@ -214,7 +215,7 @@ class Routing
      */
     public function registerModel(?array $args = null)
     {
-        if(!is_null($args) && !empty($args)) {
+        if ( !is_null($args) && !empty($args) ) {
             $this->args = count($this->args) == 0 ? [] : $this->args;
             $this->args[0] = $args;
         }

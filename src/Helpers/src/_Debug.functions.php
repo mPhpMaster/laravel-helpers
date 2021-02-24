@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ * Copyright Â© 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
 use Illuminate\Support\Arr;
@@ -273,6 +273,13 @@ if ( !function_exists('dumpDebug') ) {
         } else if ( $lastDebug && !$runningInConsole ) {
             echo($lastDebug);
         }
+
+        if ( isConsole() ) {
+            consoleBox($string);
+        } else {
+            echo $string;
+        }
+
     }
 }
 

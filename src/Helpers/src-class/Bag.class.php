@@ -4,12 +4,17 @@
  */
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Traits\Tappable;
+use mPhpMaster\Support\Traits\TMacroable;
 
 /**
  * Class Bag
  */
 class Bag implements Arrayable
 {
+    use Tappable,
+        TMacroable;
+
     /**
      * @var array
      */
@@ -91,6 +96,10 @@ class Bag implements Arrayable
      */
     public function __call($method, $args)
     {
+        if ( ($result = $this->handleMacroCall($method, $args)) && $result !== static::$MACRO_NOT_FOUND ) {
+            return $result;
+        }
+
         throw_unless(isset($this->functions[ $method ]), new BadMethodCallException("Method $method does not exist."), $args);
 
         return call_user_func_array($this->functions[ $method ], $args);

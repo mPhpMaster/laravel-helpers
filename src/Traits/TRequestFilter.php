@@ -56,10 +56,59 @@ trait TRequestFilter
             $methodName = Str::studly("by_{$k}");
 
             if ( is_callable([$query, $methodName]) ) {
-                $query = $query->{$methodName}($v, $k);
-            } else {
-                $query = $query->where($k, $v);
+                try {
+                    $query = $query->{$methodName}($v, $k);
+
+                    return;
+                } catch (\BadMethodCallException $exception) {
+
+                }
             }
+
+            $query = $query->where($k, $v);
+        });
+
+        return $query->latest();
+    }
+
+    /**
+     * **For Models**
+     * self::requestFilter()
+     * Scope a query to append query with where from request.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     * @noinspection ForgottenDebugOutputInspection
+     */
+    public function _scopeRequestFilter($query)
+    {
+        $filterBy = self::getFiltersFromRequest();
+        toCollect($filterBy)->each(function ($v, $k) use (&$query) {
+            $methodNames = [
+                "by_{$k}"
+            ];
+            $methodName = null;
+            foreach ($methodNames as $_methodName) {
+                $_methodName = Str::studly($_methodName);
+
+                if ( $query->hasNamedScope($_methodName) || is_callable([$query, $_methodName]) ) {
+                    $methodName = $_methodName;
+                    break;
+                }
+            }
+
+            if ( $methodName && is_callable([$query, $methodName]) ) {
+                try {
+                    $query = $query->{$methodName}($v, $k);
+
+                    return;
+                } catch (\BadMethodCallException $exception) {
+
+                }
+            }
+
+            $query = $query->where($k, $v);
         });
 
         return $query->latest();

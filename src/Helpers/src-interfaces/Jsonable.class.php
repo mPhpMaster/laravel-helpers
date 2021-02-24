@@ -17,6 +17,8 @@ if ( !interface_exists('Jsonable') && !interface_exists('Illuminate\Contracts\Su
          */
         public function toJson($options = 0);
     }
-} else if(interface_exists('Illuminate\Contracts\Support\Jsonable')) {
+}
+
+if(interface_exists('Illuminate\Contracts\Support\Jsonable')) {
     class_alias('Illuminate\Contracts\Support\Jsonable', 'Jsonable');
 }

@@ -8,6 +8,8 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Routing\PendingResourceRegistration;
 use Illuminate\Routing\ResourceRegistrar;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Traits\Tappable;
+use mPhpMaster\Support\Traits\TMacroable;
 
 
 /**
@@ -17,6 +19,8 @@ use Illuminate\Support\Facades\Route;
  */
 class AbstractRouting
 {
+    use Tappable,
+        TMacroable;
 
     /**
      * block entity to register by name

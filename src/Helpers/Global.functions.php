@@ -390,6 +390,13 @@ if ( !function_exists('real_path') ) {
         $_DIRECTORY_SEPARATOR = $DIRECTORY_SEPARATOR === "/" ? "\\" : "/";
         if ( $path ) $path = str_ireplace($_DIRECTORY_SEPARATOR, $DIRECTORY_SEPARATOR, $path);
 
+        $a=0;
+        if ( stringStarts($path, ['./']) ) {
+            $path = substr($path, 2);
+            $path = base_path($path);
+            $a=1;
+        }
+
         $backslash = "..{$DIRECTORY_SEPARATOR}";
         if ( stripos($path, $backslash) !== false ) {
             $path = collect(explode($backslash, $path))->reverse();
@@ -403,6 +410,12 @@ if ( !function_exists('real_path') ) {
                 $path->reverse()->implode($DIRECTORY_SEPARATOR)
             );
         }
+
+        $path = str_ireplace(
+            './',
+            '/',
+            fixPath($path)
+        );
 
         return collect($path)->first();
     }
@@ -478,5 +491,195 @@ if ( !function_exists('dispatcher') ) {
     function dispatcher($dispatcher_class = \Illuminate\Contracts\Bus\Dispatcher::class)
     {
         return app($dispatcher_class ?: \Illuminate\Contracts\Bus\Dispatcher::class);
+    }
+}
+
+if ( !function_exists('staticData') ) {
+    /**
+     * @param string|null $name
+     * @param mixed|null  $value
+     *
+     * @return mixed|null
+     */
+    function staticData(?string $name = null, ...$value)
+    {
+        static $initValue = [];
+        static $storage = null;
+        $storage = $storage ?? $initValue;
+
+        $argsCount = func_num_args();
+        if ( !$argsCount ) {
+            return $storage;
+        }
+        $name = $name ?? 'null';
+        array_add($storage, $name, $initValue);
+
+        if ( $argsCount > 1 ) {
+            if ( !empty($value) && isClosure(head($value)) ) {
+                $result = call_user_func(array_shift($value),
+                    array_get($storage, $name),
+                    $name,
+                    ...$value
+                );
+
+                array_set($storage, $name, $result ?? $initValue);
+                return $result;
+            }
+
+            array_set($storage, $name, $value ?? $initValue);
+        }
+
+        if ( $argsCount === 1 ) {
+            $value = array_get($storage, $name, $initValue);
+        }
+
+        return $value ?? $initValue;
+    }
+}
+
+if ( !function_exists('carbonParse') ) {
+    /**
+     * @param mixed $value
+     * @param mixed $default
+     *
+     * @return \Carbon\Carbon|\Illuminate\Foundation\Application|mixed|null
+     */
+    function carbonParse($value, $default = null)
+    {
+        try {
+            return carbon()->parse(fixDate(trim($value ?: $default)));
+        } catch (Exception $exception) {
+            return $default;
+        }
+    }
+}
+
+if ( !function_exists('get_type') ) {
+    /**
+     * @param mixed $value
+     * @param array $options
+     *
+     * @return string
+     */
+    function get_type($value, $options = [
+        'class_name' => true,
+        'numeric_type' => true,
+        'custom_type' => true,
+    ]): string
+    {
+        static $all_options = [
+            'class_name' => true,
+            'numeric_type' => true,
+            'custom_type' => true,
+        ];
+
+        $unknown = 'unknown';
+        foreach ($all_options as $option_name => $default_option_value) {
+            $options[ $option_name ] ??= $default_option_value;
+            $$option_name = $options[ $option_name ];
+        }
+
+        if ( $options['custom_type'] ) {
+            $type = getCustomType($value) ?: $unknown;
+            if ( !is_null($type) && $type != $unknown ) {
+                return $type;
+            }
+        }
+        $type = $unknown;
+
+        if ( is_numeric($value) ) {
+            $type = $options['numeric_type'] ? gettype($value + 0) : 'numeric';
+        }
+
+        if ( $options['class_name'] && is_object($value) ) {
+            try {
+                $class = getClass($value);
+                $type = $class ?: gettype($value);
+            } catch (Exception $exception) {
+                $type = 'object';
+            }
+        }
+
+        return $type;
+    }
+}
+
+if ( !function_exists('customType') ) {
+    /**
+     * @param array|string|null $typeName
+     * @param callable|null     $typeTester
+     *
+     * @return array|callable|mixed|null
+     */
+    function customType($typeName = null, ?callable $typeTester = null)
+    {
+        static $types = [];
+
+        $initValue = function () {
+            return false;
+        };
+        $types = $types ?? [];
+
+        if ( !($argsCount = func_num_args()) ) {
+            return $types;
+        }
+
+        if ( $argsCount === 1 ) {
+            $value = array_get($types, $typeName, $initValue);
+        }
+        array_add($types, $typeName, $initValue);
+
+        if ( $argsCount === 2 ) {
+            $typeTester = is_string($typeTester) ? Closure::fromCallable($typeTester) : $typeTester;
+            array_set($types, $typeName, $typeTester ?? $initValue);
+            $value = $typeTester ?? $initValue;
+        }
+
+        return $value ?? $initValue;
+    }
+}
+
+if ( !function_exists('getCustomType') ) {
+    /**
+     * @param mixed      $value
+     * @param mixed|null $default
+     *
+     * @return mixed|string|null
+     */
+    function getCustomType($value, $default = null)
+    {
+        $value = getValue($value, $types = customType());
+
+        foreach ($types as $_typeName => $_typeTester) {
+            if ( isCallable($_typeTester) ) {
+                if ( call_user_func($_typeTester, $value) === true ) {
+                    return $_typeName;
+                }
+            }
+        }
+
+        return $default;
+    }
+}
+
+if ( !function_exists('cachedResponse') ) {
+    /**
+     * @return \CachedResponse|\Illuminate\Contracts\Foundation\Application|mixed|\CachedResponse
+     */
+    function cachedResponse(bool $auto_save = false)
+    {
+        return app('cached-response')->initiate($auto_save);
+    }
+}
+
+if ( !function_exists('classAccessWrapper') ) {
+    /**.
+     * @param string|object $class
+     *
+     * @return \mPhpMaster\Support\ClassAccessWrapper
+     */
+    function classAccessWrapper($class)
+    {
+        return new \mPhpMaster\Support\ClassAccessWrapper($class);
     }
 }

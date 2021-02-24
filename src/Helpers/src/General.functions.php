@@ -171,6 +171,31 @@ if ( !function_exists('replaceAll') ) {
     }
 }
 
+if ( !function_exists('replaceTokens') ) {
+    /**
+     * Replace the tokens in string
+     *
+     * @param string $_subject
+     * @param array  $values [ token => value ]
+     * @param string $token_prefix
+     * @param string $token_suffix
+     *
+     * @return string
+     */
+    function replaceTokens(string $_subject, array $values = [], $token_prefix = "{", $token_suffix = "}"): string
+    {
+        $subject = $_subject;
+        foreach ($values as $token => $value) {
+            $_token = "{$token_prefix}{$token}{$token_suffix}";
+            $subject = replaceAll([
+                $_token => $value,
+            ], $subject);
+        }
+
+        return $subject;
+    }
+}
+
 if ( !function_exists('bindTo') ) {
     /**
      * Bind the given Closure
