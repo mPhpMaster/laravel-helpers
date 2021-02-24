@@ -1,7 +1,4 @@
 <?php
-/*
- * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
- */
 
 namespace mPhpMaster\Support\Middleware;
 
@@ -66,11 +63,11 @@ class DebuggerMiddleware
                 return response()->json([
                     'model' => $model->showCreatorColumn()
                 ]);
-            } else {
-                return response()->json(
-                    "No Current Model !"
-                );
             }
+
+            return response()->json(
+                "No Current Model !"
+            );
         }
 
         if ( $request->hasAny(['show-route', 's-r']) || $request->hasHeader('show-route') || $request->hasHeader('s-r') ) {
@@ -103,7 +100,7 @@ class DebuggerMiddleware
                     'Info' => [
                         'Controller' => class_basename(currentController()),
                         'ActionName' => currentActionName(),
-                        'RouteName' => Route::current()->getName(),
+                        'RouteName' => ($_current = Route::current()) ? $_current->getName() : null,
                         'Uri' => currentRoute()->uri,
                     ],
                     'Action' => currentRoute()->action,
@@ -136,7 +133,7 @@ class DebuggerMiddleware
             }
 
             try {
-                $route_name = Route::current()->getName();
+                $route_name = ($_current = Route::current()) ? $_current->getName() : null;
             } catch (\Exception $exception) {
                 $route_name = '-';
             }

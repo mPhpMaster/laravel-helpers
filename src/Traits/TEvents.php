@@ -1,5 +1,6 @@
 <?php
 
+
 namespace mPhpMaster\Support\Traits;
 
 /**
