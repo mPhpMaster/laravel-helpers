@@ -3,7 +3,7 @@
  * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
-use App\Helpers\Interfaces\IInvocable;
+use \mPhpMaster\Support\Interfaces\IInvocable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;

@@ -115,7 +115,7 @@ if ( !function_exists('getModelAbstractClass') ) {
             return $test_class instanceof $test_abstract_class;
         }
 
-        return \App\Models\AppModel::class;
+        return \AppModel::class;
     }
 }
 
