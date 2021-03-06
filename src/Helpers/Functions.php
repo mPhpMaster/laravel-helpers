@@ -115,7 +115,7 @@ if ( !function_exists('getModelAbstractClass') ) {
             return $test_class instanceof $test_abstract_class;
         }
 
-        return \AppModel::class;
+        return (new ReflectionClass('Model'))->name;
     }
 }
 
@@ -238,5 +238,18 @@ if ( !function_exists('getNewValidator') ) {
     function getNewValidator($data, $rules, $messages = [], $customAttributes = [])
     {
         return Illuminate\Support\Facades\Validator::make($data, $rules, $messages = [], $customAttributes = []);
+    }
+}
+
+if ( !function_exists('createNewValidator') ) {
+    /**
+     * Create New Validator.
+     *
+     * @param string        $name
+     * @param \Closure|null $closure
+     */
+    function createNewValidator($name, Closure $closure = null)
+    {
+        \Illuminate\Support\Facades\Validator::extend(trim($name), $closure && $closure instanceof Closure ? $closure : fn($attribute, $value, $parameters) => $value);
     }
 }
