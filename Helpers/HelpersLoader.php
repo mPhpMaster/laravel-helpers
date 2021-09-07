@@ -9,10 +9,8 @@ use Illuminate\Support\Collection;
 /**
  * defaine LOAD_PATH as custom path
  */
-
 $app_helpers_path = defined('LOAD_PATH') ? LOAD_PATH
-    : dirname(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..')) . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . '' . 'Helpers' . DIRECTORY_SEPARATOR . '';
-//    : dirname(str_before(__DIR__, DIRECTORY_SEPARATOR . 'src')) . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . '' . 'Helpers'. DIRECTORY_SEPARATOR .'src';
+    : dirname(str_before(__DIR__, DIRECTORY_SEPARATOR . 'src')) . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . '' . 'Helpers'. DIRECTORY_SEPARATOR .'src';
 
 /**
  *
