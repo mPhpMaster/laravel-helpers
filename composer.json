@@ -2,7 +2,9 @@
     "name": "mphpmaster/laravel-helpers",
     "description": "Laravel hlaCk helpers",
     "type": "library",
-    "keywords": ["helpers"],
+    "keywords": [
+        "helpers"
+    ],
     "require": {
         "php": ">=7.4",
         "laravel/framework": ">=5.8",
@@ -17,20 +19,23 @@
     ],
     "autoload": {
         "psr-4": {
-            "mPhpMaster\\Support\\": "src/"
+            "MPhpMaster\\LaravelHelpers\\": ""
         },
         "files": [
-            "src/Helpers/Functions.php",
-            "src/Helpers/Global.functions.php",
-            "src/Helpers/HelpersLoader.php"
+            "Helpers/Functions.php",
+            "Helpers/Global.functions.php",
+            "Helpers/HelpersLoader.php"
         ]
     },
     "extra": {
         "laravel": {
             "providers": [
-                "mPhpMaster\\Support\\Providers\\MPhpMasterHelpersProvider"
+                "MPhpMaster\\LaravelHelpers\\Providers\\MPhpMasterHelpersProvider"
             ]
         }
+    },
+    "config": {
+        "sort-packages": true
     },
     "minimum-stability": "dev",
     "scripts": {
@@ -55,5 +60,6 @@
             "chmod -R 775 storage/framework",
             "chown -R `whoami`:nobody storage/framework"
         ]
-    }
+    },
+    "version": "1.0.0"
 }

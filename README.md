@@ -10,7 +10,7 @@
     2. `Helpers/src/Helpers/Functions.php`.
     3. `Helpers/src/Helpers/Global.functions.php`.
     4. The remaining helpers.
-    5. `app/Helpers/src/*.functions.php` | `app/Helpers/src/*.class.php`.
+    5. `app/Helpers/*.functions.php` | `app/Helpers/*.class.php`.
 
 
 ## License
