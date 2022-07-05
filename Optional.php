@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ * Copyright © 2022. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
 namespace MPhpMaster\LaravelHelpers;
@@ -101,7 +101,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
      *
      * @return bool
      */
-    public function offsetExists($key)
+    public function offsetExists($key): bool
     {
         if (Str::contains($key, '.')) {
             return data_get($this->getValue(), $key, UNUSED) !== UNUSED;
@@ -123,7 +123,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
      *
      * @return mixed
      */
-    public function offsetGet($key)
+    public function offsetGet($key): mixed
     {
         return data_get($this->value, $key);
     }
@@ -136,7 +136,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
      *
      * @return void
      */
-    public function offsetSet($key, $value)
+    public function offsetSet($key, $value): void
     {
         if (is_collection($this->value)) {
             $this->value->offsetSet($key, $value);
@@ -152,7 +152,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
      *
      * @return void
      */
-    public function offsetUnset($key)
+    public function offsetUnset($key): void
     {
 
         if (is_collection($this->value)) {
@@ -258,6 +258,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
     public function getArrayCopy()
     {
         $obj = new ArrayObject($this->value);
+
         return $obj->getArrayCopy();
     }
 
@@ -267,6 +268,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
     public function getObjectCopy()
     {
         $obj = new ArrayObject($this->value);
+
         return $obj;
     }
 
@@ -281,7 +283,6 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
         return $this->toJson();
     }
 
-
     /**
      * @param null $array
      *
@@ -294,6 +295,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
         foreach ($array as $key => $value) {
             $o->{$key} = is_array($value) ? (object)$value : $value;
         }
+
         return $o;
     }
 
@@ -309,6 +311,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
         foreach ($object as $key => $value) {
             $o[$key] = is_object($value) ? (array)$value : $value;
         }
+
         return $o;
     }
 
@@ -342,7 +345,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
      *
      * @since 5.4.0
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->toArray();
     }
@@ -357,7 +360,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
      * The return value is cast to an integer.
      * @since 5.1.0
      */
-    public function count()
+    public function count(): int
     {
         return count($this->value);
     }
@@ -397,7 +400,7 @@ class Optional implements ArrayAccess, Arrayable, Jsonable, \JsonSerializable, \
      * <b>Traversable</b>
      * @since 5.0.0
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->toArray());
     }

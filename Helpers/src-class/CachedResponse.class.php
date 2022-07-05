@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ * Copyright © 2022. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
 use Illuminate\Support\Traits\Tappable;
@@ -235,7 +235,7 @@ class CachedResponse implements \IteratorAggregate, \Countable, Jsonable, Arraya
      *
      * @return \ArrayIterator An \ArrayIterator instance
      */
-    public function getIterator()
+    public function getIterator(): Traversable
     {
         return new \ArrayIterator($this->toArray());
     }
@@ -245,7 +245,7 @@ class CachedResponse implements \IteratorAggregate, \Countable, Jsonable, Arraya
      *
      * @return int The number of attributes
      */
-    public function count()
+    public function count(): int
     {
         return count($this->toArray());
     }

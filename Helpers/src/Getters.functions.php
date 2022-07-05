@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ * Copyright © 2022. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
 /** @noinspection ForgottenDebugOutputInspection */
@@ -110,20 +110,39 @@ if ( !function_exists('getHidden') ) {
     }
 }
 
-if ( !function_exists('getTrans') ) {
-    /**
-     * Returns Translation or return default.
-     *
-     * @param string|null $lang_path lang path
-     * @param null|mixed  $default default value to return if trans not exists
-     *
-     * @return mixed
-     */
-    function getTrans($lang_path, $default = null)
-    {
-        $trans = ($trans = __($lang_path)) != $lang_path ? $trans : $default;
+// if ( !function_exists('getTrans') ) {
+//     /**
+//      * Returns Translation or return default.
+//      *
+//      * @param string|null $lang_path lang path
+//      * @param null|mixed  $default default value to return if trans not exists
+//      *
+//      * @return mixed
+//      */
+//     function getTrans($lang_path, $default = null)
+//     {
+//         $trans = ($trans = __($lang_path)) != $lang_path ? $trans : $default;
+//
+//         return $trans;
+//     }
+// }
 
-        return $trans;
+if( !function_exists('getTrans') ) {
+    /**
+     * Translate the given message or return default.
+     *
+     * @param string|null $key
+     * @param array       $replace
+     * @param string|null $locale
+     *
+     * @return string|array|null
+     */
+    function getTrans($key = null, $default = null, $replace = [], $locale = null)
+    {
+        $key = value($key);
+        $return = __($key, $replace, $locale);
+
+        return $return === $key ? value($default) : $return;
     }
 }
 

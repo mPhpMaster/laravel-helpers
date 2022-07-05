@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ * Copyright © 2022. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
 use Illuminate\Filesystem\Filesystem;
@@ -9,8 +9,12 @@ use Illuminate\Support\Collection;
 /**
  * defaine LOAD_PATH as custom path
  */
+// use this when u load the package from github
 $app_helpers_path = defined('LOAD_PATH') ? LOAD_PATH
     : dirname(str_before(__DIR__, DIRECTORY_SEPARATOR . 'laravel-helpers')) . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . '' . 'Helpers'. DIRECTORY_SEPARATOR .'src';
+// use this when u load the package from local path 
+// $app_helpers_path = defined('LOAD_PATH') ? LOAD_PATH
+//     : dirname(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..')) . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . '' . 'Helpers' . DIRECTORY_SEPARATOR . '';
 
 /**
  *

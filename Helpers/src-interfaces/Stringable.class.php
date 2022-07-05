@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright © 2020. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
+ * Copyright © 2022. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
 if ( !interface_exists('Stringable') && !interface_exists('Illuminate\Contracts\Support\Stringable') ) {
