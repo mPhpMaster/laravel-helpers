@@ -5,18 +5,18 @@
 
 use Illuminate\Filesystem\Filesystem;
 
-if ( !defined('DIRECTORY_SEPARATOR_L') ) {
+if( !defined('DIRECTORY_SEPARATOR_L') ) {
     /**
      * opposite of DIRECTORY_SEPARATOR
      */
     @define("DIRECTORY_SEPARATOR_L", "/");
 }
 
-if ( !function_exists('unzip') ) {
+if( !function_exists('unzip') ) {
     /**
      * UnZip .zip archive.
      *
-     * @param string      $archivePath .zip path
+     * @param string      $archivePath   .zip path
      * @param string|null $extractToPath Destination directory path.
      *
      * @return bool
@@ -25,11 +25,11 @@ if ( !function_exists('unzip') ) {
     {
         $path = $extractToPath ?: getcwd();
         $file = $archivePath;
-        if ( !file_exists($file) ) return false;
+        if( !file_exists($file) ) return false;
 
         $zip = new ZipArchive();
         $res = $zip->open($file);
-        if ( $res === TRUE ) {
+        if( $res === TRUE ) {
             // extract it to the path we determined above
             $zip->extractTo($path);
             $zip->close();
@@ -41,7 +41,7 @@ if ( !function_exists('unzip') ) {
     }
 }
 
-if ( !function_exists('includeSubFiles') ) {
+if( !function_exists('includeSubFiles') ) {
     /**
      * Include php files
      */
@@ -52,14 +52,14 @@ if ( !function_exists('includeSubFiles') ) {
         $sub_path = $__DIR__ . /*($__DIR__ && $__FILE__ ? DIRECTORY_SEPARATOR : "") .*/
             $__FILE__;
 
-        if ( file_exists($sub_path) ) {
+        if( file_exists($sub_path) ) {
             collect((new Filesystem)->files($sub_path))
-                ->map(function ($v) use ($incCallBack) {
-                    if ( trimLower($v->getExtension()) !== 'php' ) {
+                ->map(function($v) use ($incCallBack) {
+                    if( trimLower($v->getExtension()) !== 'php' ) {
                         return false;
                     }
 
-                    if ( $incCallBack && is_callable($incCallBack) ) {
+                    if( $incCallBack && is_callable($incCallBack) ) {
                         $incCallBack($v->getPathname());
                     }
 
@@ -69,7 +69,7 @@ if ( !function_exists('includeSubFiles') ) {
     }
 }
 
-if ( !function_exists('includeAllSubFiles') ) {
+if( !function_exists('includeAllSubFiles') ) {
     /**
      * Include php files
      */
@@ -77,15 +77,15 @@ if ( !function_exists('includeAllSubFiles') ) {
     {
         $__DIR__ = rtrim($__DIR__, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $__FILE__;
 
-        if ( file_exists($__DIR__) ) {
+        if( file_exists($__DIR__) ) {
             return collect((new Filesystem)->allFiles($__DIR__))
-                ->map(function ($v) use ($incCallBack) {
+                ->map(function($v) use ($incCallBack) {
                     /** @var \Symfony\Component\Finder\SplFileInfo $v */
-                    if ( $v->getExtension() !== 'php' ) {
+                    if( $v->getExtension() !== 'php' ) {
                         return false;
                     }
 
-                    if ( $incCallBack && is_callable($incCallBack) ) {
+                    if( $incCallBack && is_callable($incCallBack) ) {
                         return $incCallBack($v->getPathname());
                     }
 
@@ -98,7 +98,7 @@ if ( !function_exists('includeAllSubFiles') ) {
     }
 }
 
-if ( !function_exists('includeIfExists') ) {
+if( !function_exists('includeIfExists') ) {
     /**
      * Include file if exist
      *
@@ -113,7 +113,7 @@ if ( !function_exists('includeIfExists') ) {
     }
 }
 
-if ( !function_exists('includeOnceIfExists') ) {
+if( !function_exists('includeOnceIfExists') ) {
     /**
      * Include file Once if exist
      *
@@ -125,35 +125,19 @@ if ( !function_exists('includeOnceIfExists') ) {
      */
     function includeOnceIfExists($file, $when_not_exists = null, $when_already_included = null)
     {
-        if ( file_exists($file) ) {
-            if ( ($return = include_once($file)) === true ) {
-                $return = isClosure($when_already_included) ? getValue($when_already_included, ...[$file]) : $when_already_included;
+        if( file_exists($file) ) {
+            if( ($return = include_once($file)) === true ) {
+                $return = isClosure($when_already_included) ? getValue($when_already_included, ...[ $file ]) : $when_already_included;
             }
         } else {
-            $return = $when_not_exists = isClosure($when_not_exists) ? getValue($when_not_exists, ...[$file]) : $when_not_exists;
+            $return = $when_not_exists = isClosure($when_not_exists) ? getValue($when_not_exists, ...[ $file ]) : $when_not_exists;
         }
 
-        return getValue($return, ...[$file]);
+        return getValue($return, ...[ $file ]);
     }
 }
 
-if ( !function_exists('includeIfExists') ) {
-    /**
-     * Include file if exist
-     *
-     * @param string $file
-     * @param bool   $once
-     *
-     * @return false|mixed
-     */
-    function includeIfExists($file, $once = true)
-    {
-        $include = $once ? "include_once" : "include";
-        return file_exists($file) && is_callable($include) ? $include($file) : false;
-    }
-}
-
-if ( !function_exists('fixPath') ) {
+if( !function_exists('fixPath') ) {
     /**
      * Fix slashes/back-slashes replace it with DIRECTORY_SEPARATOR.
      *
@@ -164,15 +148,16 @@ if ( !function_exists('fixPath') ) {
     function fixPath(string $path, $replace_separator_with = DIRECTORY_SEPARATOR)
     {
         $replace_separator_with = $replace_separator_with ?: DIRECTORY_SEPARATOR;
+
         return replaceAll([
-            "\\" => $replace_separator_with,
-            "/" => $replace_separator_with,
-            $replace_separator_with . $replace_separator_with => $replace_separator_with,
-        ], $path);
+                              "\\" => $replace_separator_with,
+                              "/" => $replace_separator_with,
+                              $replace_separator_with . $replace_separator_with => $replace_separator_with,
+                          ], $path);
     }
 }
 
-if ( !function_exists('includeMenus') ) {
+if( !function_exists('includeMenus') ) {
     /**
      * Include menu files
      *
@@ -191,7 +176,7 @@ if ( !function_exists('includeMenus') ) {
             includeAllSubFiles(
                 $menuDir . "\\{$partialsDirName}\\",
                 "",
-                function ($file) {
+                function($file) {
                     return includeOnceIfExists($file, [], []);
                 }
             )
@@ -204,7 +189,7 @@ if ( !function_exists('includeMenus') ) {
 //        });
 
         $menu = $menus;
-        if ( !is_null($mergeWith) ) {
+        if( !is_null($mergeWith) ) {
             $menu = $menu->mergeRecursive($mergeWith);
         }
 
@@ -219,7 +204,7 @@ if ( !function_exists('includeMenus') ) {
     }
 }
 
-if ( !function_exists('filenameWithoutExtension') ) {
+if( !function_exists('filenameWithoutExtension') ) {
     /**
      * returns the given filename with out extension
      *

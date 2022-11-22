@@ -21,6 +21,7 @@ if ( !defined('DEBUG_METHODS') ) {
         'dx',
         'd',
         'dd',
+        'duE',
         'dE',
     ]);
 }
@@ -390,6 +391,7 @@ if ( !function_exists('dd') ) {
      */
     function dd(...$vars)
     {
+
         if ( !isDebugEnabled() ) {
             return;
         }

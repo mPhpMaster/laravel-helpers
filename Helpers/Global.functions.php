@@ -49,6 +49,20 @@ if ( !function_exists('toCollectOrModel') ) {
     }
 }
 
+if ( !function_exists('toObjectOrModel') ) {
+    /**
+     * Returns $var as Object, if the given var is model ? return model
+     *
+     * @param $var
+     *
+     * @return object|\Illuminate\Database\Eloquent\Model
+     */
+    function toObjectOrModel($var)
+    {
+        return isModel($var) ? $var : valueToObject($var);
+    }
+}
+
 if ( !function_exists('toBoolValue') ) {
     /**
      * Returns value as boolean

@@ -206,7 +206,7 @@ if ( !function_exists('getLanguageCodeByLocale') ) {
             return data_get(getLocaleInfo($locale_name), 'code', $locale_name);
         }
 
-        return $locale . "_" . strtoupper($locale);
+        return $locale . "_" . strtoupper($country ?: "");
     }
 }
 

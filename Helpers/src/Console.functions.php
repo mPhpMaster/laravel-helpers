@@ -86,7 +86,6 @@ if ( !function_exists('duE') ) {
     {
         debugEnable();
         dumpDebug(@getDebugBacktrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10), ...$args);
-//        du(...func_get_args());
     }
 }
 

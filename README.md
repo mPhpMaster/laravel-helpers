@@ -1,4 +1,4 @@
-# Laravel Helpers `2.1.0`
+# Laravel Helpers `2.2.0`
 
 - `php artisan mphpmaster:app:setup` to setup the app (Use `--seed` or `-s` to run seeders).
 - `composer a:routes` Use `artisan route:list` and write the output to `routes.txt`.

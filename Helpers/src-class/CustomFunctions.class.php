@@ -26,44 +26,50 @@ class CustomFunctions
      * @var string
      */
     private static $declaration = '
+    if( !function_exists("%s") ) {
         function %s() {
             return call_user_func_array(
-                %s::get(__FUNCTION__),
-                func_get_args()
-            );
+                    %s::get(__FUNCTION__),
+                    func_get_args()
+                );
         }
+    }
     ';
 
     public function __construct()
     {
         $path = \Illuminate\Support\Env::get('COMPOSER_VENDOR_DIR', app()->basePath('vendor/composer/autoload_classmap.php'));
-        if ( ($_f = new \Illuminate\Filesystem\Filesystem)->exists($path) ) {
+        if( ($_f = new \Illuminate\Filesystem\Filesystem)->exists($path) ) {
             collect($_f->getRequire($path))
-                ->filter(function ($path, $class) {
-                    $is_class = str_before(cutbasepath($path), "/") !== 'vendor' && class_exists($class);
-                    if ( !$is_class ) {
-                        return false;
-                    }
-
+                ->filter(function($path, $class) {
                     try {
+                        $is_class = str_before(cutbasepath($path), "/") !== 'vendor' && class_exists($class);
+                        if( !$is_class ) {
+                            return false;
+                        }
+
                         $_class = app($class);
                         $is_class = is_object($_class) ? getModelAbstractClass($_class) : false;
+                        if( $is_class ) {
 
-                        if ( $is_class ) {
-                            if ( function_exists($_class_name = basenameOf($class)) ) {
+                            if( function_exists($_class_name = basenameOf($class)) ) {
                                 $_class_name = "{$_class_name}_";
                             }
-                            \CustomFunctions::add($_class_name,
-                                function (...$arguments) use ($class) {
+                            \CustomFunctions::add(
+                                $_class_name,
+                                function(...$arguments) use ($class) {
                                     return func_num_args() ? $class::find(...$arguments) : $class::all();
                                 }
                             );
+
                             return true;
                         }
+
                         return false;
-                    } catch (\Exception $exception) {
+                    } catch(\Exception|Error $exception) {
 
                     }
+
                     return false;
                 });
 
@@ -81,6 +87,7 @@ class CustomFunctions
         // extra safety against bad function names
         $name = preg_replace('/[^a-zA-Z0-9_]/', "", $name);
         $name = substr($name, 0, 64);
+
         return $name;
     }
 
@@ -92,8 +99,15 @@ class CustomFunctions
     {
         // prepares a new function for make()
         $name = self::safeName($name);
+        if( !class_exists($name) || function_exists($name) || isset(self::$store[ $name ]) ) {
+            if( !class_exists("App\\Models\\{$name}") )
+            {
+                return;
+            }
+        }
+
         self::$store[ $name ] = $func;
-        self::$maker .= sprintf(self::$declaration, $name, __CLASS__);
+        self::$maker .= sprintf(self::$declaration, $name, $name, __CLASS__);
     }
 
     /**

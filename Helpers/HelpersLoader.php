@@ -43,14 +43,12 @@ class HelpersLoader
     /**
      * @var null|string
      */
-    private
-        $path;
+    private $path;
 
     /**
      * @var array
      */
-    protected
-    static $included = [];
+    protected static $included = [];
 
     /**
      * HelpersLoader constructor.

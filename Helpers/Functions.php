@@ -11,11 +11,11 @@
 //    }
 //}
 
-if ( !\defined('NAMESPACE_SEPARATOR') ) {
+if( !\defined('NAMESPACE_SEPARATOR') ) {
     \define('NAMESPACE_SEPARATOR', '\\');
 }
 
-if ( !function_exists('grep') ) {
+if( !function_exists('grep') ) {
     /**
      * @param $data
      * @param $grep
@@ -24,18 +24,20 @@ if ( !function_exists('grep') ) {
      */
     function grep($data, $grep)
     {
-        $is = is_array($data) ? $data : [$data];
-        return mapEach($is, function ($value) use ($grep) {
-            if ( stringContains($value, $grep) ) {
+        $is = is_array($data) ? $data : [ $data ];
+
+        return mapEach($is, function($value) use ($grep) {
+            if( stringContains($value, $grep) ) {
                 return $value;
             }
+
             return null;
         });
 
     }
 }
 
-if ( !function_exists('getInterfaces') ) {
+if( !function_exists('getInterfaces') ) {
     /**
      * @param string|string[]|null $grep
      *
@@ -44,7 +46,7 @@ if ( !function_exists('getInterfaces') ) {
     function getInterfaces($grep = null)
     {
         $result = array_values(get_declared_interfaces());
-        if ( !is_null($grep) ) {
+        if( !is_null($grep) ) {
             $result = filterEach($result, $grep, false);
         }
 
@@ -52,7 +54,7 @@ if ( !function_exists('getInterfaces') ) {
     }
 }
 
-if ( !function_exists('getClasses') ) {
+if( !function_exists('getClasses') ) {
     /**
      * @param string|string[]|null $grep
      *
@@ -61,7 +63,7 @@ if ( !function_exists('getClasses') ) {
     function getClasses($grep = null)
     {
         $result = array_values(get_declared_classes());
-        if ( !is_null($grep) ) {
+        if( !is_null($grep) ) {
             $result = filterEach($result, $grep, false);
         }
 
@@ -69,7 +71,7 @@ if ( !function_exists('getClasses') ) {
     }
 }
 
-if ( !function_exists('getTraits') ) {
+if( !function_exists('getTraits') ) {
     /**
      * @param string|string[]|null $grep
      *
@@ -78,7 +80,7 @@ if ( !function_exists('getTraits') ) {
     function getTraits($grep = null)
     {
         $result = array_values(get_declared_traits());
-        if ( !is_null($grep) ) {
+        if( !is_null($grep) ) {
             $result = filterEach($result, $grep, false);
         }
 
@@ -86,7 +88,7 @@ if ( !function_exists('getTraits') ) {
     }
 }
 
-if ( !function_exists('getAllDeclared') ) {
+if( !function_exists('getAllDeclared') ) {
     /**
      * @param string|string[]|null $grep
      *
@@ -95,7 +97,7 @@ if ( !function_exists('getAllDeclared') ) {
     function getAllDeclared($grep = null)
     {
         $result = array_merge(getClasses(), getInterfaces(), getTraits());
-        if ( !is_null($grep) ) {
+        if( !is_null($grep) ) {
             $result = filterEach($result, $grep, false);
         }
 
@@ -103,7 +105,7 @@ if ( !function_exists('getAllDeclared') ) {
     }
 }
 
-if ( !function_exists('getModelAbstractClass') ) {
+if( !function_exists('getModelAbstractClass') ) {
     /**
      * @param object|string|null $test_class
      *
@@ -112,10 +114,11 @@ if ( !function_exists('getModelAbstractClass') ) {
      */
     function getModelAbstractClass($test_class = null)
     {
-        if ( $test_class ) {
+        if( $test_class ) {
             $test_class = is_object($test_class) ? $test_class : app(getRealClassName($test_class));
 
             $test_abstract_class = getModelAbstractClass();
+
             return $test_class instanceof $test_abstract_class;
         }
 
@@ -124,7 +127,7 @@ if ( !function_exists('getModelAbstractClass') ) {
 }
 
 // region: data loop
-if ( !function_exists('dataForEach') ) {
+if( !function_exists('dataForEach') ) {
     /**
      * @param array|mixed $array
      * @param callable    $callback
@@ -136,37 +139,37 @@ if ( !function_exists('dataForEach') ) {
     {
         $result = [];
 
-        foreach ((array)$array as $key => $value) {
-            $crnt_data = ['value' => &$value, 'key' => &$key, 'all' => &$array/*, 'result' => &$result*/];
+        foreach( (array) $array as $key => $value ) {
+            $crnt_data = [ 'value' => &$value, 'key' => &$key, 'all' => &$array/*, 'result' => &$result*/ ];
 
             try {
-                $return = call_user_func_array($callback, [&$value, &$key, &$array, &$crnt_data]);
+                $return = call_user_func_array($callback, [ &$value, &$key, &$array, &$crnt_data ]);
 
-                if ( $map ) {
-                    if ( isClosure($map) ) {
+                if( $map ) {
+                    if( isClosure($map) ) {
                         call_user_func_array($map, [
                             &$return,
-                            $put = function ($newValue = null, $newKey = null) use (&$result, &$return, &$key, &$value) {
-                                if ( func_num_args() === 0 ) {
+                            $put = function($newValue = null, $newKey = null) use (&$result, &$return, &$key, &$value) {
+                                if( func_num_args() === 0 ) {
                                     $result[ $key ] = $value;
-                                } elseif ( func_num_args() === 1 ) {
+                                } elseif( func_num_args() === 1 ) {
                                     $result[ $key ] = $newValue;
-                                } elseif ( func_num_args() === 2 ) {
+                                } elseif( func_num_args() === 2 ) {
                                     $result[ $newKey ] = $newValue;
                                 }
 
                                 return $result;
                             },
-                            $skip = function () use (&$result) {
+                            $skip = function() use (&$result) {
                                 return $result;
                             },
-                            &$crnt_data
+                            &$crnt_data,
                         ]);
-                    } else if ( !is_null($return) ) {
+                    } elseif( !is_null($return) ) {
                         $result[ $key ] = $return;
                     }
                 }
-            } catch (Exception $exception) {
+            } catch(Exception $exception) {
                 break;
             }
         }
@@ -175,7 +178,7 @@ if ( !function_exists('dataForEach') ) {
     }
 }
 
-if ( !function_exists('applyEach') ) {
+if( !function_exists('applyEach') ) {
     /**
      * @param array|mixed $array
      * @param callable    $callback
@@ -188,7 +191,7 @@ if ( !function_exists('applyEach') ) {
     }
 }
 
-if ( !function_exists('mapEach') ) {
+if( !function_exists('mapEach') ) {
     /**
      * @param array|mixed $array
      * @param callable    $callback
@@ -201,7 +204,7 @@ if ( !function_exists('mapEach') ) {
     }
 }
 
-if ( !function_exists('filterEach') ) {
+if( !function_exists('filterEach') ) {
     /**
      * @param array|mixed   $array
      * @param callable|null $for
@@ -211,8 +214,9 @@ if ( !function_exists('filterEach') ) {
      */
     function filterEach($array, $for = null, $strict = false)
     {
-        $callback = function ($v) use ($for, $strict, $array) {
+        $callback = function($v) use ($for, $strict, $array) {
             $v = is_bool($v) && $v ? "true" : "false";
+
             return stringContains($v, $for) !== false ||
                 (
                     $strict === false &&
@@ -220,9 +224,9 @@ if ( !function_exists('filterEach') ) {
                 );
         };
 
-        $map = function ($returns, $put, $skip, $data) use ($strict) {
-            $pass = $strict ? $returns !== false : !!$returns;
-            ($pass && $put($data['value'])) || $skip;
+        $map = function($returns, $put, $skip, $data) use ($strict) {
+            $pass = $strict ? $returns !== false : ! !$returns;
+            ($pass && $put($data[ 'value' ])) || $skip;
         };
 
         return dataForEach($array, $callback, $map);
@@ -230,7 +234,7 @@ if ( !function_exists('filterEach') ) {
 }
 // endregion: data loop
 
-if ( !function_exists('getNewValidator') ) {
+if( !function_exists('getNewValidator') ) {
     /**
      * @param array $data
      * @param array $rules
@@ -245,7 +249,7 @@ if ( !function_exists('getNewValidator') ) {
     }
 }
 
-if ( !function_exists('createNewValidator') ) {
+if( !function_exists('createNewValidator') ) {
     /**
      * Create New Validator.
      *
@@ -258,7 +262,7 @@ if ( !function_exists('createNewValidator') ) {
     }
 }
 
-if ( !function_exists('macros') ) {
+if( !function_exists('macros') ) {
     /**
      * Require php file that returns an array contains classFQN => methodName => closure
      *
@@ -268,41 +272,66 @@ if ( !function_exists('macros') ) {
     {
         $data = null;
 
-        if ( $path instanceof Closure ) {
+        if( $path instanceof Closure ) {
             $data = call_user_func($path);
-            if ( is_string($data) ) {
+            if( is_string($data) ) {
                 $path = $data;
                 $data = null;
             }
         }
 
-        if ( is_string($path) ) {
-            if ( !file_exists($path) ) {
+        if( is_string($path) ) {
+            if( !file_exists($path) ) {
                 throw new Exception("The given path [{$path}] doesn't exist!");
             }
             $data = \Illuminate\Support\Facades\File::requireOnce($path);
         }
 
-        if ( is_array($path) ) {
+        if( is_array($path) ) {
             $data = $path;
         }
 
-        if ( !is_array($data) ) {
+        if( !is_array($data) ) {
             throw new Exception("The given data must be array, " . gettype($data) . " given.");
         }
 
-        foreach ($data as $class => $methods) {
-            if ( !is_string($class) || !is_array($methods) || !method_exists($class, 'macro') ) {
+        foreach( $data as $class => $methods ) {
+            if( !is_string($class) || !is_array($methods) || !method_exists($class, 'macro') ) {
                 continue;
             }
 
-            foreach ($methods as $name => $method) {
-                if ( !is_string($name) || !is_callable($method) && !is_object($method) ) {
+            foreach( $methods as $name => $method ) {
+                if( !is_string($name) || !is_callable($method) && !is_object($method) ) {
                     continue;
                 }
 
                 $class::macro($name, $method);
             }
         }
+    }
+}
+
+if( !function_exists('fromCallable') ) {
+    /**
+     * @param string|\Closure|callable $callable
+     *
+     * @return \Closure|mixed
+     * @throws \Exception
+     */
+    function fromCallable($callable)
+    {
+        if( $callable instanceof Closure ) {
+            return $callable;
+        }
+
+        if( is_string($callable) ) {
+            if( !is_callable($callable) ) {
+                throw new Exception("The given name [{$callable}] is not callable!");
+            }
+
+            return \Closure::fromCallable($callable);
+        }
+
+        return $callable;
     }
 }
