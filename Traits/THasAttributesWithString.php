@@ -1,4 +1,4 @@
-<?php /** @noinspection PhpUndefinedClassInspection */
+<?php
 /*
  * Copyright © 2022. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
@@ -10,6 +10,7 @@ namespace MPhpMaster\LaravelHelpers\Traits;
  *
  * @mixin \MPhpMaster\LaravelHelpers\Interfaces\IHasAttributesWithString
  * @mixin \Illuminate\Database\Eloquent\Model
+ * @parent \App\Models\Model
  *
  * @package MPhpMaster\LaravelHelpers\Traits
  */
@@ -23,6 +24,7 @@ trait THasAttributesWithString
      * @param $key
      *
      * @return array|null|string
+     * @noinspection PhpUndefinedClassInspection
      */
     public function getAttribute($key)
     {

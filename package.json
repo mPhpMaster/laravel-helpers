@@ -1,6 +1,6 @@
 {
     "name": "@mphpmaster/laravel-helpers",
-    "version": "2.3.0",
+    "version": "2.3.1",
     "description": "Laravel Helpers By hlaCk",
     "main": "index.js",
     "scripts": {
@@ -12,6 +12,7 @@
     },
     "keywords": [
         "laravel",
+        "hlaCk",
         "helpers"
     ],
     "author": "mPhpMaster",

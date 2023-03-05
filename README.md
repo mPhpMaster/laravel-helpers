@@ -13,10 +13,10 @@
 ### Autoload functions loading files order:
 1. `app/Helpers/` _(This is the loader default path, it's changeable)_
 2. `vendor/mphpmaster/laravel-helpers/Helpers/src/`
-2. `vendor/mphpmaster/laravel-helpers/Helpers/macro/`
-3. `vendor/mphpmaster/laravel-helpers/Helpers/src-interfaces/`
-4. `vendor/mphpmaster/laravel-helpers/Helpers/src-traits/`
-5. `vendor/mphpmaster/laravel-helpers/Helpers/src-class/`
+3. `vendor/mphpmaster/laravel-helpers/Helpers/macro/`
+4. `vendor/mphpmaster/laravel-helpers/Helpers/src-interfaces/`
+5. `vendor/mphpmaster/laravel-helpers/Helpers/src-traits/`
+6. `vendor/mphpmaster/laravel-helpers/Helpers/src-class/`
 
 ##### NOTE:<small>
 > Only files ends with __.functions.php__ and __.class.php__ will be auto-loaded. _(Loading is not **recursive**, depth: **1**)_</small>
