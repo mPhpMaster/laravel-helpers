@@ -3,14 +3,14 @@
  * Copyright © 2022. mPhpMaster(https://github.com/mPhpMaster) All rights reserved.
  */
 
-use \MPhpMaster\LaravelHelpers\Interfaces\IInvocable;
+use MPhpMaster\LaravelHelpers\Interfaces\IInvocable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
-if ( !function_exists('array_keys_exists') ) {
+if( !function_exists('array_keys_exists') ) {
     /**
      * Easily check if multiple array keys exist.
      *
@@ -19,75 +19,73 @@ if ( !function_exists('array_keys_exists') ) {
      *
      * @return boolean
      */
-    function array_keys_exists(array $keys, array $arr)
+    function array_keys_exists(array $keys, array $arr): bool
     {
         return !array_diff_key(array_flip($keys), $arr);
     }
 }
 
-/**
- * return bool
- */
-if ( !function_exists('isJsonable') ) {
+if( !function_exists('isJsonable') ) {
     /**
      * Check if the given var is Jsonable (has ->toJson()).
      *
-     * @param mixed|null $object
+     * @param mixed $object
      *
      * @return bool
      */
-    function isJsonable($object): bool
+    function isJsonable(mixed $object): bool
     {
-        return
-            (interface_exists(\Illuminate\Contracts\Support\Jsonable::class) && $object instanceof \Illuminate\Contracts\Support\Jsonable) ||
-            (interface_exists(Jsonable::class) && $object instanceof Jsonable) ||
-            method_exists($object, 'toJson');
+        try {
+            return
+                (interface_exists(\Illuminate\Contracts\Support\Jsonable::class) && $object instanceof \Illuminate\Contracts\Support\Jsonable) ||
+                (interface_exists(Jsonable::class) && $object instanceof Jsonable) ||
+                method_exists($object, 'toJson');
+        } catch(Exception $e) {
+            return false;
+        }
     }
 }
 
-/**
- * return bool
- */
-if ( !function_exists('isJsonSerializable') ) {
+if( !function_exists('isJsonSerializable') ) {
     /**
      * Check if the given var is JsonSerializable (has ->jsonSerialize()).
      *
-     * @param mixed|null $object
+     * @param mixed $object
      *
      * @return bool
      */
-    function isJsonSerializable($object): bool
+    function isJsonSerializable(mixed $object): bool
     {
-        return
-            (interface_exists(\JsonSerializable::class) && $object instanceof \JsonSerializable) ||
-            method_exists($object, 'jsonSerialize');
+        try {
+            return
+                (interface_exists(\JsonSerializable::class) && $object instanceof \JsonSerializable) ||
+                method_exists($object, 'jsonSerialize');
+        } catch(Exception $e) {
+        }
     }
 }
 
-/**
- * return bool
- */
-if ( !function_exists('isArrayable') ) {
+if( !function_exists('isArrayable') ) {
     /**
      * Check if the given var is Arrayable (has ->toArray()).
      *
-     * @param mixed|null $array
+     * @param mixed $array
      *
      * @return bool
      */
-    function isArrayable($array): bool
+    function isArrayable(mixed $array): bool
     {
         return
             (interface_exists(\Illuminate\Contracts\Support\Arrayable::class) && $array instanceof \Illuminate\Contracts\Support\Arrayable) ||
             (interface_exists(Arrayable::class) && $array instanceof Arrayable) ||
-            method_exists($array, 'toArray');
+            is_object($array) && method_exists($array, 'toArray');
     }
 }
 
 /**
  * return bool
  */
-if ( !function_exists('isAssocArray') ) {
+if( !function_exists('isAssocArray') ) {
     /**
      * @param array $array
      *
@@ -104,7 +102,7 @@ if ( !function_exists('isAssocArray') ) {
 /**
  * return bool
  */
-if ( !function_exists('isClosure') ) {
+if( !function_exists('isClosure') ) {
     /**
      * Check if the given var is Closure.
      *
@@ -121,7 +119,7 @@ if ( !function_exists('isClosure') ) {
 /**
  * return bool
  */
-if ( !function_exists('isClass') ) {
+if( !function_exists('isClass') ) {
     /**
      * Check if the given var is Class.
      *
@@ -133,7 +131,7 @@ if ( !function_exists('isClass') ) {
     {
         try {
             return is_object($object) && ($class_name = get_class($object));
-        } catch (Exception $exception) {
+        } catch(Exception $exception) {
             return false;
         }
     }
@@ -142,7 +140,7 @@ if ( !function_exists('isClass') ) {
 /**
  * return bool
  */
-if ( !function_exists('isCallableDeep') ) {
+if( !function_exists('isCallableDeep') ) {
     /**
      * Check if the given var is Closure or|and callable or|and string or|and Array or|and object.
      *
@@ -155,13 +153,14 @@ if ( !function_exists('isCallableDeep') ) {
      *
      * @return bool
      */
-    function isCallableDeep($closure,
-                            bool $mustBeCallable = false,
-                            bool $mustBeClosure = false,
-                            bool $mustBeString = false,
-                            bool $mustBeArray = false,
-                            bool $mustBeObject = false): bool
-    {
+    function isCallableDeep(
+        $closure,
+        bool $mustBeCallable = false,
+        bool $mustBeClosure = false,
+        bool $mustBeString = false,
+        bool $mustBeArray = false,
+        bool $mustBeObject = false
+    ): bool {
         $_result = [
             'callable' => is_callable($closure),
             'closure' => isClosure($closure),
@@ -170,21 +169,21 @@ if ( !function_exists('isCallableDeep') ) {
             'object' => is_object($closure),
         ];
 
-        if (
-            ($mustBeCallable === true && $_result['callable'] === false) ||
-            ($mustBeClosure === true && $_result['closure'] === false) ||
-            ($mustBeString === true && $_result['string'] === false) ||
-            ($mustBeArray === true && $_result['array'] === false) ||
-            ($mustBeObject === true && $_result['object'] === false)
+        if(
+            ($mustBeCallable === true && $_result[ 'callable' ] === false) ||
+            ($mustBeClosure === true && $_result[ 'closure' ] === false) ||
+            ($mustBeString === true && $_result[ 'string' ] === false) ||
+            ($mustBeArray === true && $_result[ 'array' ] === false) ||
+            ($mustBeObject === true && $_result[ 'object' ] === false)
         ) {
             return false;
         }
-        if (
-            ($mustBeCallable === false && $_result['callable'] === true) ||
-            ($mustBeClosure === false && $_result['closure'] === true) ||
-            ($mustBeString === false && $_result['string'] === true) ||
-            ($mustBeArray === false && $_result['array'] === true) ||
-            ($mustBeObject === false && $_result['object'] === true)
+        if(
+            ($mustBeCallable === false && $_result[ 'callable' ] === true) ||
+            ($mustBeClosure === false && $_result[ 'closure' ] === true) ||
+            ($mustBeString === false && $_result[ 'string' ] === true) ||
+            ($mustBeArray === false && $_result[ 'array' ] === true) ||
+            ($mustBeObject === false && $_result[ 'object' ] === true)
         ) {
             return true;
         }
@@ -203,7 +202,7 @@ if ( !function_exists('isCallableDeep') ) {
 /**
  * return bool
  */
-if ( !function_exists('isCallable') ) {
+if( !function_exists('isCallable') ) {
     /**
      * Check if the given var is callable && not string.
      *
@@ -221,7 +220,7 @@ if ( !function_exists('isCallable') ) {
 /**
  * return bool
  */
-if ( !function_exists('isArrayableOrArray') ) {
+if( !function_exists('isArrayableOrArray') ) {
     /**
      * Check if the given var is Array | is Arrayable (has ->toArray()).
      *
@@ -235,10 +234,7 @@ if ( !function_exists('isArrayableOrArray') ) {
     }
 }
 
-/**
- * return bool
- */
-if ( !function_exists('isAllable') ) {
+if( !function_exists('isAllable') ) {
     /**
      * Check if the given var is Allable (has ->all()).
      *
@@ -246,16 +242,20 @@ if ( !function_exists('isAllable') ) {
      *
      * @return bool
      */
-    function isAllable($array): bool
+    function isAllable(mixed $array): bool
     {
-        return method_exists($array, 'all');
+        try {
+            return method_exists($array, 'all');
+        } catch(Exception $exception) {
+            return false;
+        }
     }
 }
 
 /**
  * return bool
  */
-if ( !function_exists('isInvocable') ) {
+if( !function_exists('isInvocable') ) {
     /**
      * @param mixed $object
      *
@@ -266,14 +266,14 @@ if ( !function_exists('isInvocable') ) {
         return
             method_exists($object, '__invoke') ||
             is_callable($object) ||
-            $object instanceof IInvocable;
+            (interface_exists(IInvocable::class) && $object instanceof IInvocable);
     }
 }
 
 /**
  * return bool
  */
-if ( !function_exists('isPaginator') ) {
+if( !function_exists('isPaginator') ) {
     /**
      * Check if the given var is paginator instance.
      *
@@ -302,7 +302,7 @@ if ( !function_exists('isPaginator') ) {
 /**
  * return bool
  */
-if ( !function_exists('isPaginated') ) {
+if( !function_exists('isPaginated') ) {
     /**
      * Check if the given var is paginate result.
      *
@@ -310,15 +310,15 @@ if ( !function_exists('isPaginated') ) {
      *
      * @return null
      */
-    function isPaginated($value)
+    function isPaginated($value): ?bool
     {
-        if ( isPaginator($value) || method_exists($value, 'getCollection') ) {
+        if( isPaginator($value) || method_exists($value, 'getCollection') ) {
             return true;
         }
 
-        if ( is_array($value) ) {
-            if (
-                Arr::has($value, ['current_page', 'per_page']) ||
+        if( is_array($value) ) {
+            if(
+                Arr::has($value, [ 'current_page', 'per_page' ]) ||
                 Arr::has($value, 'meta')
             ) {
                 return true;
@@ -332,7 +332,7 @@ if ( !function_exists('isPaginated') ) {
 /**
  * return mixed
  */
-if ( !function_exists('isConsole') ) {
+if( !function_exists('isConsole') ) {
     /**
      *
      * ### Check if the application running in `Console (CLI)`.
@@ -345,12 +345,12 @@ if ( !function_exists('isConsole') ) {
      *
      * -----| **$notRunningInConsole** By default its `false`, Returns this **ONLY** If App. is **NOT** in **Console**.
      *
-     * @param mixed $runningInConsole | return value of ( $runningInConsole ) when App is running in console.
+     * @param mixed $runningInConsole    | return value of ( $runningInConsole ) when App is running in console.
      * @param mixed $notRunningInConsole | return value of ( $notRunningInConsole ) when App is NOT running in console.
      *
      * @return mixed
      */
-    function isConsole($runningInConsole = true, $notRunningInConsole = false)
+    function isConsole($runningInConsole = true, $notRunningInConsole = false): mixed
     {
         return App::runningInConsole() ? $runningInConsole : $notRunningInConsole;
     }
@@ -359,7 +359,7 @@ if ( !function_exists('isConsole') ) {
 /**
  * return bool
  */
-if ( !function_exists('isBuilder') ) {
+if( !function_exists('isBuilder') ) {
     /**
      * ### Check if the given var is Query Builder | Eloquent Builder | Relation.
      *
@@ -376,7 +376,7 @@ if ( !function_exists('isBuilder') ) {
 /**
  * return bool
  */
-if ( !function_exists('isLoggedIn') ) {
+if( !function_exists('isLoggedIn') ) {
     /**
      * ### Check if user has logged in.
      *
@@ -384,14 +384,14 @@ if ( !function_exists('isLoggedIn') ) {
      */
     function isLoggedIn(): bool
     {
-        return !!Auth()->check();
+        return ! !Auth()->check();
     }
 }
 
 /**
  * return bool
  */
-if ( !function_exists('isGuest') ) {
+if( !function_exists('isGuest') ) {
     /**
      * ### Check if user is guest.
      *
@@ -399,11 +399,11 @@ if ( !function_exists('isGuest') ) {
      */
     function isGuest(): bool
     {
-        return !!Auth()->guest();
+        return ! !Auth()->guest();
     }
 }
 
-if ( !function_exists('endsWithAny') ) {
+if( !function_exists('endsWithAny') ) {
     /**
      * Determine if a given string ends with a given substrings then return substring or False when fail.
      *
@@ -412,10 +412,10 @@ if ( !function_exists('endsWithAny') ) {
      *
      * @return string
      */
-    function endsWithAny($haystack, $needles)
+    function endsWithAny($haystack, $needles): bool|string
     {
-        foreach ((array)$needles as $needle) {
-            if ( Str::endsWith($haystack, $needle) )
+        foreach( (array) $needles as $needle ) {
+            if( Str::endsWith($haystack, $needle) )
                 return $needle;
         }
 
@@ -426,7 +426,7 @@ if ( !function_exists('endsWithAny') ) {
 /**
  * return bool
  */
-if ( !function_exists('isInstanceOf') ) {
+if( !function_exists('isInstanceOf') ) {
     /**
      * ### Check if the given object\objects is an instance of second object.
      *
@@ -438,22 +438,22 @@ if ( !function_exists('isInstanceOf') ) {
      */
     function isInstanceOf($object, $ofThat, ?callable $then = null): bool
     {
-        $applyThen = function (&$_object, &$_ofThat) use (&$then) {
+        $applyThen = function(&$_object, &$_ofThat) use (&$then) {
             return isClosure($then) ? $then($_object, $_ofThat) : $then;
         };
 
         $instance_found = 0;
         try {
             $object = valueToArray($object);
-            foreach ($object as $_object) {
-                foreach ((array)$ofThat as $_ofThat) {
-                    if ( ($_object instanceof $_ofThat) || is_a($_object, $_ofThat) ) {
+            foreach( $object as $_object ) {
+                foreach( (array) $ofThat as $_ofThat ) {
+                    if( ($_object instanceof $_ofThat) || is_a($_object, $_ofThat) ) {
                         $instance_found++;
                         $applyThen($_object, $_ofThat);
                     }
 
                     $__ofThat = $_ofThat;
-                    if ( ($_ofThat = getClass($__ofThat)) !== $__ofThat &&
+                    if( ($_ofThat = getClass($__ofThat)) !== $__ofThat &&
                         (
                             ($_object instanceof $_ofThat) || is_a($_object, $_ofThat)
                         )
@@ -464,7 +464,7 @@ if ( !function_exists('isInstanceOf') ) {
                 }
             }
 
-        } catch (Exception $exception) {
+        } catch(Exception $exception) {
 
         }
 
@@ -472,7 +472,7 @@ if ( !function_exists('isInstanceOf') ) {
     }
 }
 
-if ( !function_exists('isInstanceOfAnyOf') ) {
+if( !function_exists('isInstanceOfAnyOf') ) {
     /**
      * Determine if any of the given object\objects is an instance of any of second object\objects
      *
@@ -481,18 +481,18 @@ if ( !function_exists('isInstanceOfAnyOf') ) {
      *
      * @return bool
      */
-    function isInstanceOfAnyOf($objects, $ofThese, ?callable $then = null)
+    function isInstanceOfAnyOf($objects, $ofThese, ?callable $then = null): bool
     {
         try {
-            foreach ((array)$objects as $_object) {
-                foreach ((array)$ofThese as $_ofThat) {
-                    if ( isInstanceOf($_object, $_ofThat, $then) ) {
+            foreach( (array) $objects as $_object ) {
+                foreach( (array) $ofThese as $_ofThat ) {
+                    if( isInstanceOf($_object, $_ofThat, $then) ) {
                         return true;
                     }
                 }
             }
 
-        } catch (Exception $exception) {
+        } catch(Exception $exception) {
 
         }
 
@@ -500,7 +500,7 @@ if ( !function_exists('isInstanceOfAnyOf') ) {
     }
 }
 
-if ( !function_exists('isModel') ) {
+if( !function_exists('isModel') ) {
     /**
      * Determine if a given object is inherit Model class.
      *
@@ -508,11 +508,11 @@ if ( !function_exists('isModel') ) {
      *
      * @return bool
      */
-    function isModel($object)
+    function isModel($object): bool
     {
         try {
-            return ($object instanceof Model) || is_a($object, Model::class);
-        } catch (Exception $exception) {
+            return ($object instanceof Model) || is_subclass_of($object, Model::class);
+        } catch(Exception $exception) {
 
         }
 
@@ -520,7 +520,7 @@ if ( !function_exists('isModel') ) {
     }
 }
 
-if ( !function_exists('isRelation') ) {
+if( !function_exists('isRelation') ) {
     /**
      * Determine if a given object is inherit \Illuminate\Database\Eloquent\Relations\Relation class.
      *
@@ -528,11 +528,13 @@ if ( !function_exists('isRelation') ) {
      *
      * @return bool
      */
-    function isRelation($object)
+    function isRelation($object): bool
     {
         try {
-            return (isInstanceOf($object, \Illuminate\Database\Eloquent\Relations\Relation::class)) || is_a($object, \Illuminate\Database\Eloquent\Relations\Relation::class);
-        } catch (Exception $exception) {
+            return ($object instanceof \Illuminate\Database\Eloquent\Relations\Relation) ||
+                is_a($object, \Illuminate\Database\Eloquent\Relations\Relation::class) ||
+                is_subclass_of($object, \Illuminate\Database\Eloquent\Relations\Relation::class);
+        } catch(Exception $exception) {
 
         }
 
@@ -540,17 +542,19 @@ if ( !function_exists('isRelation') ) {
     }
 }
 
-if ( !function_exists('isCarbon') ) {
+if( !function_exists('isCarbon') ) {
     /**
      * @param object $object
      *
      * @return bool
      */
-    function isCarbon($object)
+    function isCarbon($object): bool
     {
         try {
-            return (isInstanceOf($object, \Carbon\Carbon::class)) || is_a($object, \Carbon\Carbon::class);
-        } catch (Exception $exception) {
+            return ($object instanceof \Carbon\Carbon) ||
+                is_a($object, \Carbon\Carbon::class) ||
+                is_subclass_of($object, \Carbon\Carbon::class);
+        } catch(Exception $exception) {
 
         }
 
@@ -558,17 +562,19 @@ if ( !function_exists('isCarbon') ) {
     }
 }
 
-if ( !function_exists('isDateTime') ) {
+if( !function_exists('isDateTime') ) {
     /**
      * @param object $object
      *
      * @return bool
      */
-    function isDateTime($object)
+    function isDateTime($object): bool
     {
         try {
-            return (isInstanceOf($object, DateTime::class)) || is_a($object, DateTime::class);
-        } catch (Exception $exception) {
+            return ($object instanceof DateTime) ||
+                is_a($object, DateTime::class) ||
+                is_subclass_of($object, DateTime::class);
+        } catch(Exception $exception) {
 
         }
 
@@ -576,17 +582,17 @@ if ( !function_exists('isDateTime') ) {
     }
 }
 
-if ( !function_exists('isTraversable') ) {
+if( !function_exists('isTraversable') ) {
     /**
      * @param object $object
      *
      * @return bool
      */
-    function isTraversable($object)
+    function isTraversable($object): bool
     {
         try {
             return $object instanceof Traversable;
-        } catch (Exception $exception) {
+        } catch(Exception $exception) {
 
         }
 
@@ -594,35 +600,7 @@ if ( !function_exists('isTraversable') ) {
     }
 }
 
-if ( !function_exists('isMobileNumber') ) {
-    /**
-     * @param mixed|null $value
-     *
-     * @return bool
-     */
-    function isMobileNumber($value = null)
-    {
-        try {
-            return is_numeric($value) && stringStarts($value, "05") && strlen($value) === 10;
-        } catch (Exception $exception) {
-            return false;
-        }
-    }
-}
-
-if ( !function_exists('isDynamicObject') ) {
-    /**
-     * @param \MPhpMaster\LaravelHelpers\DynamicObject|mixed $data
-     *
-     * @return bool
-     */
-    function isDynamicObject($data): bool
-    {
-        return $data instanceof \MPhpMaster\LaravelHelpers\DynamicObject;
-    }
-}
-
-if ( !function_exists('hasArabicChars') ) {
+if( !function_exists('hasArabicChars') ) {
     /**
      * @param $string |mixed $string
      *
@@ -634,22 +612,22 @@ if ( !function_exists('hasArabicChars') ) {
     }
 }
 
-if ( !function_exists('hasArrayableItems') ) {
+if( !function_exists('isArrayableItems') ) {
     /**
-     * Check if the given $items is one of Collection, Arrayable, Allable, Jsonable, JsonSerializable, Traversable or array.
+     * Check if the given $item if its type is one of `Collection`, `Arrayable`, `Allable`, `Jsonable`, `JsonSerializable`, `Traversable` or `array`.
      *
      * @param mixed $items
      *
      * @return bool
      */
-    function hasArrayableItems($items): bool
+    function isArrayableItems($items): bool
     {
         return
             is_array($items) ||
-            ( $items instanceof \Illuminate\Support\Enumerable || isAllable($items)) ||
-            ( $items instanceof Arrayable || $items instanceof \Illuminate\Contracts\Support\Arrayable || isArrayable($items) ) ||
-            ( $items instanceof Jsonable || $items instanceof \Illuminate\Contracts\Support\Jsonable || isJsonable($items) ) ||
-            ( $items instanceof JsonSerializable || isJsonSerializable($items) ) ||
-            ( $items instanceof Traversable );
+            ($items instanceof \Illuminate\Support\Enumerable || isAllable($items)) ||
+            ($items instanceof Arrayable || $items instanceof \Illuminate\Contracts\Support\Arrayable || isArrayable($items)) ||
+            ($items instanceof Jsonable || $items instanceof \Illuminate\Contracts\Support\Jsonable || isJsonable($items)) ||
+            ($items instanceof JsonSerializable || isJsonSerializable($items)) ||
+            ($items instanceof Traversable);
     }
 }

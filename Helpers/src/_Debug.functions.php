@@ -391,7 +391,6 @@ if ( !function_exists('dd') ) {
      */
     function dd(...$vars)
     {
-
         if ( !isDebugEnabled() ) {
             return;
         }

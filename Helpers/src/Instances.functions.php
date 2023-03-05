@@ -67,22 +67,3 @@ if ( !function_exists('newInstance') ) {
         return $class;
     }
 }
-
-if ( !function_exists('proxy') ) {
-    /**
-     * create HigherOrderProxy proxy.
-     *
-     * @param string|object|callable $class
-     * @param string|null            $getMethod
-     * @param string|null            $callMethod
-     *
-     * @return \HigherOrderProxy
-     */
-    function proxy($class, ?string $getMethod = null, ?string $callMethod = null)
-    {
-        /** @var mixed|null $class */
-        return HigherOrderProxy::make($class)
-            ->setGetMethod($getMethod)
-            ->setCallMethod($callMethod);
-    }
-}

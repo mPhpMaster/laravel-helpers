@@ -12,7 +12,13 @@ namespace MPhpMaster\LaravelHelpers\Interfaces;
  */
 interface IFilenameBuilder
 {
+    /**
+     *
+     */
     const FilenameUniqueHash = "dmygia";
+    /**
+     *
+     */
     const FilenameExtension = "xlsx";
 
     public function getFilename(): string;

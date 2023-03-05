@@ -10,11 +10,12 @@ use Illuminate\Support\Collection;
  * defaine LOAD_PATH as custom path
  */
 // use this when u load the package from github
-$app_helpers_path = defined('LOAD_PATH') ? LOAD_PATH
-    : dirname(str_before(__DIR__, DIRECTORY_SEPARATOR . 'laravel-helpers')) . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . '' . 'Helpers'. DIRECTORY_SEPARATOR .'src';
-// use this when u load the package from local path 
 // $app_helpers_path = defined('LOAD_PATH') ? LOAD_PATH
-//     : dirname(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..')) . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . '' . 'Helpers' . DIRECTORY_SEPARATOR . '';
+//     : dirname(str_before(__DIR__, DIRECTORY_SEPARATOR . 'laravel-helpers')) . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . '' . 'Helpers'. DIRECTORY_SEPARATOR .'src';
+
+// use this when u load the package from local path
+$app_helpers_path = defined('LOAD_PATH') ? LOAD_PATH
+    : dirname(realpath(__DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..')) . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . '' . 'Helpers' . DIRECTORY_SEPARATOR . '';
 
 /**
  *
@@ -104,15 +105,15 @@ class HelpersLoader
 
 }
 
+foreach ((array)APP_HELPERS_DIR as $path) {
+    new HelpersLoader($path);
+}
+
 new HelpersLoader(HELPERS_DIR . 'src');
 new HelpersLoader(HELPERS_DIR . 'macro');
 new HelpersLoader(HELPERS_DIR . 'src-interfaces');
 new HelpersLoader(HELPERS_DIR . 'src-traits');
 new HelpersLoader(HELPERS_DIR . 'src-class');
-
-foreach ((array)APP_HELPERS_DIR as $path) {
-    new HelpersLoader($path);
-}
 
 $files = (array)glob(fixPath(HELPERS_DIR . '/CustomTypes/*.php'));
 $files = array_merge($files, (array)glob(fixPath(APP_HELPERS_DIR . '/../CustomTypes/*.php')));

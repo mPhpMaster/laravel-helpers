@@ -89,7 +89,6 @@ if ( !function_exists('duE') ) {
     }
 }
 
-
 if ( !function_exists('makeCol') ) {
     /**
      * @param        $text
@@ -119,7 +118,6 @@ if ( !function_exists('makeCol') ) {
             isConsole(' ', "</{$elm}> ");
     }
 }
-
 /**
  * Drow box with text inside it
  */

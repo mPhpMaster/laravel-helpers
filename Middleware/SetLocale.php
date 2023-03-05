@@ -22,20 +22,20 @@ class SetLocale
      */
     public function handle($request, Closure $next)
     {
-        if ( request('change_language') ) {
+        if( request('change_language') ) {
             $request->session()->put('language', request('change_language'));
             $request->session()->save();
 
             $language = request('change_language');
-        } elseif ( $request->session()->has('language') ) {
+        } elseif( $request->session()->has('language') ) {
             $language = $request->session()->get('language');
-        } elseif ( config('app.locale') ) {
+        } elseif( config('app.locale') ) {
             $language = config('app.locale');
         }
 
-        if ( isset($language) ) {
+        if( isset($language) ) {
             app()->setLocale($language);
-            if ( request('change_language') ) {
+            if( request('change_language') ) {
                 return redirect()->back();
             }
         }

@@ -5,7 +5,7 @@
 
 use Illuminate\Contracts\Support\Arrayable;
 
-if ( !function_exists('carbon') ) {
+if( !function_exists('carbon') ) {
     /**
      * @return \Carbon\Carbon|\Illuminate\Foundation\Application|mixed
      */
@@ -18,12 +18,12 @@ if ( !function_exists('carbon') ) {
 /**
  * return column_{appLocale}
  */
-if ( !function_exists('columnLocalize') ) {
+if( !function_exists('columnLocalize') ) {
     /**
      * Localize column name.
      *
      * @param string      $columnName Column name
-     * @param string|null $locale Locale name, Null = current locale name
+     * @param string|null $locale     Locale name, Null = current locale name
      *
      * @return string
      */
@@ -36,7 +36,7 @@ if ( !function_exists('columnLocalize') ) {
 /**
  * return column_{appLocale}
  */
-if ( !function_exists('tool_title_locale') ) {
+if( !function_exists('tool_title_locale') ) {
     /**
      * return name_{appLocale}
      *
@@ -51,7 +51,7 @@ if ( !function_exists('tool_title_locale') ) {
 /**
  * return string
  */
-if ( !function_exists('prefixNumber') ) {
+if( !function_exists('prefixNumber') ) {
     /**
      * like:
      * Number: 0001
@@ -65,6 +65,7 @@ if ( !function_exists('prefixNumber') ) {
     function prefixNumber($value, $prefix = '0', $length = 4)
     {
         $prefix = trim($prefix ?: '0');
+
         return sprintf("%{$prefix}{$length}d", $value);
     }
 }
@@ -72,7 +73,7 @@ if ( !function_exists('prefixNumber') ) {
 /**
  * return string
  */
-if ( !function_exists('prefixText') ) {
+if( !function_exists('prefixText') ) {
     /**
      * like:
      * Text:
@@ -100,7 +101,7 @@ if ( !function_exists('prefixText') ) {
 /**
  * return int
  */
-if ( !function_exists('countToken') ) {
+if( !function_exists('countToken') ) {
     /**
      * Return count of the given token.
      *
@@ -111,7 +112,7 @@ if ( !function_exists('countToken') ) {
      */
     function countToken($token, $subject): int
     {
-        if ( empty($_token = trim($token)) || empty($_subject = trim($subject)) ) {
+        if( empty($_token = trim($token)) || empty($_subject = trim($subject)) ) {
             return 0;
         }
 
@@ -119,59 +120,30 @@ if ( !function_exists('countToken') ) {
     }
 }
 
-/**
- * return mixed
- */
-if ( !function_exists('replaceAll') ) {
+if( !function_exists('replaceAll') ) {
     /**
      * Replace a given data in string.
      *
-     * @param Arrayable<mixed, \Closure|callable|mixed>|array<mixed, \Closure|callable|mixed> $_searchAndReplace
-     * @param string                                                                          $_subject
+     * @param iterable|\Closure $searchAndReplace [ searchFor => replaceWith ]
+     * @param string|\Closure   $subject
      *
      * @return string
      */
-    function replaceAll($_searchAndReplace, $_subject)
+    function replaceAll(iterable|Closure $searchAndReplace, Closure|string $subject): string
     {
-        if ( isArrayableOrArray($_subject) && !isArrayableOrArray($_searchAndReplace) ) {
-            $searchAndReplace = $_subject;
-            $subject = $_searchAndReplace;
-        } else {
-            $searchAndReplace = $_searchAndReplace;
-            $subject = $_subject;
+        $subject = (string) value($subject);
+        $searchAndReplace = value($searchAndReplace);
+        // $searchAndReplace = is_iterable($searchAndReplace) ? iterator_to_array($searchAndReplace) : $searchAndReplace;
+
+        foreach( $searchAndReplace as $search => $replace ) {
+            $subject = str_ireplace($search, $replace, $subject);
         }
-
-        toCollect((array)$searchAndReplace)->each(function ($replace, $search) use (&$subject) {
-            if (
-                !is_string($replace) &&
-                isCallableDeep(
-                    $replace,
-                    false,
-                    false,
-                    false,
-                    false,
-                    false
-                )
-            ) {
-                $_args = [
-                    'search' => $search,
-                    'subject' => $subject,
-                    'count' => trim($count = countToken($search, $subject)),
-                ];
-
-                $_replace = call_user_func($replace, $_args);
-            } else {
-                $_replace = $replace;
-            }
-
-            $subject = str_ireplace($search, $_replace, $subject);
-        });
 
         return $subject;
     }
 }
 
-if ( !function_exists('replaceTokens') ) {
+if( !function_exists('replaceTokens') ) {
     /**
      * Replace the tokens in string
      *
@@ -185,32 +157,32 @@ if ( !function_exists('replaceTokens') ) {
     function replaceTokens(string $_subject, array $values = [], $token_prefix = "{", $token_suffix = "}"): string
     {
         $subject = $_subject;
-        foreach ($values as $token => $value) {
+        foreach( $values as $token => $value ) {
             $_token = "{$token_prefix}{$token}{$token_suffix}";
             $subject = replaceAll([
-                $_token => $value,
-            ], $subject);
+                                      $_token => $value,
+                                  ], $subject);
         }
 
         return $subject;
     }
 }
 
-if ( !function_exists('bindTo') ) {
+if( !function_exists('bindTo') ) {
     /**
      * Bind the given Closure
      *
      * @param \Closure    $closure
-     * @param object|null $newthis The object to which the given anonymous function should be bound, or NULL for the closure to be unbound.
+     * @param object|null $newthis  The object to which the given anonymous function should be bound, or NULL for the closure to be unbound.
      * @param mixed       $newscope The class scope to which associate the closure is to be associated, or 'static' to keep the current one.
-     * If an object is given, the type of the object will be used instead.
-     * This determines the visibility of protected and private methods of the bound object.
+     *                              If an object is given, the type of the object will be used instead.
+     *                              This determines the visibility of protected and private methods of the bound object.
      *
      * @return Closure Returns the newly created Closure object
      */
     function bindTo($closure, $newthis = null, $newscope = 'static')
     {
-        if ( isClosure($closure) && $newthis ) {
+        if( isClosure($closure) && $newthis ) {
             return $closure->bindTo($newthis, $newscope);
         }
 

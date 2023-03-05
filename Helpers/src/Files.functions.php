@@ -16,7 +16,7 @@ if( !function_exists('unzip') ) {
     /**
      * UnZip .zip archive.
      *
-     * @param string      $archivePath   .zip path
+     * @param string      $archivePath   zip path
      * @param string|null $extractToPath Destination directory path.
      *
      * @return bool
@@ -136,6 +136,22 @@ if( !function_exists('includeOnceIfExists') ) {
         return getValue($return, ...[ $file ]);
     }
 }
+/*
+if ( !function_exists('includeIfExists') ) {
+    /**
+     * Include file if exist
+     *
+     * @param string $file
+     * @param bool   $once
+     *
+     * @return false|mixed
+     *//*
+    function includeIfExists($file, $once = true)
+    {
+        $include = $once ? "include_once" : "include";
+        return file_exists($file) && is_callable($include) ? $include($file) : false;
+    }
+}*/
 
 if( !function_exists('fixPath') ) {
     /**

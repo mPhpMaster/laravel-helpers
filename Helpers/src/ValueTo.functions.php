@@ -7,7 +7,7 @@
  * return string
  */
 
-if ( !function_exists('valueToDate') ) {
+if( !function_exists('valueToDate') ) {
     /**
      * Returns value as date format
      *
@@ -21,7 +21,7 @@ if ( !function_exists('valueToDate') ) {
     }
 }
 
-if ( !function_exists('valueToDateTime') ) {
+if( !function_exists('valueToDateTime') ) {
     /**
      * Returns value as date and time format
      *
@@ -38,7 +38,7 @@ if ( !function_exists('valueToDateTime') ) {
 /**
  * return array
  */
-if ( !function_exists('valueToArray') ) {
+if( !function_exists('valueToArray') ) {
     /**
      * Returns value as Array
      *
@@ -49,7 +49,7 @@ if ( !function_exists('valueToArray') ) {
      */
     function valueToArray($value, bool $forceToArray = false)
     {
-        if ( $value instanceof Traversable ) {
+        if( $value instanceof Traversable ) {
             return iterator_to_array($value);
         }
         $collect = toCollect($value);
@@ -61,7 +61,7 @@ if ( !function_exists('valueToArray') ) {
 /**
  * return array
  */
-if ( !function_exists('valueToUnDotArray') ) {
+if( !function_exists('valueToUnDotArray') ) {
     /**
      * Returns value as Array. (Array undot)
      *
@@ -73,7 +73,7 @@ if ( !function_exists('valueToUnDotArray') ) {
     {
         $array = [];
 
-        collect($value)->mapWithKeys(function ($value, $key) use (&$array) {
+        collect($value)->mapWithKeys(function($value, $key) use (&$array) {
             return array_set($array, $key, $value);
         });
 
@@ -81,7 +81,7 @@ if ( !function_exists('valueToUnDotArray') ) {
     }
 }
 
-if ( !function_exists('valueToDotArray') ) {
+if( !function_exists('valueToDotArray') ) {
     /**
      * Flatten a multi-dimensional associative array with dots.
      *
@@ -94,11 +94,11 @@ if ( !function_exists('valueToDotArray') ) {
     {
         $results = [];
 
-        foreach ((array)$array as $key => $value) {
-            if ( !empty($value) && is_array($value) ) {
+        foreach( (array) $array as $key => $value ) {
+            if( !empty($value) && is_array($value) ) {
                 $results[] = valueToDotArray($value, $prepend . $key . '.');
             } else {
-                $results[] = [$prepend . $key => $value];
+                $results[] = [ $prepend . $key => $value ];
             }
         }
         $results = count($results) === 1 ? head($results) : array_merge(...$results);
@@ -110,7 +110,7 @@ if ( !function_exists('valueToDotArray') ) {
 /**
  * return object
  */
-if ( !function_exists('valueToObject') ) {
+if( !function_exists('valueToObject') ) {
     /**
      * Cast value as Object
      *
@@ -120,11 +120,11 @@ if ( !function_exists('valueToObject') ) {
      */
     function valueToObject($value)
     {
-        return (object)$value;
+        return (object) $value;
     }
 }
 
-if ( !function_exists('valueFromJson') ) {
+if( !function_exists('valueFromJson') ) {
     /**
      * @param string|null $_data
      * @param null|mixed  $default
@@ -135,7 +135,7 @@ if ( !function_exists('valueFromJson') ) {
     {
         try {
             $data = json_decode($_data, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Exception $exception) {
+        } catch(\Exception $exception) {
             $data = value($default ?? false);
         }
 
@@ -143,7 +143,7 @@ if ( !function_exists('valueFromJson') ) {
     }
 }
 
-if ( !function_exists('valueToJson') ) {
+if( !function_exists('valueToJson') ) {
     /**
      * @param string|array|null $_data
      * @param null|mixed        $default
@@ -156,7 +156,7 @@ if ( !function_exists('valueToJson') ) {
         $_data = is_string($_data) ? valueFromJson($_data, $_data) : $_data;
         try {
             $data = json_encode($_data, $options);
-        } catch (\Exception $exception) {
+        } catch(\Exception $exception) {
             $data = value($default ?? false);
         }
 
@@ -164,25 +164,26 @@ if ( !function_exists('valueToJson') ) {
     }
 }
 
-if ( !function_exists('getValue') ) {
+if( !function_exists('getValue') ) {
     /**
      * Return the default value of the given value.
      *
      * @param mixed $value
-     * @param mixed ...$arguments
+     * @param mixed ...$args
      *
      * @return mixed
+     * @see \value()
      */
-    function getValue($value, ...$arguments)
+    function getValue($value, ...$args): mixed
     {
-        return isClosure($value) || isCallable($value) ? $value(...$arguments) : $value;
+        return is_callable($value) && !is_string($value) ? $value(...$args) : value($value, ...$args);
     }
 }
 
 /**
  * return object
  */
-if ( !function_exists('arrayToObject') ) {
+if( !function_exists('arrayToObject') ) {
     /**
      * Returns array as Object
      *
@@ -192,15 +193,15 @@ if ( !function_exists('arrayToObject') ) {
      */
     function arrayToObject($value)
     {
-        if ( is_object($value) || is_array($value) ) {
+        if( is_object($value) || is_array($value) ) {
 
             //            $_value->by = "hlack";
             return json_decode(json_encode($value));
         }
 
-        $object = (object)[];
-        foreach ((array)$value as $key => $item) {
-            if ( is_array($item) ) {
+        $object = (object) [];
+        foreach( (array) $value as $key => $item ) {
+            if( is_array($item) ) {
                 $object->$key = arrayToObject($item);
             } else {
                 $object->$key = $item;
@@ -211,7 +212,7 @@ if ( !function_exists('arrayToObject') ) {
     }
 }
 
-if ( !function_exists('arrayToStdClass') ) {
+if( !function_exists('arrayToStdClass') ) {
     /**
      * Returns value as Object
      *
@@ -223,7 +224,7 @@ if ( !function_exists('arrayToStdClass') ) {
     {
         $stdClass = new \stdClass;
         $item = null;
-        foreach ($value as $key => &$item) {
+        foreach( $value as $key => &$item ) {
             $stdClass->$key = is_array($item) ? arrayToStdClass($item) : $item;
         }
         unset($item);
@@ -232,7 +233,7 @@ if ( !function_exists('arrayToStdClass') ) {
     }
 }
 
-if ( !function_exists('toVar') ) {
+if( !function_exists('toVar') ) {
     /**
      * Returns value as boolean
      *
@@ -242,68 +243,46 @@ if ( !function_exists('toVar') ) {
      */
     function toVar($value = null, \Closure $callable = null): Closure
     {
-        if ( $callable && ($callable instanceof \Closure) ) {
-            return function () use (&$callable, &$value) {
+        if( $callable && ($callable instanceof \Closure) ) {
+            return function() use (&$callable, &$value) {
                 /** @var $callable \Closure */
-                return $callable->call(new class ($value) {
-                    /**
-                     * @var mixed
-                     */
-                    public $var = null;
+                return $callable->call(
+                       new class ($value) {
+                           /**
+                            * @var mixed
+                            */
+                           public $var = null;
 
-                    /**
-                     *  constructor.
-                     *
-                     * @param mixed $var
-                     */
-                    public function __construct(&$var = null)
-                    {
-                        $this->var = &$var;
-                    }
+                           /**
+                            *  constructor.
+                            *
+                            * @param mixed $var
+                            */
+                           public function __construct(&$var = null)
+                           {
+                               $this->var = &$var;
+                           }
 
-                    /**
-                     * @return string
-                     */
-                    public function __toString()
-                    {
-                        return (string)$this->var;
-                    }
-                }, ...func_get_args());
+                           /**
+                            * @return string
+                            */
+                           public function __toString()
+                           {
+                               return (string) $this->var;
+                           }
+                       },
+                    ...func_get_args()
+                );
             };
         }
 
-        return function () use (&$value) {
+        return function() use (&$value) {
             return $value;
         };
     }
 }
 
-if ( !function_exists('toDynamicObject') ) {
-    /**
-     * @param iterable $data
-     *
-     * @return \MPhpMaster\LaravelHelpers\DynamicObject
-     */
-    function toDynamicObject($data, array $except = []): \MPhpMaster\LaravelHelpers\DynamicObject
-    {
-        return $data instanceof \MPhpMaster\LaravelHelpers\DynamicObject ? $data : \MPhpMaster\LaravelHelpers\DynamicObject::make($data, $except);
-    }
-}
-
-if ( !function_exists('toVarObject') ) {
-    /**
-     * @param mixed      $value
-     * @param mixed|null $key
-     *
-     * @return \VarObject
-     */
-    function toVarObject($value, $key = null): VarObject
-    {
-        return new VarObject($value, $key);
-    }
-}
-
-if ( !function_exists('trimLower') ) {
+if( !function_exists('trimLower') ) {
     /**
      * @param string $string
      *
@@ -315,7 +294,7 @@ if ( !function_exists('trimLower') ) {
     }
 }
 
-if ( !function_exists('trimUpper') ) {
+if( !function_exists('trimUpper') ) {
     /**
      * @param string $string
      *
@@ -327,7 +306,7 @@ if ( !function_exists('trimUpper') ) {
     }
 }
 
-if ( !function_exists('withKey') ) {
+if( !function_exists('withKey') ) {
     /**
      * If the given data is not an array, wrap it in one.
      * If the given data is array and doesn't has $key ? add $key with $key_default_value.
@@ -340,16 +319,17 @@ if ( !function_exists('withKey') ) {
      */
     function withKey($value, string $key, $key_default_value = []): array
     {
-        $value = is_array($value) ? $value : [$value];
-        if ( isset($value[ $key ]) ) {
+        $value = is_array($value) ? $value : [ $value ];
+        if( isset($value[ $key ]) ) {
             return $value;
         }
         $value[ $key ] = $key_default_value;
+
         return $value;
     }
 }
 
-if ( !function_exists('wrapWith') ) {
+if( !function_exists('wrapWith') ) {
     /**
      * If the given value is not an array, wrap it in one. and assign it to the given key.
      *
@@ -360,11 +340,11 @@ if ( !function_exists('wrapWith') ) {
      */
     function wrapWith($value, string $key = null): array
     {
-        if ( is_array($value) ) {
-            if ( is_null($key) ) {
+        if( is_array($value) ) {
+            if( is_null($key) ) {
                 return array_wrap($value);
             }
-            if ( isset($value[ $key ]) ) {
+            if( isset($value[ $key ]) ) {
                 return $value;
             }
         }
@@ -373,7 +353,7 @@ if ( !function_exists('wrapWith') ) {
     }
 }
 
-if ( !function_exists('wrapWithData') ) {
+if( !function_exists('wrapWithData') ) {
     /**
      * Wrap the given value with 'data' key or return it if already wrapped.
      *
@@ -384,8 +364,8 @@ if ( !function_exists('wrapWithData') ) {
     function wrapWithData($value): array
     {
         $key = 'data';
-        if ( is_array($value) ) {
-            if ( isset($value[ $key ]) ) {
+        if( is_array($value) ) {
+            if( isset($value[ $key ]) ) {
                 return $value;
             }
         }
@@ -394,7 +374,7 @@ if ( !function_exists('wrapWithData') ) {
     }
 }
 
-if ( !function_exists('wrapWithData') ) {
+if( !function_exists('wrapWithData') ) {
     /**
      * Flatten a multi-dimensional associative array with dots.
      *
@@ -406,8 +386,8 @@ if ( !function_exists('wrapWithData') ) {
     function wrapWithData($array, $prepend = ''): array
     {
         $key = 'data';
-        if ( is_array($array) ) {
-            if ( isset($array[ $key ]) ) {
+        if( is_array($array) ) {
+            if( isset($array[ $key ]) ) {
                 return $array;
             }
         }
@@ -416,11 +396,11 @@ if ( !function_exists('wrapWithData') ) {
     }
 }
 
-if ( !defined('NO_CHANGE') ) {
+if( !defined('NO_CHANGE') ) {
     define('NO_CHANGE', "no-change");
 }
 
-if ( !function_exists('unwrapWith') ) {
+if( !function_exists('unwrapWith') ) {
     /**+
      * like data_get
      *
@@ -433,9 +413,9 @@ if ( !function_exists('unwrapWith') ) {
     function unwrapWith($data, string $key = null, $default = null)
     {
         $default = $default === NO_CHANGE ? $data : $default;
-        $data = ($_data = getArrayableItems($data)) == [$data] ? $data : $_data;
-        if ( is_array($data) ) {
-            if ( is_null($key) ) {
+        $data = ($_data = getArrayableItems($data)) == [ $data ] ? $data : $_data;
+        if( is_array($data) ) {
+            if( is_null($key) ) {
                 return isAssocArray($data) ? $default : head($data);
             }
 

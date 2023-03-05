@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 /**
  * return appLocale
  */
-if (!function_exists('currentLocale')) {
+if( !function_exists('currentLocale') ) {
     /**
      * return appLocale
      *
@@ -18,16 +18,17 @@ if (!function_exists('currentLocale')) {
      */
     function currentLocale($full = false): string
     {
-        if ($full)
-            return (string)app()->getLocale();
+        if( $full )
+            return (string) app()->getLocale();
 
         $locale = str_replace('_', '-', app()->getLocale());
         $locale = current(explode("-", $locale));
+
         return $locale ?: "";
     }
 }
 
-if (!function_exists('currentActionName')) {
+if( !function_exists('currentActionName') ) {
     /**
      * @param null $action
      *
@@ -35,33 +36,44 @@ if (!function_exists('currentActionName')) {
      */
     function currentActionName($action = null)
     {
-        $action = $action ?:
-            Route::current()->getActionName() ?:
-                currentRoute()->getActionMethod() ?:
-                    Route::currentRouteAction() ?:
-                        Route::current()->getName() ?:
-                            null;
+        try {
+            $action = $action ?:
+                Route::current()->getActionName() ?:
+                    currentRoute()->getActionMethod() ?:
+                        Route::currentRouteAction() ?:
+                            Route::current()->getName() ?:
+                                null;
 
-        $methodName = $action ? getMethodName($action) : null;
+            $methodName = $action ? getMethodName($action) : null;
 
-        return $methodName ?: null;
+            return $methodName ?: null;
+        } catch(Exception $exception) {
+
+        }
+
+        return null;
     }
 }
 
-if (!function_exists('currentModel')) {
+if( !function_exists('currentModel') ) {
     /**
      * Returns current model form route
      *
-     * @param null $default
-     * @return null
+     * @param mixed $default
+     *
+     * @return mixed
      */
     function currentModel($default = null)
     {
-        return array_first(currentRoute()->parameters()) ?: $default;
+        try {
+            return array_first(currentRoute()->parameters()) ?: value($default);
+        } catch(Exception $exception) {
+            return value($default);
+        }
     }
 }
 
-if (!function_exists('routeParameter')) {
+if( !function_exists('routeParameter') ) {
     /**
      * @param array $default
      *
@@ -71,24 +83,24 @@ if (!function_exists('routeParameter')) {
     {
         $parameters = currentRoute()->parameters;
 
-        if(!$parameters) {
+        if( !$parameters ) {
             return $default;
         }
 
-        return  is_null($key) ? $parameters : array_get($parameters, $key, $default);
+        return is_null($key) ? $parameters : array_get($parameters, $key, $default);
     }
 }
 
-if (!function_exists('currentUrl')) {
+if( !function_exists('currentUrl') ) {
     /**
      * Returns current url.
      *
-     * @param string|null $key return as array with key $key and value as url
-     * @param bool $encode use urlencode
+     * @param string|null $key    return as array with key $key and value as url
+     * @param bool        $encode use urlencode
      *
      * @return string|array
      */
-    function currentUrl(?string $key = null,bool $encode = true)
+    function currentUrl(?string $key = null, bool $encode = true)
     {
         $url = request()->url();
         $url = iif($encode, urlencode($url), $url);

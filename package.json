@@ -1,6 +1,6 @@
 {
     "name": "@mphpmaster/laravel-helpers",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "description": "Laravel Helpers By hlaCk",
     "main": "index.js",
     "scripts": {

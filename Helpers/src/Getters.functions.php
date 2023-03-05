@@ -11,7 +11,7 @@ use Illuminate\Filesystem\Filesystem;
 /**
  * return column_{appLocale}
  */
-if ( !function_exists('tool_title_locale') ) {
+if( !function_exists('tool_title_locale') ) {
     /**
      * return name_{appLocale}
      *
@@ -26,7 +26,7 @@ if ( !function_exists('tool_title_locale') ) {
 /**
  * return table name}
  */
-if ( !function_exists('getTable') ) {
+if( !function_exists('getTable') ) {
     /**
      * Returns Model table name.
      *
@@ -36,7 +36,7 @@ if ( !function_exists('getTable') ) {
      */
     function getTable(string $model)
     {
-        if ( $model && class_exists($model) ) {
+        if( $model && class_exists($model) ) {
             $class = new $model;
 
             /** @var $class \Illuminate\Database\Eloquent\Model */
@@ -50,7 +50,7 @@ if ( !function_exists('getTable') ) {
 /**
  * return class methods}
  */
-if ( !function_exists('getMethods') ) {
+if( !function_exists('getMethods') ) {
     /**
      * Returns Model methods list.
      *
@@ -67,7 +67,7 @@ if ( !function_exists('getMethods') ) {
 /**
  * return model fillable}
  */
-if ( !function_exists('getFillable') ) {
+if( !function_exists('getFillable') ) {
     /**
      * Returns Model Fillable.
      *
@@ -77,8 +77,9 @@ if ( !function_exists('getFillable') ) {
      */
     function getFillable(string $model)
     {
-        if ( $model && class_exists($model) ) {
+        if( $model && class_exists($model) ) {
             $class = new $model;
+
             /** @var $class \Illuminate\Database\Eloquent\Model */
             return $class->getFillable();
         }
@@ -90,7 +91,7 @@ if ( !function_exists('getFillable') ) {
 /**
  * return model hidden}
  */
-if ( !function_exists('getHidden') ) {
+if( !function_exists('getHidden') ) {
     /**
      * Returns Model hidden.
      *
@@ -100,8 +101,9 @@ if ( !function_exists('getHidden') ) {
      */
     function getHidden(string $model)
     {
-        if ( $model && class_exists($model) ) {
+        if( $model && class_exists($model) ) {
             $class = new $model;
+
             /** @var $class \Illuminate\Database\Eloquent\Model */
             return $class->getHidden();
         }
@@ -146,12 +148,12 @@ if( !function_exists('getTrans') ) {
     }
 }
 
-if ( !function_exists('cutBasePath') ) {
+if( !function_exists('cutBasePath') ) {
     /**
      * Remove base_path() from the given file path.
      *
      * @param string $_fullFilePath file path
-     * @param string $prefix any text to prefix the result with.
+     * @param string $prefix        any text to prefix the result with.
      *
      * @return string
      */
@@ -172,7 +174,7 @@ if ( !function_exists('cutBasePath') ) {
     }
 }
 
-if ( !function_exists('classPropertyValue') ) {
+if( !function_exists('classPropertyValue') ) {
     /**
      * Get property value fom class
      *
@@ -187,11 +189,12 @@ if ( !function_exists('classPropertyValue') ) {
     {
         $_property = new ReflectionProperty($class, $property);
         $_property->setAccessible(true);
+
         return $_property->getValue();
     }
 }
 
-if ( !function_exists('getArrayFirst') ) {
+if( !function_exists('getArrayFirst') ) {
     /**
      * Get first item in the given array as [ $value, $key ]
      *
@@ -203,7 +206,7 @@ if ( !function_exists('getArrayFirst') ) {
     function getArrayFirst(iterable $array, callable $callback = null)
     {
         try {
-            if ( !is_array($array) ) {
+            if( !is_array($array) ) {
                 $array = valueToArray($array);
             }
             reset($array);
@@ -211,11 +214,11 @@ if ( !function_exists('getArrayFirst') ) {
             $key = key($array);
             $value = &$array[ $key ];
 //            $value = current($array);
-        } catch (Exception | Error $exception) {
+        } catch(Exception|Error $exception) {
             $fresh = 0;
 
-            foreach ($array as $k => &$v) {
-                if ( $fresh === 1 ) {
+            foreach( $array as $k => &$v ) {
+                if( $fresh === 1 ) {
                     $key = $k;
                     $value = &$v;
                     $fresh++;
@@ -231,15 +234,15 @@ if ( !function_exists('getArrayFirst') ) {
             &$value,
             $key,
         ];
-        $callback = is_callable($callback) ? $callback : function (&$_value, $_key) {
-            return [&$_value, $_key];
+        $callback = is_callable($callback) ? $callback : function(&$_value, $_key) {
+            return [ &$_value, $_key ];
         };
 
         return is_callable($callback) ? $callback(...$_row) : $_row;
     }
 }
 
-if ( !function_exists('Row') ) {
+if( !function_exists('Row') ) {
     /**
      * Get first item in the given array as [ $value, $key ], then remove it from array.
      *
@@ -252,12 +255,12 @@ if ( !function_exists('Row') ) {
     {
         $row = getArrayFirst(...func_get_args());
 
-        if ( !is_array($array) ) {
+        if( !is_array($array) ) {
             $array = valueToArray($array);
         }
 
-        if ( is_array($row) && is_array($array) ) {
-            [, $index] = $row;
+        if( is_array($row) && is_array($array) ) {
+            [ , $index ] = $row;
             array_has($array, $index) && array_forget($array, $index);
         }
 
@@ -265,7 +268,7 @@ if ( !function_exists('Row') ) {
     }
 }
 
-if ( !function_exists('getNumbers') ) {
+if( !function_exists('getNumbers') ) {
     /**
      * Returns Numbers only from the given string
      *
@@ -279,7 +282,7 @@ if ( !function_exists('getNumbers') ) {
     }
 }
 
-if ( !function_exists('replaceArabicNumbers') ) {
+if( !function_exists('replaceArabicNumbers') ) {
     /**
      * replace ١٢٣٤٥٦٧٨٩٠ to 1234567890
      *
@@ -291,20 +294,38 @@ if ( !function_exists('replaceArabicNumbers') ) {
     {
         $replacer = fn($_m) => str_ireplace(
             [
-                '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩', '٠',
+                '١',
+                '٢',
+                '٣',
+                '٤',
+                '٥',
+                '٦',
+                '٧',
+                '٨',
+                '٩',
+                '٠',
             ],
             [
-                '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+                '1',
+                '2',
+                '3',
+                '4',
+                '5',
+                '6',
+                '7',
+                '8',
+                '9',
+                '0',
             ],
-            head((array)$_m)
+            head((array) $_m)
         );
 
         $patterns = [
-            "/./u"
+            "/./u",
         ];
 
         $_string = $string;
-        foreach ($patterns as $pattern) {
+        foreach( $patterns as $pattern ) {
             $_string = preg_replace_callback(
                 $pattern,
                 $replacer,
@@ -343,11 +364,11 @@ if ( !function_exists('replaceArabicNumbers') ) {
 //    }
 //}
 
-if ( !function_exists('getClass') ) {
+if( !function_exists('getClass') ) {
     /**
      * Returns the name of the class of an object
      *
-     * @param object $object |string [optional] <p> The tested object. This parameter may be omitted when inside a class. </p>
+     * @param object|Model|string $object |string [optional] <p> The tested object. This parameter may be omitted when inside a class. </p>
      *
      * @return string|false <p> The name of the class of which <i>`object`</i> is an instance.</p>
      * <p>
@@ -355,9 +376,9 @@ if ( !function_exists('getClass') ) {
      *      If <i>`object`</i> is omitted when inside a class, the name of that class is returned.
      * </p>
      */
-    function getClass($object)
+    function getClass($object): string|false
     {
-        if ( is_object($object) ) {
+        if( is_object($object) ) {
             return get_class(valueToObject($object));
         }
 
@@ -365,7 +386,7 @@ if ( !function_exists('getClass') ) {
     }
 }
 
-if ( !function_exists('getRealClassName') ) {
+if( !function_exists('getRealClassName') ) {
     /**
      * Returns the real class name.
      *
@@ -379,21 +400,20 @@ if ( !function_exists('getRealClassName') ) {
      */
     function getRealClassName($class)
     {
-        if ( is_object($class) ) {
+        if( is_object($class) ) {
             $class = get_class($class);
         }
         throw_if(!class_exists($class), new Exception("Class `{$class}` not exists!"));
 
         try {
-            $_class = eval("return new class extends {$class} { public function getResourceValueAttribute(): string { return \"\"; } };");
-
-        } catch (Exception $exception) {
+            $_class = eval(sprintf("return new class extends %s {  };", $class));
+        } catch(Exception $exception) {
             dE(
                 $exception->getMessage()
             );
         }
 
-        if ( $_class && is_object($_class) ) {
+        if( $_class && is_object($_class) ) {
             return get_parent_class($_class);
         }
 
@@ -401,7 +421,7 @@ if ( !function_exists('getRealClassName') ) {
     }
 }
 
-if ( !function_exists("filesMap") ) {
+if( !function_exists("filesMap") ) {
     /**
      * Get Files names into collect()->mapWithKeys()->filter()->toArray() list as [ FilenameWithoutExtension => $callabke(RealPath) ]
      *
@@ -416,10 +436,11 @@ if ( !function_exists("filesMap") ) {
         $data = null;
         $path = (new Filesystem)->exists($path) ? $path : null;
 
-        if ( $path ) {
-            $data = collect((new Filesystem())->files($path))->mapWithKeys(function ($v) use ($callback) {
+        if( $path ) {
+            $data = collect((new Filesystem())->files($path))->mapWithKeys(function($v) use ($callback) {
                 /** @var $v \Symfony\Component\Finder\SplFileInfo */
-                $map = [pathinfo($v->getFilename(), PATHINFO_FILENAME) => $v->getRealPath()];
+                $map = [ pathinfo($v->getFilename(), PATHINFO_FILENAME) => $v->getRealPath() ];
+
                 return is_callable($callback) ? $callback($map) : $map;
             })->filter()->toArray();
         }
@@ -428,7 +449,7 @@ if ( !function_exists("filesMap") ) {
     }
 }
 
-if ( !function_exists("getByKey") ) {
+if( !function_exists("getByKey") ) {
     /**
      * @param      $data
      * @param null $key
@@ -437,12 +458,12 @@ if ( !function_exists("getByKey") ) {
      */
     function getByKey($data, $key = null)
     {
-        if ( is_null($key) ) {
+        if( is_null($key) ) {
             return $data;
         }
         $data = valueToArray($data ?: []);
 
-        if ( $key && array_has($data, $key) ) {
+        if( $key && array_has($data, $key) ) {
             $data = array_get($data, $key, []);
         }
 
@@ -450,7 +471,7 @@ if ( !function_exists("getByKey") ) {
     }
 }
 
-if ( !function_exists('getOld') ) {
+if( !function_exists('getOld') ) {
     /**
      * Retrieve an old input item.
      *
@@ -469,7 +490,7 @@ if ( !function_exists('getOld') ) {
     }
 }
 
-if ( !function_exists('slice') ) {
+if( !function_exists('slice') ) {
     /**
      * Slice the given array.
      *
@@ -482,11 +503,12 @@ if ( !function_exists('slice') ) {
     function slice(array $items, $offset, $length = null)
     {
         $items = valueToArray($items);
+
         return array_slice($items, $offset, $length, true);
     }
 }
 
-if ( !function_exists('take') ) {
+if( !function_exists('take') ) {
     /**
      * Take the first or last {$limit} items.
      *
@@ -497,7 +519,7 @@ if ( !function_exists('take') ) {
      */
     function take(array $items, $limit)
     {
-        if ( $limit < 0 ) {
+        if( $limit < 0 ) {
             return slice($items, $limit, abs($limit));
         }
 
@@ -505,7 +527,7 @@ if ( !function_exists('take') ) {
     }
 }
 
-if ( !function_exists('getFirst') ) {
+if( !function_exists('getFirst') ) {
     /**
      * @param mixed ...$vars
      *
@@ -513,8 +535,8 @@ if ( !function_exists('getFirst') ) {
      */
     function getFirst(...$vars)
     {
-        foreach ($vars as $_var) {
-            if ( $_var ) {
+        foreach( $vars as $_var ) {
+            if( $_var ) {
                 return $_var;
             }
         }
@@ -523,7 +545,7 @@ if ( !function_exists('getFirst') ) {
     }
 }
 
-if ( !function_exists('getFirstValueByKey') ) {
+if( !function_exists('getFirstValueByKey') ) {
     /**
      * Get first existing key from object.
      *
@@ -537,11 +559,13 @@ if ( !function_exists('getFirstValueByKey') ) {
     {
         $request = toCollect($request);
         $return = $default;
-        toCollect($keys)->each(function ($key) use (&$return, $request) {
-            if ( $request->has($key) ) {
+        toCollect($keys)->each(function($key) use (&$return, $request) {
+            if( $request->has($key) ) {
                 $return = $request->get($key);
+
                 return false;
             }
+
             return true;
         });
 
@@ -549,7 +573,7 @@ if ( !function_exists('getFirstValueByKey') ) {
     }
 }
 
-if ( !function_exists('getFirstKeyByKey') ) {
+if( !function_exists('getFirstKeyByKey') ) {
     /**
      * Get first existing key from object.
      *
@@ -563,11 +587,13 @@ if ( !function_exists('getFirstKeyByKey') ) {
     {
         $request = toCollect($request);
         $return = $default;
-        toCollect($keys)->each(function ($key) use (&$return, $request) {
-            if ( $request->has($key) ) {
+        toCollect($keys)->each(function($key) use (&$return, $request) {
+            if( $request->has($key) ) {
                 $return = $key;
+
                 return false;
             }
+
             return true;
         });
 
@@ -575,7 +601,7 @@ if ( !function_exists('getFirstKeyByKey') ) {
     }
 }
 
-if ( !function_exists('getRequestedPage') ) {
+if( !function_exists('getRequestedPage') ) {
     /**
      * @param int                           $default
      * @param \Illuminate\Http\Request|null $request
@@ -585,16 +611,17 @@ if ( !function_exists('getRequestedPage') ) {
     function getRequestedPage(int $default = 0, \Illuminate\Http\Request &$request = null)
     {
         $request ??= request();
-        if ( !$request->has('page') ) {
+        if( !$request->has('page') ) {
             return $default ?? null;
         }
 
         $page = $request->get('page', $default);
+
         return strtolower($page) === 'all' ? 0 : $page;
     }
 }
 
-if ( !function_exists('getRequestedPageCount') ) {
+if( !function_exists('getRequestedPageCount') ) {
     /**
      * @param int                           $default
      * @param \Illuminate\Http\Request|null $request
@@ -606,16 +633,17 @@ if ( !function_exists('getRequestedPageCount') ) {
     {
         $request ??= request();
         $default ??= config('app.per_page', null);
-        if ( !$request->has($key) ) {
+        if( !$request->has($key) ) {
             return $default;
         }
 
         $itemsPerPage = $request->get($key, $default);
+
         return strtolower($itemsPerPage) === 'all' ? -1 : $itemsPerPage;
     }
 }
 
-if ( !function_exists('getMethodName') ) {
+if( !function_exists('getMethodName') ) {
     /**
      * Returns method name by given Route->uses
      *
@@ -625,19 +653,19 @@ if ( !function_exists('getMethodName') ) {
      */
     function getMethodName(string $method)
     {
-        if ( empty($method) ) return '';
+        if( empty($method) ) return '';
 
-        if ( stripos($method, '::') !== false )
+        if( stripos($method, '::') !== false )
             $method = collect(explode('::', $method))->last();
 
-        if ( stripos($method, '@') !== false )
+        if( stripos($method, '@') !== false )
             $method = collect(explode('@', $method))->last();
 
         return $method;
     }
 }
 
-if ( !function_exists('getCurrentNamespace') ) {
+if( !function_exists('getCurrentNamespace') ) {
     /**
      * Returns current namespace of current class|object
      *
@@ -651,36 +679,36 @@ if ( !function_exists('getCurrentNamespace') ) {
         $caller = $caller[ $backtrace_times ];
         $class = null;
         try {
-            if ( isset($caller['class']) ) {
-                $class = (new ReflectionClass($caller['class']))->getNamespaceName();
+            if( isset($caller[ 'class' ]) ) {
+                $class = (new ReflectionClass($caller[ 'class' ]))->getNamespaceName();
             }
-            if ( isset($caller['object']) ) {
-                $class = (new ReflectionClass(get_class($caller['object'])))->getNamespaceName();
+            if( isset($caller[ 'object' ]) ) {
+                $class = (new ReflectionClass(get_class($caller[ 'object' ])))->getNamespaceName();
             }
-        } catch (ReflectionException $exception) {
+        } catch(ReflectionException $exception) {
 //			d($exception);
             return null;
         }
-        if ( $append ) $append = str_ireplace("/", "\\", $append);
-        if ( $class ) $class = str_ireplace("/", "\\", $class);
+        if( $append ) $append = str_ireplace("/", "\\", $append);
+        if( $class ) $class = str_ireplace("/", "\\", $class);
 
-        if ( $class ) $class = real_path("{$class}" . ($append ? "\\{$append}" : ""));
+        if( $class ) $class = real_path("{$class}" . ($append ? "\\{$append}" : ""));
 
         return $class;
     }
 }
 
-if ( !function_exists('getControllerPermissionPrefix') ) {
+if( !function_exists('getControllerPermissionPrefix') ) {
     /**
      * Returns prefix of permissions name
      *
-     * @param \Illuminate\Routing\Controller|string|null $controller Controller or controller name, default: {@see currentController()}
+     * @param \Illuminate\Routing\Controller|string|null $controller      Controller or controller name, default: {@see currentController()}
      * @param string|null                                $permission_name Permission name
-     * @param string                                     $separator Permission name separator
+     * @param string                                     $separator       Permission name separator
      *
      * @return string
      */
-    function getControllerPermissionPrefix($controller = null, $permission_name = null, $separator = "_"): string
+    function getControllerPermissionPrefix($controller = null, $permission_name = null, $separator = "."): string
     {
         $controller = $controller instanceof \Illuminate\Routing\Controller ? get_class($controller) : ($controller ? trim($controller) : get_class(currentController()));
 
@@ -690,13 +718,13 @@ if ( !function_exists('getControllerPermissionPrefix') ) {
 
         $controller = snake_case($controller);
 
-        $controller = $permission_name ? $controller : str_finish($controller, "_");
+        $controller = $permission_name ? $controller : str_finish($controller, ".");
 
         return str_ireplace("_", $separator, $controller);
     }
 }
 
-if ( !function_exists('getArrayableItems') ) {
+if( !function_exists('getArrayableItems') ) {
     /**
      * Results array of items from Collection, Arrayable, Allable, Jsonable, JsonSerializable, Traversable or array.
      *
@@ -704,24 +732,24 @@ if ( !function_exists('getArrayableItems') ) {
      *
      * @return array
      */
-    function getArrayableItems($items)
+    function getArrayableItems($items): array
     {
-        if ( hasArrayableItems($items) ) {
-            if ( is_array($items) ) {
+        if( isArrayableItems($items) ) {
+            if( is_array($items) ) {
                 return $items;
-            } elseif ( $items instanceof Arrayable || $items instanceof \Illuminate\Contracts\Support\Arrayable || isArrayable($items) ) {
+            } elseif( $items instanceof Arrayable || $items instanceof \Illuminate\Contracts\Support\Arrayable || isArrayable($items) ) {
                 return $items->toArray();
-            } elseif ( $items instanceof \Illuminate\Support\Enumerable || isAllable($items) ) {
+            } elseif( $items instanceof \Illuminate\Support\Enumerable || isAllable($items) ) {
                 return $items->all();
-            } elseif ( $items instanceof Jsonable || $items instanceof \Illuminate\Contracts\Support\Jsonable || isJsonable($items) ) {
+            } elseif( $items instanceof Jsonable || $items instanceof \Illuminate\Contracts\Support\Jsonable || isJsonable($items) ) {
                 return json_decode($items->toJson(), true);
-            } elseif ( $items instanceof JsonSerializable || isJsonSerializable($items) ) {
-                return (array)$items->jsonSerialize();
-            } elseif ( $items instanceof Traversable ) {
+            } elseif( $items instanceof JsonSerializable || isJsonSerializable($items) ) {
+                return (array) $items->jsonSerialize();
+            } elseif( $items instanceof Traversable ) {
                 return iterator_to_array($items);
             }
         }
 
-        return (array)$items;
+        return (array) $items;
     }
 }

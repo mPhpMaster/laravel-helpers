@@ -5,25 +5,22 @@
 
 /** @noinspection ForgottenDebugOutputInspection */
 
-use MPhpMaster\LaravelHelpers\Suffixer;
-use MPhpMaster\LaravelHelpers\With;
-
-if( !defined('e') )
+if ( !defined('e') )
     /**
      *
      */
     define('e', 'else');
 
 //class isPlainVar { public function __construct($var="var") { $this->plain = $var; } };
-if( !defined('UNUSED') )
+if ( !defined('UNUSED') )
     /**
      *
      */
-    define('UNUSED', gzcompress(serialize([ 'plain' => 0x0011 ]), 9));
+    define('UNUSED', gzcompress(serialize(['plain' => 0x0011]), 9));
 //    define('UNUSED', gzcompress(serialize(new isPlainVar('Variable')), 9));
 
 //dd(UNUSED);
-if( !function_exists('toLocaleDate') ) {
+if ( !function_exists('toLocaleDate') ) {
     /**
      * @param $date
      *
@@ -130,22 +127,24 @@ if( !function_exists('toLocaleDate') ) {
 //        }
 //        dd($months);
 
+
         try {
-            if( !app()->isLocale('ar') || !$date )
+            if ( !app()->isLocale('ar') || !$date )
                 return $date;
+
 
             return str_ireplace(
                 $notAr,
                 $ar,
                 $date
             );
-        } catch(\Exception $exception) {
+        } catch (\Exception $exception) {
             return $date;
         }
     }
 }
 
-if( !function_exists('whenUsed') ) {
+if ( !function_exists('whenUsed') ) {
     /**
      * @param          $var
      * @param callable $callable
@@ -154,9 +153,8 @@ if( !function_exists('whenUsed') ) {
      */
     function whenUsed($var, callable $callable): bool
     {
-        if( $var !== UNUSED ) {
+        if ( $var !== UNUSED ) {
             $callable($var);
-
             return true;
         }
 
@@ -164,7 +162,7 @@ if( !function_exists('whenUsed') ) {
     }
 }
 
-if( !function_exists('when') ) {
+if ( !function_exists('when') ) {
     /**
      * if $condition then call $whenTrue|null else call $whenFalse|null
      *
@@ -177,7 +175,7 @@ if( !function_exists('when') ) {
      */
     function when($condition, callable $whenTrue = null, callable $whenFalse = null, $with = null)
     {
-        if( value($condition) ) {
+        if ( value($condition) ) {
             return is_callable($whenTrue) ? $whenTrue($condition, $with) : $whenTrue;
         } else {
             return is_callable($whenFalse) ? $whenFalse($condition, $with) : $whenFalse;
@@ -185,7 +183,7 @@ if( !function_exists('when') ) {
     }
 }
 
-if( !function_exists('whenEmpty') ) {
+if ( !function_exists('whenEmpty') ) {
     /**
      * Apply the callback if the collection is empty.
      *
@@ -197,9 +195,9 @@ if( !function_exists('whenEmpty') ) {
      */
     function whenEmpty($collection, callable $empty, callable $notEmpty = null)
     {
-        return toCollectWithModel($collection)->pipe(function($_collection) use ($collection, $empty, $notEmpty) {
-            if( $collection instanceof \Illuminate\Database\Eloquent\Model ) {
-                if( empty($collection->getAttributes()) ) {
+        return toCollectWithModel($collection)->pipe(function ($_collection) use ($collection, $empty, $notEmpty) {
+            if ( $collection instanceof \Illuminate\Database\Eloquent\Model ) {
+                if ( empty($collection->getAttributes()) ) {
                     return $empty($collection, true);
                 } else {
                     return $notEmpty($collection, false);
@@ -211,7 +209,7 @@ if( !function_exists('whenEmpty') ) {
     }
 }
 
-if( !function_exists('whenNotEmpty') ) {
+if ( !function_exists('whenNotEmpty') ) {
     /**
      * Apply the callback if the collection is not empty.
      *
@@ -223,9 +221,9 @@ if( !function_exists('whenNotEmpty') ) {
      */
     function whenNotEmpty($collection, callable $notEmpty, callable $empty = null)
     {
-        return toCollectWithModel($collection)->pipe(function($_collection) use ($collection, $notEmpty, $empty) {
-            if( $collection instanceof \Illuminate\Database\Eloquent\Model ) {
-                if( !empty($collection->getAttributes()) ) {
+        return toCollectWithModel($collection)->pipe(function ($_collection) use ($collection, $notEmpty, $empty) {
+            if ( $collection instanceof \Illuminate\Database\Eloquent\Model ) {
+                if ( !empty($collection->getAttributes()) ) {
                     return $notEmpty($collection, true);
                 } else {
                     return $empty($collection, false);
@@ -237,20 +235,8 @@ if( !function_exists('whenNotEmpty') ) {
     }
 }
 
-if( !function_exists('makeWith') ) {
-    /**
-     * @param mixed ...$value
-     *
-     * @return With
-     */
-    function makeWith(...$value)
-    {
-        return new With($value);
-    }
-}
-
 // region: return
-if( !function_exists('returnCallable') ) {
+if ( !function_exists('returnCallable') ) {
     /**
      * Determine if the given value is callable, but not a string.
      * **Source**: ---  {@link \Illuminate\Support\Collection Laravel Collection}
@@ -261,11 +247,11 @@ if( !function_exists('returnCallable') ) {
      */
     function returnCallable($value): \Closure
     {
-        if( !is_callable($value) ) {
+        if ( !is_callable($value) ) {
             return returnClosure($value);
         }
 
-        if( is_string($value) ) {
+        if ( is_string($value) ) {
             return Closure::fromCallable($value);
         }
 
@@ -273,7 +259,7 @@ if( !function_exists('returnCallable') ) {
     }
 }
 
-if( !function_exists('returnClosure') ) {
+if ( !function_exists('returnClosure') ) {
     /**
      * Returns function that returns any arguments u sent;
      *
@@ -284,19 +270,19 @@ if( !function_exists('returnClosure') ) {
     function returnClosure(...$data)
     {
         $_data = head($data);
-        if( func_num_args() > 1 ) {
+        if ( func_num_args() > 1 ) {
             $_data = $data;
-        } elseif( func_num_args() === 0 ) {
+        } else if ( func_num_args() === 0 ) {
             $_data = returnNull();
         }
 
-        return function() use ($_data) {
+        return function () use ($_data) {
             return value($_data);
         };
     }
 }
 
-if( !function_exists('returnArray') ) {
+if ( !function_exists('returnArray') ) {
     /**
      * Returns function that returns [];
      *
@@ -310,7 +296,7 @@ if( !function_exists('returnArray') ) {
     }
 }
 
-if( !function_exists('returnCollect') ) {
+if ( !function_exists('returnCollect') ) {
     /**
      * Returns function that returns Collection;
      *
@@ -320,13 +306,13 @@ if( !function_exists('returnCollect') ) {
      */
     function returnCollect(...$data)
     {
-        return function(...$args) use ($data) {
+        return function (...$args) use ($data) {
             return collect($data)->merge($args);
         };
     }
 }
 
-if( !function_exists('returnArgs') ) {
+if ( !function_exists('returnArgs') ) {
     /**
      * Returns function that returns func_get_args();
      *
@@ -334,13 +320,13 @@ if( !function_exists('returnArgs') ) {
      */
     function returnArgs()
     {
-        return function() {
+        return function () {
             return func_get_args();
         };
     }
 }
 
-if( !function_exists('returnThis') ) {
+if ( !function_exists('returnThis') ) {
     /**
      * Returns function that returns $this;
      *
@@ -348,13 +334,13 @@ if( !function_exists('returnThis') ) {
      */
     function returnThis()
     {
-        return returnClosureBinder(function() {
+        return returnClosureBinder(function () {
             return $this;
         }, ...func_get_args());
     }
 }
 
-if( !function_exists('returnStaticName') ) {
+if ( !function_exists('returnStaticName') ) {
     /**
      * Returns function that returns static::class
      *
@@ -362,14 +348,14 @@ if( !function_exists('returnStaticName') ) {
      */
     function returnStaticName()
     {
-        return returnClosureBinder(function() {
+        return returnClosureBinder(function () {
             /** @noinspection PhpUndefinedClassInspection */
             return static::class;
         }, ...func_get_args());
     }
 }
 
-if( !function_exists('returnClosureBinder') ) {
+if ( !function_exists('returnClosureBinder') ) {
     /**
      * Returns function that accepts Closure and scope and returns new Closure.
      *
@@ -379,7 +365,7 @@ if( !function_exists('returnClosureBinder') ) {
      */
     function returnClosureBinder($closure = null)
     {
-        if( isClosure($closure) ) {
+        if ( isClosure($closure) ) {
             /**
              * @param object|null $newthis  The object to which the given anonymous function should be bound, or NULL for the closure to be unbound.
              * @param mixed       $newscope The class scope to which associate the closure is to be associated, or 'static' to keep the current one.
@@ -388,7 +374,7 @@ if( !function_exists('returnClosureBinder') ) {
              *
              * @return Closure Returns the newly created Closure object
              */
-            $return = function($newthis = null, $newscope = 'static') use (&$closure) {
+            $return = function ($newthis = null, $newscope = 'static') use (&$closure) {
                 return $newthis ? bindTo($closure, $newthis, $newscope) : $closure;
             };
         } else {
@@ -400,15 +386,14 @@ if( !function_exists('returnClosureBinder') ) {
              *
              * @return Closure Returns the newly created Closure object
              */
-            $return = function(\Closure $_closure = null, $newthis = null, $newscope = 'static') {
+            $return = function (\Closure $_closure = null, $newthis = null, $newscope = 'static') {
                 return $newthis ? bindTo($_closure, $newthis, $newscope) : $_closure;
             };
         }
 
-        if( func_num_args() > 1 ) {
+        if ( func_num_args() > 1 ) {
             $args = func_get_args();
             array_shift($args);
-
             return $return(...$args);
         }
 
@@ -416,7 +401,7 @@ if( !function_exists('returnClosureBinder') ) {
     }
 }
 
-if( !function_exists('returnString') ) {
+if ( !function_exists('returnString') ) {
     /**
      * Returns function that returns ""
      *
@@ -426,11 +411,11 @@ if( !function_exists('returnString') ) {
      */
     function returnString(?string $text = "")
     {
-        return returnClosure((string) $text);
+        return returnClosure((string)$text);
     }
 }
 
-if( !function_exists('returnNull') ) {
+if ( !function_exists('returnNull') ) {
     /**
      * Returns function that returns null;
      *
@@ -440,13 +425,13 @@ if( !function_exists('returnNull') ) {
      */
     function returnNull()
     {
-        return function() {
+        return function () {
             return null;
         };
     }
 }
 
-if( !function_exists('returnTrue') ) {
+if ( !function_exists('returnTrue') ) {
     /**
      * Returns function that returns true;
      *
@@ -460,7 +445,7 @@ if( !function_exists('returnTrue') ) {
     }
 }
 
-if( !function_exists('returnFalse') ) {
+if ( !function_exists('returnFalse') ) {
     /**
      * Returns function that returns false;
      *
@@ -476,7 +461,7 @@ if( !function_exists('returnFalse') ) {
 // endregion: return
 
 #region IS
-if( !function_exists('isUsed') ) {
+if ( !function_exists('isUsed') ) {
     /**
      * @param mixed $var
      *
@@ -488,7 +473,7 @@ if( !function_exists('isUsed') ) {
     }
 }
 
-if( !function_exists('isUnused') ) {
+if ( !function_exists('isUnused') ) {
     /**
      * @param mixed $var
      *
@@ -500,7 +485,7 @@ if( !function_exists('isUnused') ) {
     }
 }
 
-if( !function_exists('ifSet') ) {
+if ( !function_exists('ifSet') ) {
     /**
      * @param mixed        $var
      * @param string|mixed $true
@@ -517,7 +502,7 @@ if( !function_exists('ifSet') ) {
     }
 }
 
-if( !function_exists('firstSet') ) {
+if ( !function_exists('firstSet') ) {
     /**
      * @param mixed ...$var
      *
@@ -525,15 +510,15 @@ if( !function_exists('firstSet') ) {
      */
     function firstSet(...$var)
     {
-        foreach( $var as $_var )
-            if( isset($_var) )
+        foreach ($var as $_var)
+            if ( isset($_var) )
                 return $_var;
 
         return null;
     }
 }
 
-if( !function_exists('getAny') ) {
+if ( !function_exists('getAny') ) {
     /**
      * @param mixed ...$vars
      *
@@ -541,8 +526,8 @@ if( !function_exists('getAny') ) {
      */
     function getAny(...$vars)
     {
-        foreach( $vars as $_var ) {
-            if( $_var ) {
+        foreach ($vars as $_var) {
+            if ( $_var ) {
                 return $_var;
             }
         }
@@ -551,7 +536,7 @@ if( !function_exists('getAny') ) {
     }
 }
 
-if( !function_exists('test') ) {
+if ( !function_exists('test') ) {
     /**
      * Apply `value` function to each argument. when value returns something true ? return it.
      *
@@ -561,8 +546,8 @@ if( !function_exists('test') ) {
      */
     function test(...$vars)
     {
-        foreach( $vars as $_var )
-            if( $_var = value($_var) ) {
+        foreach ($vars as $_var)
+            if ( $_var = value($_var) ) {
                 return $_var;
             }
 
@@ -570,7 +555,7 @@ if( !function_exists('test') ) {
     }
 }
 
-if( !function_exists('iif') ) {
+if ( !function_exists('iif') ) {
     /**
      * Test Condition and return one of two parameters
      *
@@ -582,13 +567,13 @@ if( !function_exists('iif') ) {
      */
     function iif($var, $true = null, $false = null)
     {
-        return value(value($var) ? $true : $false);
+        return value($var ? $true : $false);
     }
 }
 #endregion
 
 #region HAS
-if( !function_exists('hasTrait') ) {
+if ( !function_exists('hasTrait') ) {
     /**
      * Check if given class has trait.
      *
@@ -608,14 +593,14 @@ if( !function_exists('hasTrait') ) {
             $traitName = str_contains($traitName, "\\") ? class_basename($traitName) : $traitName;
 
             $hasTraitRC = new ReflectionClass($class);
-            $hasTrait = collect($hasTraitRC->getTraitNames())->map(function($name) use ($traitName) {
+            $hasTrait = collect($hasTraitRC->getTraitNames())->map(function ($name) use ($traitName) {
                     $name = str_contains($name, "\\") ? class_basename($name) : $name;
 
                     return $name == $traitName;
                 })->filter()->count() > 0;
-        } catch(ReflectionException $exception) {
+        } catch (ReflectionException $exception) {
             $hasTrait = false;
-        } catch(Exception $exception) {
+        } catch (Exception $exception) {
             d($exception->getMessage());
             $hasTrait = false;
         }
@@ -624,7 +609,7 @@ if( !function_exists('hasTrait') ) {
     }
 }
 
-if( !function_exists('hasKey') ) {
+if ( !function_exists('hasKey') ) {
     /**
      * Check if given array has key if has key call $callable.
      *
@@ -638,12 +623,12 @@ if( !function_exists('hasKey') ) {
     {
         try {
             $has = array_key_exists($key, $array);
-            if( $callable && is_callable($callable) ) {
+            if ( $callable && is_callable($callable) ) {
                 return $callable->call($array, $array);
             }
 
             return $has === true;
-        } catch(Exception $exception) {
+        } catch (Exception $exception) {
             d($exception->getMessage());
         }
 
@@ -651,7 +636,7 @@ if( !function_exists('hasKey') ) {
     }
 }
 
-if( !function_exists('hasScope') ) {
+if ( !function_exists('hasScope') ) {
     /**
      * Check if given class has the given scope name.
      *
@@ -672,7 +657,7 @@ if( !function_exists('hasScope') ) {
             $scopeName = strtolower(studly_case($scopeName));
             starts_with($scopeName, "scope") && ($scopeName = substr($scopeName, strlen("scope")));
 
-            $hasScope = collect($hasScopeRC->getMethods())->map(function($c) use ($scopeName) {
+            $hasScope = collect($hasScopeRC->getMethods())->map(function ($c) use ($scopeName) {
                     /**
                      * @var $c ReflectionMethod
                      */
@@ -681,17 +666,17 @@ if( !function_exists('hasScope') ) {
 
                     return $name == $scopeName;
                 })->filter()->count() > 0;
-        } catch(ReflectionException $exception) {
+        } catch (ReflectionException $exception) {
             $hasScope = false;
-        } catch(Exception $exception) {
+        } catch (Exception $exception) {
             $hasScope = false;
         }
 
-        return ! !$hasScope;
+        return !!$hasScope;
     }
 }
 
-if( !function_exists('hasConst') ) {
+if ( !function_exists('hasConst') ) {
     /**
      * Check if given class has the given const.
      *
@@ -709,21 +694,21 @@ if( !function_exists('hasConst') ) {
     {
         $hasConst = false;
         try {
-            if( is_object($class) || is_string($class) ) {
+            if ( is_object($class) || is_string($class) ) {
                 $reflect = new ReflectionClass($class);
                 $hasConst = array_key_exists($const, $reflect->getConstants());
             }
-        } catch(ReflectionException $exception) {
+        } catch (ReflectionException $exception) {
             $hasConst = false;
-        } catch(Exception $exception) {
+        } catch (Exception $exception) {
             $hasConst = false;
         }
 
-        return (bool) $hasConst;
+        return (bool)$hasConst;
     }
 }
 
-if( !function_exists('getConst') ) {
+if ( !function_exists('getConst') ) {
     /**
      * Returns const value if exists, otherwise returns $default.
      *
@@ -744,7 +729,7 @@ if( !function_exists('getConst') ) {
 #endregion
 
 #region GET
-if( !function_exists('fixDate') ) {
+if ( !function_exists('fixDate') ) {
     /**
      * @param string $value
      * @param string $date_delimiter
@@ -753,24 +738,12 @@ if( !function_exists('fixDate') ) {
      */
     function fixDate(string $value, $date_delimiter = '-'): string
     {
-        $value = $value ?: dateFormat(now());
-
-        return replaceAll([ '/' => $date_delimiter, '\\' => $date_delimiter, '.' => $date_delimiter ], $value);
+        $value = $value ?: now();
+        return replaceAll(['/' => $date_delimiter, '\\' => $date_delimiter, '.' => $date_delimiter], $value);
     }
 }
 
-if( !function_exists('suffixerMaker') ) {
-    /**
-     * Alias for: {@link Suffixer::makeer}
-     *
-     * @return Closure
-     */
-    function suffixerMaker(): Closure
-    {
-        return Suffixer::makeer(...func_get_args());
-    }
-}
-if( !function_exists('str_prefix') ) {
+if ( !function_exists('str_prefix') ) {
     /**
      * Add a prefix to string but only if string2 is not empty.
      *
@@ -790,7 +763,7 @@ if( !function_exists('str_prefix') ) {
     }
 }
 
-if( !function_exists('str_suffix') ) {
+if ( !function_exists('str_suffix') ) {
     /**
      * Add a suffix to string but only if string2 is not empty.
      *
@@ -808,7 +781,7 @@ if( !function_exists('str_suffix') ) {
     }
 }
 
-if( !function_exists('str_words_limit') ) {
+if ( !function_exists('str_words_limit') ) {
     /**
      * Limit string words.
      *
@@ -829,9 +802,9 @@ if( !function_exists('str_words_limit') ) {
         $return = substr($string, 0, stripos($string, $lastWord) + strlen($lastWord)) . ' ' . $suffix;
 
         $m = [];
-        if( preg_match_all('#<(\w+).+?#is', $return, $m) ) {
-            $m = is_array($m) && is_array($m[ 1 ]) ? array_reverse($m[ 1 ]) : [];
-            foreach( $m as $HTMLTAG ) {
+        if ( preg_match_all('#<(\w+).+?#is', $return, $m) ) {
+            $m = is_array($m) && is_array($m[1]) ? array_reverse($m[1]) : [];
+            foreach ($m as $HTMLTAG) {
                 $return .= "</{$HTMLTAG}>";
             }
         }
@@ -840,7 +813,7 @@ if( !function_exists('str_words_limit') ) {
     }
 }
 
-if( !function_exists('basenameOf') ) {
+if ( !function_exists('basenameOf') ) {
     /**
      * Returns basename of the given string after replace slashes and back slashes to DIRECTORY_SEPARATOR
      *
@@ -850,10 +823,10 @@ if( !function_exists('basenameOf') ) {
      */
     function basenameOf(string $string)
     {
-        $string = (string) replaceAll([
-                                          '/' => DIRECTORY_SEPARATOR,
-                                          '\\' => DIRECTORY_SEPARATOR,
-                                      ], $string);
+        $string = (string)replaceAll([
+            '/' => DIRECTORY_SEPARATOR,
+            '\\' => DIRECTORY_SEPARATOR,
+        ], $string);
 
         return basename($string);
     }

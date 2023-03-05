@@ -100,8 +100,7 @@ class CustomFunctions
         // prepares a new function for make()
         $name = self::safeName($name);
         if( !class_exists($name) || function_exists($name) || isset(self::$store[ $name ]) ) {
-            if( !class_exists("App\\Models\\{$name}") )
-            {
+            if( !class_exists("App\\Models\\{$name}") ) {
                 return;
             }
         }

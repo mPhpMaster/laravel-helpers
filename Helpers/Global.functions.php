@@ -6,7 +6,7 @@
 use Illuminate\Support\Facades\Route;
 
 // region: to
-if ( !function_exists('toCollect') ) {
+if( !function_exists('toCollect') ) {
     /**
      * Returns $var as collection
      *
@@ -20,7 +20,7 @@ if ( !function_exists('toCollect') ) {
     }
 }
 
-if ( !function_exists('toCollectWithModel') ) {
+if( !function_exists('toCollectWithModel') ) {
     /**
      * Returns $var as collection, if the given var is model ? return collect([model])
      *
@@ -30,12 +30,13 @@ if ( !function_exists('toCollectWithModel') ) {
      */
     function toCollectWithModel($var): \Illuminate\Support\Collection
     {
-        $var = $var instanceof \Illuminate\Database\Eloquent\Model ? [$var] : $var;
+        $var = $var instanceof \Illuminate\Database\Eloquent\Model ? [ $var ] : $var;
+
         return toCollect($var);
     }
 }
 
-if ( !function_exists('toCollectOrModel') ) {
+if( !function_exists('toCollectOrModel') ) {
     /**
      * Returns $var as collection, if the given var is model ? return model
      *
@@ -49,7 +50,7 @@ if ( !function_exists('toCollectOrModel') ) {
     }
 }
 
-if ( !function_exists('toObjectOrModel') ) {
+if( !function_exists('toObjectOrModel') ) {
     /**
      * Returns $var as Object, if the given var is model ? return model
      *
@@ -63,7 +64,7 @@ if ( !function_exists('toObjectOrModel') ) {
     }
 }
 
-if ( !function_exists('toBoolValue') ) {
+if( !function_exists('toBoolValue') ) {
     /**
      * Returns value as boolean
      *
@@ -73,7 +74,7 @@ if ( !function_exists('toBoolValue') ) {
      */
     function toBoolValue($var): bool
     {
-        if ( is_bool($var) ) return boolval($var);
+        if( is_bool($var) ) return boolval($var);
 
         !is_bool($var) && ($var = strtolower(trim($var)));
         !is_bool($var) && ($var = $var === 'false' ? false : $var);
@@ -87,7 +88,7 @@ if ( !function_exists('toBoolValue') ) {
 // endregion: to
 
 // region: is
-if ( !function_exists('is_collection') ) {
+if( !function_exists('is_collection') ) {
     /**
      * @param $var
      *
@@ -99,7 +100,7 @@ if ( !function_exists('is_collection') ) {
     }
 }
 
-if ( !function_exists('isLoggedIn') ) {
+if( !function_exists('isLoggedIn') ) {
     /**
      * check if user is logged in.
      *
@@ -107,11 +108,11 @@ if ( !function_exists('isLoggedIn') ) {
      */
     function isLoggedIn()
     {
-        return !!Auth::check();
+        return ! !Auth::check();
     }
 }
 
-if ( !function_exists('whenLoggedIn') ) {
+if( !function_exists('whenLoggedIn') ) {
     /**
      * return first argument if user is logged in otherwise return second argument.
      *
@@ -119,11 +120,11 @@ if ( !function_exists('whenLoggedIn') ) {
      */
     function whenLoggedIn(callable $when_true = null, callable $when_false = null)
     {
-        return getValue($isLoggedIn = isLoggedIn() ? $when_true : $when_false, $isLoggedIn, User());
+        return getValue($isLoggedIn = isLoggedIn() ? $when_true : $when_false, $isLoggedIn, currentUser());
     }
 }
 
-if ( !function_exists('isRunningInConsole') ) {
+if( !function_exists('isRunningInConsole') ) {
     /**
      * @return bool
      */
@@ -131,20 +132,19 @@ if ( !function_exists('isRunningInConsole') ) {
     {
         static $runningInConsole = null;
 
-        if ( isset($_ENV['APP_RUNNING_IN_CONSOLE']) || isset($_SERVER['APP_RUNNING_IN_CONSOLE']) ) {
-            return ($runningInConsole = $_ENV['APP_RUNNING_IN_CONSOLE']) ||
-                ($runningInConsole = $_SERVER['APP_RUNNING_IN_CONSOLE']) === 'true';
+        if( isset($_ENV[ 'APP_RUNNING_IN_CONSOLE' ]) || isset($_SERVER[ 'APP_RUNNING_IN_CONSOLE' ]) ) {
+            return ($runningInConsole = $_ENV[ 'APP_RUNNING_IN_CONSOLE' ]) ||
+                ($runningInConsole = $_SERVER[ 'APP_RUNNING_IN_CONSOLE' ]) === 'true';
         }
 
         return $runningInConsole = $runningInConsole ?: (
             \Illuminate\Support\Env::get('APP_RUNNING_IN_CONSOLE') ??
-            (\PHP_SAPI === 'cli' || \PHP_SAPI === 'phpdbg' || in_array(php_sapi_name(), ['cli', 'phpdb']))
+            (\PHP_SAPI === 'cli' || \PHP_SAPI === 'phpdbg' || in_array(php_sapi_name(), [ 'cli', 'phpdb' ]))
         );
     }
 }
 
-
-if ( !function_exists('whenRunningInConsole') ) {
+if( !function_exists('whenRunningInConsole') ) {
     /**
      * return first argument if user is logged in otherwise return second argument.
      *
@@ -153,12 +153,30 @@ if ( !function_exists('whenRunningInConsole') ) {
     function whenRunningInConsole(callable $when_true = null, callable $when_false = null)
     {
         return is_callable($value = $isRunningInConsole = isRunningInConsole() ? $when_true : $when_false) ?
-            call_user_func_array($value, [$isRunningInConsole, User()]) :
+            call_user_func_array($value, [ $isRunningInConsole, currentUser() ]) :
             $value;
     }
 }
 
-if ( !function_exists('isViewMode') ) {
+if( !function_exists('ViewMode') ) {
+    /**
+     * get current route
+     *
+     * @return \Illuminate\Foundation\Application|\Illuminate\Routing\Route|mixed
+     */
+    function ViewMode()
+    {
+        try {
+            $array = explode('.', CurrentRoute()->getName());
+
+            return @end($array);
+        } catch(Exception $exception) {
+            return null;
+        }
+    }
+}
+
+if( !function_exists('isViewMode') ) {
     /**
      * get current route
      *
@@ -170,7 +188,7 @@ if ( !function_exists('isViewMode') ) {
     }
 }
 
-if ( !function_exists('stringContainsAll') ) {
+if( !function_exists('stringContainsAll') ) {
     /**
      * Determine if a given string contains all array values.
      *
@@ -181,8 +199,8 @@ if ( !function_exists('stringContainsAll') ) {
      */
     function stringContainsAll($haystack, array $needles)
     {
-        foreach ($needles as $needle) {
-            if ( !stringContains($haystack, $needle) ) {
+        foreach( $needles as $needle ) {
+            if( !stringContains($haystack, $needle) ) {
                 return false;
             }
         }
@@ -191,7 +209,7 @@ if ( !function_exists('stringContainsAll') ) {
     }
 }
 
-if ( !function_exists('stringContains') ) {
+if( !function_exists('stringContains') ) {
     /**
      * Determine if a given string contains a given substring.
      *
@@ -203,13 +221,13 @@ if ( !function_exists('stringContains') ) {
      */
     function stringContains(string $haystack, $needles, $ignore_case = false)
     {
-        foreach ((array)$needles as $needle) {
-            if ( $ignore_case ) {
+        foreach( (array) $needles as $needle ) {
+            if( $ignore_case ) {
                 $needle = snake_case($needle);
                 $haystack = snake_case($haystack);
             }
 
-            if ( is_string($haystack) && is_string($needle) && $needle !== '' && mb_strpos($haystack, $needle) !== false ) {
+            if( is_string($haystack) && is_string($needle) && $needle !== '' && mb_strpos($haystack, $needle) !== false ) {
                 return true;
             }
         }
@@ -218,7 +236,7 @@ if ( !function_exists('stringContains') ) {
     }
 }
 
-if ( !function_exists('stringEnds') ) {
+if( !function_exists('stringEnds') ) {
     /**
      * Determine if a given string ends with a given substring.
      *
@@ -229,8 +247,8 @@ if ( !function_exists('stringEnds') ) {
      */
     function stringEnds($haystack, $needles)
     {
-        foreach ((array)$needles as $needle) {
-            if ( $needle !== '' && substr($haystack, -strlen($needle)) === (string)$needle ) {
+        foreach( (array) $needles as $needle ) {
+            if( $needle !== '' && substr($haystack, -strlen($needle)) === (string) $needle ) {
                 return true;
             }
         }
@@ -240,7 +258,7 @@ if ( !function_exists('stringEnds') ) {
 
 }
 
-if ( !function_exists('stringStarts') ) {
+if( !function_exists('stringStarts') ) {
     /**
      * Determine if a given string starts with a given substring.
      *
@@ -251,8 +269,8 @@ if ( !function_exists('stringStarts') ) {
      */
     function stringStarts($haystack, $needles)
     {
-        foreach ((array)$needles as $needle) {
-            if ( (string)$needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0 ) {
+        foreach( (array) $needles as $needle ) {
+            if( (string) $needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0 ) {
                 return true;
             }
         }
@@ -263,7 +281,7 @@ if ( !function_exists('stringStarts') ) {
 // endregion: is
 
 // region: current
-if ( !function_exists('currentNamespace') ) {
+if( !function_exists('currentNamespace') ) {
     /**
      * Returns namespace of current controller
      *
@@ -273,7 +291,7 @@ if ( !function_exists('currentNamespace') ) {
     {
         try {
             $currentController = currentController();
-            if ( $currentController && (
+            if( $currentController && (
                     (is_string($currentController) && class_exists($currentController)) ||
                     is_object($currentController)
                 ) ) {
@@ -282,7 +300,7 @@ if ( !function_exists('currentNamespace') ) {
             } else {
                 return null;
             }
-        } catch (ReflectionException $exception) {
+        } catch(ReflectionException $exception) {
             return null;
         }
 
@@ -290,7 +308,7 @@ if ( !function_exists('currentNamespace') ) {
     }
 }
 
-if ( !function_exists('currentRoute') ) {
+if( !function_exists('currentRoute') ) {
     /**
      * Returns current route
      *
@@ -305,23 +323,25 @@ if ( !function_exists('currentRoute') ) {
     }
 }
 
-if ( !function_exists('currentController') ) {
+if( !function_exists('currentController') ) {
     /**
      * @return \Illuminate\Routing\Controller|null
+     * @throws \Exception
      */
     function currentController()
     {
         $route = Route::current();
-        if ( !$route ) return null;
+        if( !$route ) return null;
 
-        if ( isset($route->controller) || method_exists($route, 'getController') ) {
+        if( isset($route->controller) || method_exists($route, 'getController') ) {
             return isset($route->controller) ? $route->controller : $route->getController();
         }
 
         $action = $route->getAction();
-        if ( $action && isset($action['controller']) ) {
-            $currentAction = $action['controller'];
-            list($controller, $method) = explode('@', $currentAction);
+        if( $action && isset($action[ 'controller' ]) ) {
+            $currentAction = $action[ 'controller' ];
+            [ $controller, $method ] = explode('@', $currentAction);
+
             return $controller ? app($controller) : $controller;
         }
 
@@ -329,7 +349,7 @@ if ( !function_exists('currentController') ) {
     }
 }
 
-if ( !function_exists('currentMethod') ) {
+if( !function_exists('currentMethod') ) {
     /**
      * @param null $method
      *
@@ -338,11 +358,12 @@ if ( !function_exists('currentMethod') ) {
     function currentMethod($method = null)
     {
         $method = $method ?: currentActionName();
-        return (string)$method;
+
+        return (string) $method;
     }
 }
 
-if ( !function_exists('currentModelName') ) {
+if( !function_exists('currentModelName') ) {
     /**
      * @param null $method
      *
@@ -355,12 +376,32 @@ if ( !function_exists('currentModelName') ) {
             str_before(class_basename($controller), "Controller"),
             ""
         );
-        return (string)$model;
+
+        return (string) $model;
+    }
+}
+
+if( !function_exists('currentModelInstance') ) {
+    /**
+     * @param null $method
+     *
+     * @return string
+     */
+    function currentModelInstance($model = null)
+    {
+        $model ??= currentModelName();
+        throw_if(!$model, "Could not get current model!");
+        $_class = "\\App\\Models\\{$model}";
+        // getClass(
+        //     class_exists($_class) ? $_class : app()->getAlias($model)
+        // )
+
+        return (string) $model;
     }
 }
 // endregion: current
 
-if ( !function_exists('collectGet') ) {
+if( !function_exists('collectGet') ) {
     /**
      * Returns value from collection by key
      *
@@ -376,7 +417,7 @@ if ( !function_exists('collectGet') ) {
     }
 }
 
-if ( !function_exists('boolval') ) {
+if( !function_exists('boolval') ) {
     /**
      * Get the boolean value of a variable
      *
@@ -386,11 +427,11 @@ if ( !function_exists('boolval') ) {
      */
     function boolval($var)
     {
-        return !!$var;
+        return ! !$var;
     }
 }
 
-if ( !function_exists('real_path') ) {
+if( !function_exists('real_path') ) {
     /**
      * return given path without ../
      *
@@ -402,20 +443,21 @@ if ( !function_exists('real_path') ) {
     function real_path($path = null, $DIRECTORY_SEPARATOR = "/")
     {
         $_DIRECTORY_SEPARATOR = $DIRECTORY_SEPARATOR === "/" ? "\\" : "/";
-        if ( $path ) $path = str_ireplace($_DIRECTORY_SEPARATOR, $DIRECTORY_SEPARATOR, $path);
+        if( $path ) $path = str_ireplace($_DIRECTORY_SEPARATOR, $DIRECTORY_SEPARATOR, $path);
 
-        $a=0;
-        if ( stringStarts($path, ['./']) ) {
+        $a = 0;
+        if( stringStarts($path, [ './' ]) ) {
             $path = substr($path, 2);
             $path = base_path($path);
-            $a=1;
+            $a = 1;
         }
 
         $backslash = "..{$DIRECTORY_SEPARATOR}";
-        if ( stripos($path, $backslash) !== false ) {
+        if( stripos($path, $backslash) !== false ) {
             $path = collect(explode($backslash, $path))->reverse();
-            $path = $path->map(function ($v, $i) use ($path) {
+            $path = $path->map(function($v, $i) use ($path) {
                 $_v = ($_v = dirname($v)) === '.' ? '' : $_v;
+
                 return $i == $path->count() - 1 ? $v : $_v;
             });
             $path = str_ireplace(
@@ -435,29 +477,12 @@ if ( !function_exists('real_path') ) {
     }
 }
 
-if ( !function_exists('ViewMode') ) {
-    /**
-     * get current route
-     *
-     * @return \Illuminate\Foundation\Application|\Illuminate\Routing\Route|mixed
-     */
-    function ViewMode()
-    {
-        try {
-            $array = explode('.', CurrentRoute()->getName());
-            return @end($array);
-        } catch (Exception $exception) {
-            return null;
-        }
-    }
-}
-
-if ( !function_exists('notify') ) {
+if( !function_exists('notify') ) {
     /**
      * Send the given notification to the given notifiable entities.
      *
-     * @param \App\Models\AppModel|\Illuminate\Support\Collection|array|mixed $notifiables
-     * @param mixed                                                           $notification
+     * @param \App\Models\Model|\Illuminate\Support\Collection|array|mixed $notifiables
+     * @param mixed                                                        $notification
      *
      * @return \Illuminate\Contracts\Bus\Dispatcher|\Illuminate\Contracts\Foundation\Application|mixed
      */
@@ -467,12 +492,12 @@ if ( !function_exists('notify') ) {
     }
 }
 
-if ( !function_exists('notifyNow') ) {
+if( !function_exists('notifyNow') ) {
     /**
      * Send the given notification to the given notifiable entities immediately.
      *
-     * @param \App\Models\AppModel|\Illuminate\Support\Collection|array|mixed $notifiables
-     * @param mixed                                                           $notification
+     * @param \App\Models\Model|\Illuminate\Support\Collection|array|mixed $notifiables
+     * @param mixed                                                        $notification
      *
      * @return \Illuminate\Contracts\Bus\Dispatcher|\Illuminate\Contracts\Foundation\Application|mixed
      */
@@ -482,7 +507,7 @@ if ( !function_exists('notifyNow') ) {
     }
 }
 
-if ( !function_exists('appDispatch') ) {
+if( !function_exists('appDispatch') ) {
     /**
      * @param        $command
      * @param string $dispatcher_class
@@ -492,11 +517,12 @@ if ( !function_exists('appDispatch') ) {
     function appDispatch($command, $dispatcher_class = \Illuminate\Bus\Dispatcher::class)
     {
         $dispatcher = dispatcher($dispatcher_class);
+
         return $command ? $dispatcher->dispatch($command) : $dispatcher;
     }
 }
 
-if ( !function_exists('dispatcher') ) {
+if( !function_exists('dispatcher') ) {
     /**
      * @param string $dispatcher_class
      *
@@ -508,7 +534,7 @@ if ( !function_exists('dispatcher') ) {
     }
 }
 
-if ( !function_exists('staticData') ) {
+if( !function_exists('staticData') ) {
     /**
      * @param string|null $name
      * @param mixed|null  $value
@@ -522,28 +548,30 @@ if ( !function_exists('staticData') ) {
         $storage = $storage ?? $initValue;
 
         $argsCount = func_num_args();
-        if ( !$argsCount ) {
+        if( !$argsCount ) {
             return $storage;
         }
         $name = $name ?? 'null';
         array_add($storage, $name, $initValue);
 
-        if ( $argsCount > 1 ) {
-            if ( !empty($value) && isClosure(head($value)) ) {
-                $result = call_user_func(array_shift($value),
-                    array_get($storage, $name),
-                    $name,
+        if( $argsCount > 1 ) {
+            if( !empty($value) && isClosure(head($value)) ) {
+                $result = call_user_func(
+                       array_shift($value),
+                       array_get($storage, $name),
+                       $name,
                     ...$value
                 );
 
                 array_set($storage, $name, $result ?? $initValue);
+
                 return $result;
             }
 
             array_set($storage, $name, $value ?? $initValue);
         }
 
-        if ( $argsCount === 1 ) {
+        if( $argsCount === 1 ) {
             $value = array_get($storage, $name, $initValue);
         }
 
@@ -551,7 +579,7 @@ if ( !function_exists('staticData') ) {
     }
 }
 
-if ( !function_exists('carbonParse') ) {
+if( !function_exists('carbonParse') ) {
     /**
      * @param mixed $value
      * @param mixed $default
@@ -562,25 +590,26 @@ if ( !function_exists('carbonParse') ) {
     {
         try {
             return carbon()->parse(fixDate(trim($value ?: $default)));
-        } catch (Exception $exception) {
+        } catch(Exception $exception) {
             return $default;
         }
     }
 }
 
-if ( !function_exists('get_type') ) {
+if( !function_exists('get_type') ) {
     /**
      * @param mixed $value
      * @param array $options
      *
      * @return string
      */
-    function get_type($value, $options = [
+    function get_type(
+        $value, $options = [
         'class_name' => true,
         'numeric_type' => true,
         'custom_type' => true,
-    ]): string
-    {
+    ]
+    ): string {
         static $all_options = [
             'class_name' => true,
             'numeric_type' => true,
@@ -588,28 +617,28 @@ if ( !function_exists('get_type') ) {
         ];
 
         $unknown = 'unknown';
-        foreach ($all_options as $option_name => $default_option_value) {
+        foreach( $all_options as $option_name => $default_option_value ) {
             $options[ $option_name ] ??= $default_option_value;
             $$option_name = $options[ $option_name ];
         }
 
-        if ( $options['custom_type'] ) {
+        if( $options[ 'custom_type' ] ) {
             $type = getCustomType($value) ?: $unknown;
-            if ( !is_null($type) && $type != $unknown ) {
+            if( !is_null($type) && $type != $unknown ) {
                 return $type;
             }
         }
         $type = $unknown;
 
-        if ( is_numeric($value) ) {
-            $type = $options['numeric_type'] ? gettype($value + 0) : 'numeric';
+        if( is_numeric($value) ) {
+            $type = $options[ 'numeric_type' ] ? gettype($value + 0) : 'numeric';
         }
 
-        if ( $options['class_name'] && is_object($value) ) {
+        if( $options[ 'class_name' ] && is_object($value) ) {
             try {
                 $class = getClass($value);
                 $type = $class ?: gettype($value);
-            } catch (Exception $exception) {
+            } catch(Exception $exception) {
                 $type = 'object';
             }
         }
@@ -618,7 +647,7 @@ if ( !function_exists('get_type') ) {
     }
 }
 
-if ( !function_exists('customType') ) {
+if( !function_exists('customType') ) {
     /**
      * @param array|string|null $typeName
      * @param callable|null     $typeTester
@@ -629,21 +658,21 @@ if ( !function_exists('customType') ) {
     {
         static $types = [];
 
-        $initValue = function () {
+        $initValue = function() {
             return false;
         };
         $types = $types ?? [];
 
-        if ( !($argsCount = func_num_args()) ) {
+        if( !($argsCount = func_num_args()) ) {
             return $types;
         }
 
-        if ( $argsCount === 1 ) {
+        if( $argsCount === 1 ) {
             $value = array_get($types, $typeName, $initValue);
         }
         array_add($types, $typeName, $initValue);
 
-        if ( $argsCount === 2 ) {
+        if( $argsCount === 2 ) {
             $typeTester = is_string($typeTester) ? Closure::fromCallable($typeTester) : $typeTester;
             array_set($types, $typeName, $typeTester ?? $initValue);
             $value = $typeTester ?? $initValue;
@@ -653,7 +682,7 @@ if ( !function_exists('customType') ) {
     }
 }
 
-if ( !function_exists('getCustomType') ) {
+if( !function_exists('getCustomType') ) {
     /**
      * @param mixed      $value
      * @param mixed|null $default
@@ -664,9 +693,9 @@ if ( !function_exists('getCustomType') ) {
     {
         $value = getValue($value, $types = customType());
 
-        foreach ($types as $_typeName => $_typeTester) {
-            if ( isCallable($_typeTester) ) {
-                if ( call_user_func($_typeTester, $value) === true ) {
+        foreach( $types as $_typeName => $_typeTester ) {
+            if( isCallable($_typeTester) ) {
+                if( call_user_func($_typeTester, $value) === true ) {
                     return $_typeName;
                 }
             }
@@ -676,17 +705,7 @@ if ( !function_exists('getCustomType') ) {
     }
 }
 
-if ( !function_exists('cachedResponse') ) {
-    /**
-     * @return \CachedResponse|\Illuminate\Contracts\Foundation\Application|mixed|\CachedResponse
-     */
-    function cachedResponse(bool $auto_save = false)
-    {
-        return app('cached-response')->initiate($auto_save);
-    }
-}
-
-if ( !function_exists('classAccessWrapper') ) {
+if( !function_exists('classAccessWrapper') ) {
     /**.
      * @param string|object $class
      *
