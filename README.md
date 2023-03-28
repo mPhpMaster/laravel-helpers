@@ -33,12 +33,12 @@ define('LOAD_PATH', __DIR__.'/../app/Helpers/Autoload/');
 <small>**CLI Only:**</small>
 1. To change it only on `artisan`, you need to modify `./artisan`.
 <br>
-<small>_add your code before or after `define('LARAVEL_START', microtime(true));` line._</small>
+<small>add your code before or after <code>define('LARAVEL_START', microtime(true));</code> line.</small>
 
 <small>**WEB Only:**</small>
 2. To change it only when browsing/api, you need to modify `./public/index.php`.
 <br>
-<small>add your code before or after `define('LARAVEL_START', microtime(true));` line.</small>
+<small>add your code before or after <code>define('LARAVEL_START', microtime(true));</code> line.</small>
 
 ---
 
