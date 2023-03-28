@@ -36,6 +36,7 @@ define('LOAD_PATH', __DIR__.'/../app/Helpers/Autoload/');
 <small>add your code before or after <code>define('LARAVEL_START', microtime(true));</code> line.</small>
 
 <small>**WEB Only:**</small>
+
 2. To change it only when browsing/api, you need to modify `./public/index.php`.
 <br>
 <small>add your code before or after <code>define('LARAVEL_START', microtime(true));</code> line.</small>
