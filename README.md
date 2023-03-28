@@ -30,16 +30,17 @@ Use `define` method to define `LOAD_PATH` which will change the default path.
 ```php
 define('LOAD_PATH', __DIR__.'/../app/Helpers/Autoload/');
 ```
-<small>**CLI Only:**</small>
-1. To change it only on `artisan`, you need to modify `./artisan`.
-<br>
-<small>add your code before or after <code>define('LARAVEL_START', microtime(true));</code> line.</small>
+1. **CLI Only:**
 
-<small>**WEB Only:**</small>
-
-2. To change it only when browsing/api, you need to modify `./public/index.php`.
+To change it only on `artisan`, you need to modify `./artisan`.
 <br>
-<small>add your code before or after <code>define('LARAVEL_START', microtime(true));</code> line.</small>
+> <small>add your code before or after <code>define('LARAVEL_START', microtime(true));</code> line.</small>
+
+2. **WEB Only:**
+
+To change it only when browsing/api, you need to modify `./public/index.php`.
+<br>
+> <small>add your code before or after <code>define('LARAVEL_START', microtime(true));</code> line.</small>
 
 ---
 
