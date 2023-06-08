@@ -1,56 +1,51 @@
 # Laravel Helpers
+<small>v3.0.0</small>
 
-- `composer a:routes` Use `artisan route:list` and write the output to `routes.txt`.
-- `composer helpers` Use `ide-helper` to regenerate ide helpers files.
-- `composer c:c` Use `artisan` to clear **cache**, **route**, **config** and **view** files.
-- `composer m:c` Create `sessions`, `views` and `sessions` directories in `storage/framework` then chomd `storage/framework` 775 for the user as owner.
-- Autoload functions.
-- Models to functions.
-    > `config(app.models_to_functions)` and `config(app.debug)` are both required to be `true` in order to active *Models to functions*. 
+## Dependencies:
+* php >=8.1 **REQUIRED IN YOUR PROJECT**
+* laravel >=9 **REQUIRED IN YOUR PROJECT**
+* illuminate/support >=9 _composer will install it automatically_
+* laravel/helpers ^1.5 _composer will install it automatically_
+* mphpmaster/laravel-dev-helpers ^1 _composer will install it automatically_
+* mphpmaster/laravel-guesser-helpers ^1 _composer will install it automatically_
+* mphpmaster/laravel-helpers2 ^1 _composer will install it automatically_
+* mphpmaster/laravel-app-helpers ^1 _composer will install it automatically_
+* mphpmaster/laravel-nova-helpers ^1 _composer will install it automatically_
+
+## Installation:
+  ```shell
+  composer require mphpmaster/laravel-helpers
+  ```
+
+## Content
+- Providers:
+  - `MPhpMaster\LaravelHelpers\Providers\HelperProvider`
+
+- Functions:
+  - `columnLocalize`
+  - `unzip`
 
 ---
 
-### Autoload functions loading files order:
-1. `app/Helpers/` _(This is the loader default path, it's changeable)_
-2. `vendor/mphpmaster/laravel-helpers/Helpers/src/`
-3. `vendor/mphpmaster/laravel-helpers/Helpers/macro/`
-4. `vendor/mphpmaster/laravel-helpers/Helpers/src-interfaces/`
-5. `vendor/mphpmaster/laravel-helpers/Helpers/src-traits/`
-6. `vendor/mphpmaster/laravel-helpers/Helpers/src-class/`
+## <span style="color: red;">To add:</span>
+- Add `developer` key to `config/app.php`
+- Add `dev_mode` key to `config/app.php`
 
-##### NOTE:<small>
-> Only files ends with __.functions.php__ and __.class.php__ will be auto-loaded. _(Loading is not **recursive**, depth: **1**)_</small>
-
----
-
-#### How to Change the loader default path (`app/Helpers/`) ?
-Use `define` method to define `LOAD_PATH` which will change the default path.
-
-<small>**Example:**</small>
 ```php
-define('LOAD_PATH', __DIR__.'/../app/Helpers/Autoload/');
+// example:
+return [
+//  ...
+    'dev_mode' => env('DEV_MODE', false),
+    'developer' => env('DEVELOPER', 'safadi'),
+//  ...
+];
 ```
-1. **CLI Only:**
 
-To change it only on `artisan`, you need to modify `./artisan`.
-<br>
-> <small>add your code before or after <code>define('LARAVEL_START', microtime(true));</code> line.</small>
-
-2. **WEB Only:**
-
-To change it only when browsing/api, you need to modify `./public/index.php`.
-<br>
-> <small>add your code before or after <code>define('LARAVEL_START', microtime(true));</code> line.</small>
-
----
-
-### Configuration:
-- You need to define alias for your abstract class model as `\Model`.
-
----
+> *Inspired by laravel/helpers.*
 
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
-The Laravel Helpers is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The Laravel Helpers: App is open-sourced software licensed under the [MIT license](https://github.com/mPhpMaster/laravel-helpers/blob/master/LICENSE).
+
