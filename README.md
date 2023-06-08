@@ -13,8 +13,14 @@
 * mphpmaster/laravel-nova-helpers ^1 _composer will install it automatically_
 
 ## Installation:
+### Composer:
   ```shell
   composer require mphpmaster/laravel-helpers
+  ```
+
+### NPM:
+  ```shell
+  npm install @mphpmaster/laravel-helpers
   ```
 
 ## Content
