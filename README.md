@@ -55,3 +55,8 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 The Laravel Helpers: App is open-sourced software licensed under the [MIT license](https://github.com/mPhpMaster/laravel-helpers/blob/master/LICENSE).
 
+
+***
+
+## Stand with Palestine 🇵🇸 <i>#FreePalestine</i>
+
